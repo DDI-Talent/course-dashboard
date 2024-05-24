@@ -11,12 +11,12 @@ from shiny.express import input, ui
 bill_rng = (min(tips.total_bill), max(tips.total_bill))
 
 # Add page title and sidebar
-ui.page_opts(title="Restaurant Hollie tipping", fillable=True)
+ui.page_opts(title="Restaurant Pawel!! tipping", fillable=True)
 
 with ui.sidebar(open="desktop"):
     ui.input_slider(
         "total_bill",
-        "Bill amount",
+        "Bill amount $$",
         min=bill_rng[0],
         max=bill_rng[1],
         value=bill_rng,
