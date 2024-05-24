@@ -11,7 +11,7 @@ from shiny.express import input, ui
 bill_rng = (min(tips.total_bill), max(tips.total_bill))
 
 # Add page title and sidebar
-ui.page_opts(title="Keith's Super Restaurant Tipping Report", fillable=True)
+ui.page_opts(title="Restaurant Hollie tipping", fillable=True)
 
 with ui.sidebar(open="desktop"):
     ui.input_slider(
@@ -84,7 +84,7 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
                 ui.input_radio_buttons(
                     "scatter_color",
                     None,
-                    ["none", "sex", "smoker", "day", "time"],
+                    ["total_bill", "sex", "smoker", "day", "time"],
                     inline=True,
                 )
 
