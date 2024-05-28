@@ -16,8 +16,17 @@ def get_courses(courses_df, year=None, block=None):
 # print('year and block:', get_courses(courses_df, year=1, block=2), '\n')  
 # print('no filtering:', get_courses(courses_df), '\n')  
 
+df_output = pd.DataFrame(columns=['Year 1', 'Year 2'])
 
-for year in [1,2]:
-    for block in [1,2,3,4,5,6]:
-        print(f'Year {year}, Block {block}:', get_courses(courses_df, year=year, block=block), '\n')
-        
+for block in range(1,7):
+    row={}
+    for year in range(1,3):
+        courses = get_courses(courses_df, year=year, block=block)
+        row[f'Year {year}'] = ', '.join([f'{course[0]} ({course[1]})' for course in courses])
+        df_output.loc[block] = row
+    # print(f'Year {year}, Block {block}:', get_courses(courses_df, year=year, block=block), '\n')
+
+# df_output['Block'] = df_output.index
+df_output = df_output.reset_index().rename(columns={'index': 'Block'})
+
+print(df_output)
