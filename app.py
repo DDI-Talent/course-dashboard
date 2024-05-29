@@ -2,7 +2,8 @@ from shiny import App, render, ui
 
 import pandas as pd
 
-courses_df = pd.read_csv('/home/hollie_hindley/Documents/data_internship/course-dashboard/example_course_outline.csv')
+PATH = '/home/hollie_hindley/Documents/data_internship'
+courses_df = pd.read_csv(f'{PATH}/course-dashboard/example_course_outline.csv')
 
 def get_courses(courses_df, year=None, block=None):
     if year is not None:
