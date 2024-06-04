@@ -38,11 +38,11 @@ def filter_taken_courses(courses_df, taken_courses):
         print(courses_df['year'])
 
         new_item_df = courses_df.loc[
-            #         courses_df = courses_df[courses_df['year'].str.contains(str(year))]
-
             		(courses_df['year'].str.contains(str(course_info['year']))) & 
               		(courses_df['block'].str.contains(str(course_info['block']))) &
                   	(courses_df['course_id'].str.contains(str(course_info['course_id'])))]
+        new_item_df['year'] = str(course_info['year'])
+        new_item_df['block'] = str(course_info['block'])
         final_df = pd.concat([final_df, new_item_df ])
         print(new_item_df)
     return final_df
