@@ -31,13 +31,21 @@ def get_courses(courses_df, year=None, block=None):
 
 def filter_taken_courses(courses_df, taken_courses):
     # {'course_id':'HEIN11062', 'year': 2, 'block': 5}
+
     final_df = pd.DataFrame()
     for course_info in taken_courses:
-        new_item_df = courses_df.loc[(courses_df.year == course_info['year']) & 
-              		(courses_df['block'] == course_info['block']) &
-                  	(courses_df['course_id'] == course_info['course_id'])]
-        final_df.add(new_item_df)
-    return courses_df[['course_name', 'course_id']].values.tolist()
+        print(course_info['year'])
+        print(courses_df['year'])
+
+        new_item_df = courses_df.loc[
+            #         courses_df = courses_df[courses_df['year'].str.contains(str(year))]
+
+            		(courses_df['year'].str.contains(str(course_info['year']))) & 
+              		(courses_df['block'].str.contains(str(course_info['block']))) &
+                  	(courses_df['course_id'].str.contains(str(course_info['course_id'])))]
+        final_df = pd.concat([final_df, new_item_df ])
+        print(new_item_df)
+    return final_df
 
 def create_output_df(courses_df, taken_courses):
     courses_df = filter_taken_courses(courses_df, taken_courses)
