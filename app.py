@@ -1,15 +1,22 @@
-from shiny import App, render, ui
+from shiny import App, render, ui, reactive
 
 import pandas as pd
 
 
+def get_all_courses_as_buttons():
+    return [
+        ui.input_action_button("add_course", "Applied Python"), 
+        ui.input_action_button("add_course2", "Intro to Python")
+    ]
 
-app_ui = ui.page_fixed(
+app_ui = ui.page_sidebar(
+    ui.sidebar("Courses", get_all_courses_as_buttons()),
+    "Main content",
     ui.output_table('courses_table')
 )
 
-def server(input, output, session):
 
+def server(input, output, session):
 
     def course_as_dict(course_id, year, block):
         return {'course_id':course_id, 'year': year, 'block': block}
@@ -37,7 +44,7 @@ def server(input, output, session):
                 return [(int(string_to_parse), '')]
             except:
                 return []
-            
+ 
     def load_data():
         loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
@@ -65,10 +72,9 @@ def server(input, output, session):
         # selected_courses = remove_course(selected_courses, 'HEIN11062',1,5)
         return selected_courses
 
+
     courses_df = load_data()
     selected_courses = load_selected_courses()
-
-
 
 
     def get_courses(courses_df, year=None, block=None, columns_to_keep = ['course_name', 'course_id']):
@@ -110,6 +116,8 @@ def server(input, output, session):
     @render.table
     def courses_table():
         return create_output_df(courses_df, selected_courses)
+    
+    @render.button
     
 
 app = App(app_ui, server)
