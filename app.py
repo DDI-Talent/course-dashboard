@@ -26,16 +26,15 @@ def server(input, output, session):
                             if course != one_to_remove]
         return selected_courses
     
-    # turns string like "1 or 2" into [1,2]. turns "1" into [1[], and "banana" into []
+    # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
     def string_to_list(string_to_parse):
         if "or" in string_to_parse:
-            return [int(item) for item in string_to_parse.split(' or ')]
+            return [(int(item.strip()), 'or') for item in string_to_parse.split('or')]
         elif "and" in string_to_parse:
-            # we might want to do something differert here
-            return [int(item) for item in string_to_parse.split(' and ')]
+            return [(list(map(int, string_to_parse.split('and'))), 'and')]
         else:
             try:
-                return [int(string_to_parse)]
+                return [(int(string_to_parse), '')]
             except:
                 return []
             
@@ -43,6 +42,13 @@ def server(input, output, session):
         loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
         loaded_df['block'] = loaded_df['block'].apply(string_to_list)
+        
+        loaded_df = loaded_df.explode('year').reset_index(drop=True)
+
+        loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
+        loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
+
+        loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
         return loaded_df
 
     def load_selected_courses():
@@ -55,7 +61,8 @@ def server(input, output, session):
     
         # testing
         selected_courses = add_course(selected_courses, 'HEIN11062',2,5)
-        selected_courses = remove_course(selected_courses, 'HEIN11062',1,5)
+        selected_courses = add_course(selected_courses, 'HEIN11062',1,5)
+        # selected_courses = remove_course(selected_courses, 'HEIN11062',1,5)
         return selected_courses
 
     courses_df = load_data()
