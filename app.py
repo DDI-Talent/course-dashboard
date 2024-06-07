@@ -68,12 +68,12 @@ def server(input, output, session):
         selected_courses = [ {'course_id':'HEIN11037', 'year': 1, 'block': 1},
                                 {'course_id':'HEIN11037', 'year': 1, 'block': 2},
                                 #   {'course_id':'HEIN11062', 'year': 2, 'block': 5},
-                                {'course_id':'HEIN11062', 'year': 1, 'block': 5}
+                                # {'course_id':'HEIN11062', 'year': 1, 'block': 5}
                                 ]
     
         # testing
-        selected_courses = add_course(selected_courses, 'HEIN11062',2,5)
-        selected_courses = add_course(selected_courses, 'HEIN11062',1,5)
+        # selected_courses = add_course(selected_courses, 'HEIN11062',2,5)
+        # selected_courses = add_course(selected_courses, 'HEIN11062',1,5)
         # selected_courses = remove_course(selected_courses, 'HEIN11062',1,5)
         return selected_courses
 
@@ -118,6 +118,13 @@ def server(input, output, session):
         df_output = df_output.reset_index().rename(columns={'index': 'Block'})
         return df_output 
 
+    @reactive.Effect
+    @reactive.event(input.button_HEIN11062)
+    def on_button1_click():
+        selected_courses = add_course(selected_courses, 'HEIN11062',1,5)
+        print(selected_courses)
+        return selected_courses
+    
     @render.table
     def courses_table():
         return create_output_df(courses_df, selected_courses)
