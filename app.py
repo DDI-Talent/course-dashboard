@@ -2,15 +2,19 @@ from shiny import App, render, ui, reactive
 
 import pandas as pd
 
+courses_df = pd.read_csv(f'./data/example_course_outline.csv')
+# courses_df = load_data()
 
-def get_all_courses_as_buttons():
+def get_all_courses_as_buttons(courses_df):
     return [
-        ui.input_action_button("add_course", "Applied Python"), 
-        ui.input_action_button("add_course2", "Intro to Python")
-    ]
+        ui.input_action_button(f"button_{course_id}", f"{course_names}") for (course_id, course_names) in zip(courses_df['course_id'], courses_df['course_name'])
+        ]
+    
 
 app_ui = ui.page_sidebar(
-    ui.sidebar("Courses", get_all_courses_as_buttons()),
+    ui.sidebar("Courses", 
+               get_all_courses_as_buttons(courses_df)
+               ),
     "Main content",
     ui.output_table('courses_table')
 )
@@ -45,6 +49,7 @@ def server(input, output, session):
             except:
                 return []
  
+    # @render.ui
     def load_data():
         loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
@@ -116,8 +121,6 @@ def server(input, output, session):
     @render.table
     def courses_table():
         return create_output_df(courses_df, selected_courses)
-    
-    @render.button
     
 
 app = App(app_ui, server)
