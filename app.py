@@ -3,21 +3,28 @@ import inspect
 import pandas as pd
 
 # global courses_df # can we move this to server? ui.sidebar("Courses",  would need to be dynamicly generated UI
-courses_df = pd.read_csv(f'./data/example_course_outline.csv')
+courses_df = pd.read_csv(f'./data/example_course_outline.csv')    
 
 def button_for_course(course):
     button_uid = f"button_{course['course_id']}"
     button_label = f"{course['course_name']}"
-    # print("add button ",button_uid)
-    return ui.input_action_button(button_uid, button_label, color="yellow")
-
-def get_all_courses_as_buttons(courses_df):
-    # print("courses_df",[row['course_id'] for i, row in courses_df.iterrows()])
-    return [
-          button_for_course(course) for _, course in courses_df.iterrows()# this is possibly more consise
-        ]
+    return ui.card(
+        ui.card_header(button_label),
+        ui.p("some course description"),
+        # here figure out if it can be taken in manu years/blocks and add more buttons
+        # should this be server side?
+        ui.input_action_button(button_uid, "➕ YEAR 1"),
+        ui.card_footer(f"Course id: {button_uid}"),
+        full_screen=True,
+    ),
     
 
+def get_all_courses_as_buttons(courses_df):
+    return [
+          button_for_course(course) 
+          for _, course in courses_df.iterrows()
+        ]
+    
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
                get_all_courses_as_buttons(courses_df)
@@ -34,7 +41,6 @@ def server(input, output, session):
 
     courses_df = reactive.value([])
     courses_df = reactive.value(pd.DataFrame({}))
-    # courses_df = reactive.value(pd.DataFrame({'course_name':[],'course_id':[],'year':[],'block':[]}))
     selected_courses = reactive.value([])
     input_states = reactive.value({})
 
@@ -43,10 +49,11 @@ def server(input, output, session):
         return {'course_id':course_id, 'year': year, 'block': block}
 
     def add_course( course_id, year, block):
-        # TODO: make it so that we can't add the same course many times
         global selected_courses
         print("selected_courses", selected_courses)
-        selected_courses.set(selected_courses.get() + [course_as_dict(course_id, year, block) ])
+        course_as_dictionary = course_as_dict(course_id, year, block) 
+        if course_as_dictionary not in selected_courses.get() : 
+            selected_courses.set(selected_courses.get() + [course_as_dictionary])
 
     def remove_course( course_id, year, block):
         global selected_courses
