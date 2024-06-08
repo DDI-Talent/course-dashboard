@@ -2,9 +2,10 @@ from shiny import App, render, ui
 
 import pandas as pd
 
-
+version = "0.3.0" # major.sprint.release
 
 app_ui = ui.page_fixed(
+	ui.panel_title(f"Course Dashbaord v{version}"),
     ui.output_table('courses_table')
 )
 
