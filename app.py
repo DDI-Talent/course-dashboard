@@ -1,5 +1,5 @@
 from shiny import App, render, ui, reactive
-
+import inspect
 import pandas as pd
 
 # global courses_df # can we move this to server? ui.sidebar("Courses",  would need to be dynamicly generated UI
@@ -8,7 +8,7 @@ courses_df = pd.read_csv(f'./data/example_course_outline.csv')
 def button_for_course(course):
     button_uid = f"button_{course['course_id']}"
     button_label = f"{course['course_name']}"
-    print("add button ",button_uid)
+    # print("add button ",button_uid)
     return ui.input_action_button(button_uid, button_label, color="yellow")
 
 def get_all_courses_as_buttons(courses_df):
@@ -23,6 +23,7 @@ app_ui = ui.page_sidebar(
                get_all_courses_as_buttons(courses_df)
                ),
     "Main content",
+    ui.input_slider("bananaslider", "sadsada",0,3,2),
     ui.output_table('courses_table')
 )
 
@@ -135,15 +136,37 @@ def server(input, output, session):
         global courses_df
         selected_courses = [course for _, course in courses_df.get().iterrows() if course['course_id'] ==  course_id]
         return selected_courses[0] if len(selected_courses) > 0 else None
+    
+    # @reactive.Effect
+    # @reactive.event(input.button_HEIN11037) # we can add many, but can we add 'all buttons'?
+    # # @reactive.event(input.button_HEIN11062, input.button_HEIN11045)
+    # def _():
+    #     print("banana")
+    #     print(get_all_inputs())
+    #     # values = reactiveValuesToList(input)
+
+
+    # def get_all_input_ids():
+    #     return [name for name, _ in inspect.getmembers(input) if not name.startswith('_') and callable(getattr(input, name))]
+
+    # print("get_all_input_ids()",get_all_input_ids())
+
+    def get_all_inputs( start_string = "button_"):
+        input_values = []
+        for var_name, value_list in inspect.getmembers(input):
+            if var_name == "_map":
+                # item_ids = [key for key, value in value_list.items() if key.startswith(start_string)]
+                input_values = [getattr(input, input_id) for input_id, input_item in value_list.items() if input_id.startswith(start_string)]
+        return input_values
 
     @reactive.Effect
-    @reactive.event(input.button_HEIN11062) # we can add many, but can we add 'all buttons'?
-    # @reactive.event(input.button_HEIN11062, input.button_HEIN11045)
-    def _():
+    @reactive.event(*get_all_inputs(), ignore_init=True) 
+    def any_course_button_clicked():
+        print("CLICKED!")
         course_id = 'HEIN11062' # How to get this with code???
         this_course = course_data_with_id(course_id)
         if type(this_course) != None:
-            # TODO: get the actual block and year selected, if there were choices
+            # TODO: get the actual block and year selected, if there were choices. for now, grab first letter
             course_year = int(this_course['year'][0])
             course_block = int(this_course['block'][0])
 
