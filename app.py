@@ -1,4 +1,4 @@
-from shiny import App, render, ui, reactive
+from shiny import App, render, ui, reactive, session
 import inspect
 import pandas as pd
 
@@ -23,7 +23,6 @@ app_ui = ui.page_sidebar(
                get_all_courses_as_buttons(courses_df)
                ),
     "Main content",
-    ui.input_slider("bananaslider", "sadsada",0,3,2),
     ui.output_table('courses_table')
 )
 
@@ -31,9 +30,13 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     global selected_courses
     global courses_df
+    global input_states
 
     courses_df = reactive.value([])
+    courses_df = reactive.value(pd.DataFrame({}))
+    # courses_df = reactive.value(pd.DataFrame({'course_name':[],'course_id':[],'year':[],'block':[]}))
     selected_courses = reactive.value([])
+    input_states = reactive.value({})
 
 
     def course_as_dict(course_id, year, block):
@@ -80,8 +83,9 @@ def server(input, output, session):
 
     def load_selected_courses():
            # for testing 
-        selected_courses = [ {'course_id':'HEIN11037', 'year': 1, 'block': 1},
-                                {'course_id':'HEIN11037', 'year': 1, 'block': 2},
+        selected_courses = [ 
+            # {'course_id':'HEIN11037', 'year': 1, 'block': 1},
+            #                     {'course_id':'HEIN11037', 'year': 1, 'block': 2},
                                 #   {'course_id':'HEIN11062', 'year': 2, 'block': 5},
                                 # {'course_id':'HEIN11062', 'year': 1, 'block': 5}
                                 ]
@@ -97,12 +101,12 @@ def server(input, output, session):
 
 
     def get_courses(courses_df, year=None, block=None, columns_to_keep = ['course_name', 'course_id']):
-        if year is not None:
+        if "year" in courses_df.columns and  year is not None:
             courses_df = courses_df[courses_df['year'].eq(year)]
-        if block is not None:
+        if  "block" in courses_df.columns  and block is not None:
             courses_df = courses_df[courses_df['block'].eq(block)]
 
-        return courses_df[columns_to_keep].values.tolist()
+        return courses_df[columns_to_keep].values.tolist() if courses_df.shape[0] >0 else  []
 
     def filter_taken_courses(courses_df, taken_courses):
         final_df = pd.DataFrame()
@@ -110,9 +114,9 @@ def server(input, output, session):
             new_item_df = courses_df.loc[
                         (courses_df['year'].apply(lambda items: course_info['year'] in items)) &
                         (courses_df['block'].apply(lambda items: course_info['block'] in items)) &
-                        (courses_df['course_id'].eq(course_info['course_id']))]
+                        (courses_df['course_id'].eq(course_info['course_id']))].copy()
             # once we know course is being taken, modify it in output to only include desired year and block
-            new_item_df['year'] = course_info['year']
+            new_item_df['year'] = int(course_info['year'])
             new_item_df['block'] = course_info['block']
             final_df = pd.concat([final_df, new_item_df ])
         return final_df
@@ -128,6 +132,7 @@ def server(input, output, session):
                 # taken_courses = courses_df[ courses_df.course_id.isin(selected_courses_ids) ]
                 courses = get_courses(courses_df, year=year, block=block)
                 row[f'Year {year}'] = ', '.join([f'{course[0]} ({course[1]})' for course in courses])
+                # print(row)
                 df_output.loc[block] = row
         df_output = df_output.reset_index().rename(columns={'index': 'Block'})
         return df_output 
@@ -136,20 +141,7 @@ def server(input, output, session):
         global courses_df
         selected_courses = [course for _, course in courses_df.get().iterrows() if course['course_id'] ==  course_id]
         return selected_courses[0] if len(selected_courses) > 0 else None
-    
-    # @reactive.Effect
-    # @reactive.event(input.button_HEIN11037) # we can add many, but can we add 'all buttons'?
-    # # @reactive.event(input.button_HEIN11062, input.button_HEIN11045)
-    # def _():
-    #     print("banana")
-    #     print(get_all_inputs())
-    #     # values = reactiveValuesToList(input)
 
-
-    # def get_all_input_ids():
-    #     return [name for name, _ in inspect.getmembers(input) if not name.startswith('_') and callable(getattr(input, name))]
-
-    # print("get_all_input_ids()",get_all_input_ids())
 
     def get_all_inputs( start_string = "button_"):
         input_values = []
@@ -157,13 +149,48 @@ def server(input, output, session):
             if var_name == "_map":
                 # item_ids = [key for key, value in value_list.items() if key.startswith(start_string)]
                 input_values = [getattr(input, input_id) for input_id, input_item in value_list.items() if input_id.startswith(start_string)]
-        return input_values
+                return input_values
+        return []
+
+    def get_all_input_info( start_string = "button_"):
+        input_values = {}
+        # input has lots of objects, but _map inclides all inputs - let's grab those that start with button_
+        for var_name, value_list in inspect.getmembers(input):
+            if var_name == "_map":
+                input_values = {input_id: getattr(input, input_id) for input_id, input_item in value_list.items() if input_id.startswith(start_string)}
+                return input_values
+        return {}
+
+
+    def init_set_input_states( ):
+        global input_states
+        print("old_states")
+        new_states = { input_id: input.get() for input_id, input in get_all_input_info().items()}
+        input_states.set(new_states)
+
+    def which_input_changed( ):
+        global input_states
+        print("old_states")
+        new_states = { input_id: input.get() for input_id, input in get_all_input_info().items()}
+        old_states = input_states.get()
+        print("old_states",old_states)
+        keys_that_changed = [old_state_key
+                            for old_state_key, old_state_value in old_states.items()
+                            if old_state_value != new_states[old_state_key]]
+        # TODO
+        input_states.set(new_states)
+        print(new_states)
+        print("keys_that_changed", keys_that_changed)
+        return keys_that_changed[0]
+
+    def id_button_to_course(button_id):
+        return button_id.replace("button_","")
 
     @reactive.Effect
     @reactive.event(*get_all_inputs(), ignore_init=True) 
     def any_course_button_clicked():
-        print("CLICKED!")
-        course_id = 'HEIN11062' # How to get this with code???
+        course_id = id_button_to_course( which_input_changed( ))
+        print("CLICKED!", course_id)
         this_course = course_data_with_id(course_id)
         if type(this_course) != None:
             # TODO: get the actual block and year selected, if there were choices. for now, grab first letter
@@ -172,6 +199,31 @@ def server(input, output, session):
 
             add_course( this_course['course_id'],course_year,course_block )
         
+
+    # refresh items state at the beginning 
+
+
+    initialized = reactive.Value(0) # 0 = no context, 1 initialising, 2 initialised
+    # Function to initialize the app
+    @reactive.Effect
+    def init():
+        if initialized.get() == 0:
+            initialized.set(1)
+        elif initialized.get() == 1:
+            init_set_input_states()
+            initialized.set(2)
+        print("initialized.get()", initialized.get())
+
+
+    # def init():
+    #     # run once the session is created
+    #     print("init")
+    #     # get_all_input_info() # refresh button press counts
+    #     init_set_input_states()
+            
+    # session.on_flush(init, once=False)
+
+
     @render.table
     def courses_table():
         global selected_courses
