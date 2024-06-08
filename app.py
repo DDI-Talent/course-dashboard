@@ -2,12 +2,19 @@ from shiny import App, render, ui, reactive
 
 import pandas as pd
 
+# global courses_df # can we move this to server? ui.sidebar("Courses",  would need to be dynamicly generated UI
 courses_df = pd.read_csv(f'./data/example_course_outline.csv')
-# courses_df = load_data()
+
+def button_for_course(course):
+    button_uid = f"button_{course['course_id']}"
+    button_label = f"{course['course_name']}"
+    print("add button ",button_uid)
+    return ui.input_action_button(button_uid, button_label, color="yellow")
 
 def get_all_courses_as_buttons(courses_df):
+    # print("courses_df",[row['course_id'] for i, row in courses_df.iterrows()])
     return [
-        ui.input_action_button(f"button_{course_id}", f"{course_names}") for (course_id, course_names) in zip(courses_df['course_id'], courses_df['course_name'])
+          button_for_course(course) for _, course in courses_df.iterrows()# this is possibly more consise
         ]
     
 
@@ -21,21 +28,28 @@ app_ui = ui.page_sidebar(
 
 
 def server(input, output, session):
+    global selected_courses
+    global courses_df
+
+    courses_df = reactive.value([])
+    selected_courses = reactive.value([])
+
 
     def course_as_dict(course_id, year, block):
         return {'course_id':course_id, 'year': year, 'block': block}
 
-    def add_course(selected_courses, course_id, year, block):
-        # for now we can add the same course many times
-        selected_courses.append(course_as_dict(course_id, year, block) )
-        return selected_courses
+    def add_course( course_id, year, block):
+        # TODO: make it so that we can't add the same course many times
+        global selected_courses
+        print("selected_courses", selected_courses)
+        selected_courses.set(selected_courses.get() + [course_as_dict(course_id, year, block) ])
 
-    def remove_course(selected_courses, course_id, year, block):
+    def remove_course( course_id, year, block):
+        global selected_courses
         one_to_remove = course_as_dict(course_id, year, block) 
         selected_courses = [course 
                             for course in selected_courses
                             if course != one_to_remove]
-        return selected_courses
     
     # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
     def string_to_list(string_to_parse):
@@ -70,7 +84,6 @@ def server(input, output, session):
                                 #   {'course_id':'HEIN11062', 'year': 2, 'block': 5},
                                 # {'course_id':'HEIN11062', 'year': 1, 'block': 5}
                                 ]
-    
         # testing
         # selected_courses = add_course(selected_courses, 'HEIN11062',2,5)
         # selected_courses = add_course(selected_courses, 'HEIN11062',1,5)
@@ -78,8 +91,8 @@ def server(input, output, session):
         return selected_courses
 
 
-    courses_df = load_data()
-    selected_courses = load_selected_courses()
+    courses_df.set(load_data())
+    selected_courses.set(load_selected_courses())
 
 
     def get_courses(courses_df, year=None, block=None, columns_to_keep = ['course_name', 'course_id']):
@@ -118,16 +131,28 @@ def server(input, output, session):
         df_output = df_output.reset_index().rename(columns={'index': 'Block'})
         return df_output 
 
+    def course_data_with_id(course_id):
+        global courses_df
+        selected_courses = [course for _, course in courses_df.get().iterrows() if course['course_id'] ==  course_id]
+        return selected_courses[0] if len(selected_courses) > 0 else None
+
     @reactive.Effect
-    @reactive.event(input.button_HEIN11062)
-    def on_button1_click():
-        selected_courses = add_course(selected_courses, 'HEIN11062',1,5)
-        print(selected_courses)
-        return selected_courses
-    
+    @reactive.event(input.button_HEIN11062) # we can add many, but can we add 'all buttons'?
+    # @reactive.event(input.button_HEIN11062, input.button_HEIN11045)
+    def _():
+        course_id = 'HEIN11062' # How to get this with code???
+        this_course = course_data_with_id(course_id)
+        if type(this_course) != None:
+            # TODO: get the actual block and year selected, if there were choices
+            course_year = int(this_course['year'][0])
+            course_block = int(this_course['block'][0])
+
+            add_course( this_course['course_id'],course_year,course_block )
+        
     @render.table
     def courses_table():
-        return create_output_df(courses_df, selected_courses)
+        global selected_courses
+        global courses_df
+        return create_output_df(courses_df.get(), selected_courses.get())
     
-
 app = App(app_ui, server)
