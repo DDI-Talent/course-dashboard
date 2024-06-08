@@ -2,6 +2,8 @@ from shiny import App, render, ui, reactive, session
 import inspect
 import pandas as pd
 
+version = "0.3.0" # major.sprint.release
+
 # global courses_df # can we move this to server? ui.sidebar("Courses",  would need to be dynamicly generated UI
 courses_df = pd.read_csv(f'./data/example_course_outline.csv')    
 
@@ -29,8 +31,8 @@ app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
                get_all_courses_as_buttons(courses_df)
                ),
-    "Main content",
-    ui.output_table('courses_table')
+    ui.panel_title(f"Course Dashbaord v{version}"),
+        ui.output_table('courses_table')
 )
 
 

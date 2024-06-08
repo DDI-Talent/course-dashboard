@@ -4,3 +4,4 @@ shinywidgets
 plotly
 pandas
 ridgeplot
+jinja2
