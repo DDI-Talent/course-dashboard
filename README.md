@@ -9,7 +9,7 @@ This template gives you a more "complete" dashboard for exploring the tips datas
 - each time (you need to be in the main project folder, check in terminal with `pwd`)
 
 ```
-rsconnect deploy shiny path/to/your/app --name ddi-talent --title course-dashboard
+rsconnect deploy shiny ./ --name ddi-talent --title course-dashboard
 ``
 
 - just once:

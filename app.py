@@ -1,11 +1,27 @@
 from shiny import App, render, ui, reactive, session
-import inspect
 import pandas as pd
+from io import StringIO
 
-version = "0.3.0" # major.sprint.release
+
+version = "0.3.2" # major.sprint.release
 
 # global courses_df # can we move this to server? ui.sidebar("Courses",  would need to be dynamicly generated UI
-courses_df = pd.read_csv(f'./data/example_course_outline.csv')    
+# courses_df = pd.read_csv(f'./data/example_course_outline.csv')    
+
+csv_text = """course_name,course_id,year,block
+Introduction to data science in health and social care,HEIN11037,1,1 and 2
+Introductory applied machine learning,HEIN00000,1 or 2,3 and 4
+Digital technologies in health and social care,HEIN11043,1 or 2,5
+Data types and Structures in R & Python,HEIN11068,1 or 2,6
+Research design for data science in health and social care,HEIN11057,2,1 and 6
+Systems thinking,HEIN11054,2,2
+Data ethics in health and social care,HEIN11059,1 or 2,3
+Foundations of software development in health and social care (Python 1),HEIN11045,1 or 2,4
+Applied software development in health and social care (Python 2),HEIN11062,1 or 2,5"""
+file_text = StringIO(csv_text)
+courses_df = pd.read_csv(file_text)
+
+
 
 def button_for_course(course):
     button_uid = f"button_{course['course_id']}"
@@ -42,7 +58,6 @@ def server(input, output, session):
     global input_states
 
     courses_df = reactive.value([])
-    courses_df = reactive.value(pd.DataFrame({}))
     selected_courses = reactive.value([])
     input_states = reactive.value({})
 
@@ -78,7 +93,20 @@ def server(input, output, session):
  
     # @render.ui
     def load_data():
-        loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
+        csv_text = """course_name,course_id,year,block
+Introduction to data science in health and social care,HEIN11037,1,1 and 2
+Introductory applied machine learning,HEIN00000,1 or 2,3 and 4
+Digital technologies in health and social care,HEIN11043,1 or 2,5
+Data types and Structures in R & Python,HEIN11068,1 or 2,6
+Research design for data science in health and social care,HEIN11057,2,1 and 6
+Systems thinking,HEIN11054,2,2
+Data ethics in health and social care,HEIN11059,1 or 2,3
+Foundations of software development in health and social care (Python 1),HEIN11045,1 or 2,4
+Applied software development in health and social care (Python 2),HEIN11062,1 or 2,5"""
+        file_text = StringIO(csv_text)
+        loaded_df = pd.read_csv(file_text)
+        # print(loaded_df)
+        # loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
         loaded_df['block'] = loaded_df['block'].apply(string_to_list)
         
@@ -88,6 +116,8 @@ def server(input, output, session):
         loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
 
         loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
+        print("loaded_df")
+
         return loaded_df
 
     def load_selected_courses():
@@ -114,8 +144,11 @@ def server(input, output, session):
             courses_df = courses_df[courses_df['year'].eq(year)]
         if  "block" in courses_df.columns  and block is not None:
             courses_df = courses_df[courses_df['block'].eq(block)]
-
-        return courses_df[columns_to_keep].values.tolist() if courses_df.shape[0] >0 else  []
+        # print("courses_df",courses_df.shape[0], courses_df)
+        # print(courses_df.columns)
+        # print(columns_to_keep)
+        # print(courses_df[columns_to_keep])
+        return courses_df[columns_to_keep].values.tolist() if courses_df.shape[0] > 0 else  []
 
     def filter_taken_courses(courses_df, taken_courses):
         final_df = pd.DataFrame()
@@ -151,25 +184,21 @@ def server(input, output, session):
         selected_courses = [course for _, course in courses_df.get().iterrows() if course['course_id'] ==  course_id]
         return selected_courses[0] if len(selected_courses) > 0 else None
 
+    # tod cleanup two below finctions into something more DRY
 
     def get_all_inputs( start_string = "button_"):
-        input_values = []
-        for var_name, value_list in inspect.getmembers(input):
-            if var_name == "_map":
-                # item_ids = [key for key, value in value_list.items() if key.startswith(start_string)]
-                input_values = [getattr(input, input_id) for input_id, input_item in value_list.items() if input_id.startswith(start_string)]
-                return input_values
-        return []
+        # global courses_df
+        loaded_data = load_data() #this is not from global for now, because of reactive drama
+        button_ids = [f"button_{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        input_values = [getattr(input, button_id) for button_id in button_ids]
+        return input_values
 
     def get_all_input_info( start_string = "button_"):
-        input_values = {}
-        # input has lots of objects, but _map inclides all inputs - let's grab those that start with button_
-        for var_name, value_list in inspect.getmembers(input):
-            if var_name == "_map":
-                input_values = {input_id: getattr(input, input_id) for input_id, input_item in value_list.items() if input_id.startswith(start_string)}
-                return input_values
-        return {}
-
+        # global courses_df
+        loaded_data = load_data() #this is not from global for now, because of reactive drama
+        button_ids = [f"button_{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        input_values = {button_id: getattr(input, button_id) for button_id in button_ids}
+        return input_values
 
     def init_set_input_states( ):
         global input_states
@@ -216,12 +245,13 @@ def server(input, output, session):
     # Function to initialize the app
     @reactive.Effect
     def init():
+        # this is an awful hack to execture something once, once app is initialised, and then never again
         if initialized.get() == 0:
             initialized.set(1)
         elif initialized.get() == 1:
             init_set_input_states()
             initialized.set(2)
-        print("initialized.get()", initialized.get())
+        # print("initialized.get()", initialized.get())
 
 
     # def init():
