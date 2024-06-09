@@ -1,27 +1,11 @@
 from shiny import App, render, ui, reactive, session
 import pandas as pd
-from io import StringIO
 
 
 version = "0.3.2" # major.sprint.release
 
 # global courses_df # can we move this to server? ui.sidebar("Courses",  would need to be dynamicly generated UI
-# courses_df = pd.read_csv(f'./data/example_course_outline.csv')    
-
-csv_text = """course_name,course_id,year,block
-Introduction to data science in health and social care,HEIN11037,1,1 and 2
-Introductory applied machine learning,HEIN00000,1 or 2,3 and 4
-Digital technologies in health and social care,HEIN11043,1 or 2,5
-Data types and Structures in R & Python,HEIN11068,1 or 2,6
-Research design for data science in health and social care,HEIN11057,2,1 and 6
-Systems thinking,HEIN11054,2,2
-Data ethics in health and social care,HEIN11059,1 or 2,3
-Foundations of software development in health and social care (Python 1),HEIN11045,1 or 2,4
-Applied software development in health and social care (Python 2),HEIN11062,1 or 2,5"""
-file_text = StringIO(csv_text)
-courses_df = pd.read_csv(file_text)
-
-
+courses_df = pd.read_csv(f'./data/example_course_outline.csv')    
 
 def button_for_course(course):
     button_uid = f"button_{course['course_id']}"
@@ -93,20 +77,7 @@ def server(input, output, session):
  
     # @render.ui
     def load_data():
-        csv_text = """course_name,course_id,year,block
-Introduction to data science in health and social care,HEIN11037,1,1 and 2
-Introductory applied machine learning,HEIN00000,1 or 2,3 and 4
-Digital technologies in health and social care,HEIN11043,1 or 2,5
-Data types and Structures in R & Python,HEIN11068,1 or 2,6
-Research design for data science in health and social care,HEIN11057,2,1 and 6
-Systems thinking,HEIN11054,2,2
-Data ethics in health and social care,HEIN11059,1 or 2,3
-Foundations of software development in health and social care (Python 1),HEIN11045,1 or 2,4
-Applied software development in health and social care (Python 2),HEIN11062,1 or 2,5"""
-        file_text = StringIO(csv_text)
-        loaded_df = pd.read_csv(file_text)
-        # print(loaded_df)
-        # loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
+        loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
         loaded_df['block'] = loaded_df['block'].apply(string_to_list)
         
@@ -144,10 +115,6 @@ Applied software development in health and social care (Python 2),HEIN11062,1 or
             courses_df = courses_df[courses_df['year'].eq(year)]
         if  "block" in courses_df.columns  and block is not None:
             courses_df = courses_df[courses_df['block'].eq(block)]
-        # print("courses_df",courses_df.shape[0], courses_df)
-        # print(courses_df.columns)
-        # print(columns_to_keep)
-        # print(courses_df[columns_to_keep])
         return courses_df[columns_to_keep].values.tolist() if courses_df.shape[0] > 0 else  []
 
     def filter_taken_courses(courses_df, taken_courses):
