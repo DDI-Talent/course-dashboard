@@ -3,37 +3,15 @@ import pandas as pd
 
 
 version = "0.3.2" # major.sprint.release
-
-# global courses_df # can we move this to server? ui.sidebar("Courses",  would need to be dynamicly generated UI
-courses_df = pd.read_csv(f'./data/example_course_outline.csv')    
-
-def button_for_course(course):
-    button_uid = f"button_{course['course_id']}"
-    button_label = f"{course['course_name']}"
-    return ui.card(
-        ui.card_header(button_label),
-        ui.p("some course description"),
-        # here figure out if it can be taken in manu years/blocks and add more buttons
-        # should this be server side?
-        ui.input_action_button(button_uid, "➕ YEAR 1"),
-        ui.card_footer(f"Course id: {button_uid}"),
-        full_screen=True,
-    ),
-    
-
-def get_all_courses_as_buttons(courses_df):
-    return [
-          button_for_course(course) 
-          for _, course in courses_df.iterrows()
-        ]
     
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
-               get_all_courses_as_buttons(courses_df)
+               ui.output_ui("buttons_course_add"),
                ),
     ui.panel_title(f"Course Dashbaord v{version}"),
-        ui.output_table('courses_table')
-)
+    ui.output_table('courses_table')
+    )
+
 
 
 def server(input, output, session):
@@ -41,10 +19,30 @@ def server(input, output, session):
     global courses_df
     global input_states
 
-    courses_df = reactive.value([])
+    courses_df = reactive.value([]) 
     selected_courses = reactive.value([])
     input_states = reactive.value({})
 
+    def button_for_course(course):
+        button_uid = f"button_{course['course_id']}"
+        button_label = f"{course['course_name']}"
+        return ui.card(
+                ui.card_header(button_label),
+                ui.p("some course description"),
+                # here figure out if it can be taken in manu years/blocks and add more buttons
+                # should this be server side?
+                ui.input_action_button(button_uid, "+ YEAR 1"),
+                ui.card_footer(f"Course id: {button_uid}"),
+                full_screen=True,
+            )
+
+    @render.ui
+    def buttons_course_add():
+        global courses_df
+        return [
+          button_for_course(course) 
+          for _, course in courses_df.get().iterrows()
+        ]
 
     def course_as_dict(course_id, year, block):
         return {'course_id':course_id, 'year': year, 'block': block}
@@ -155,51 +153,68 @@ def server(input, output, session):
 
     def get_all_inputs( start_string = "button_"):
         # global courses_df
+        print("get_all_inputs")
         loaded_data = load_data() #this is not from global for now, because of reactive drama
-        button_ids = [f"button_{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        button_ids = [f"{start_string}{course_id}" for course_id in loaded_data['course_id'].tolist() ]
         input_values = [getattr(input, button_id) for button_id in button_ids]
         return input_values
 
     def get_all_input_info( start_string = "button_"):
         # global courses_df
+        print("get_all_input_info")
         loaded_data = load_data() #this is not from global for now, because of reactive drama
-        button_ids = [f"button_{course_id}" for course_id in loaded_data['course_id'].tolist() ]
-        input_values = {button_id: getattr(input, button_id) for button_id in button_ids}
+        button_ids = [f"{start_string}{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        input_values = {button_id: getattr(input, button_id) 
+						for button_id in button_ids}
         return input_values
 
     def init_set_input_states( ):
         global input_states
-        print("old_states")
-        new_states = { input_id: input.get() for input_id, input in get_all_input_info().items()}
+        print("init states - this should happen only")
+        new_states = { input_id: input_object.get() 
+						for input_id, input_object in get_all_input_info().items()}
         input_states.set(new_states)
 
     def which_input_changed( ):
         global input_states
-        print("old_states")
-        new_states = { input_id: input.get() for input_id, input in get_all_input_info().items()}
+        new_states = { 
+						input_id: input_object.get()  # value of a button is a number of times it was clicked
+						for input_id, input_object in get_all_input_info().items()
+						}
+		# {"but_45678": button_oibject} # turn those into
+		# {"but_45678": 2}  # those. where number is how many times I was clicked
+		
+		# old [0,0,1]
+		# new [0,0,2]
+
         old_states = input_states.get()
-        print("old_states",old_states)
+        print("old_states??",old_states)
         keys_that_changed = [old_state_key
                             for old_state_key, old_state_value in old_states.items()
                             if old_state_value != new_states[old_state_key]]
-        # TODO
+        
         input_states.set(new_states)
         print(new_states)
         print("keys_that_changed", keys_that_changed)
+		# "but_45678"
         return keys_that_changed[0]
 
     def id_button_to_course(button_id):
         return button_id.replace("button_","")
 
+	# [0,0,0,0,0,0,0] 
+	# [1,0,0,0,1,0,0]
+	
     @reactive.Effect
     @reactive.event(*get_all_inputs(), ignore_init=True) 
+    # @reactive.event("button_HEIN11037", ignore_init=True) 
     def any_course_button_clicked():
         course_id = id_button_to_course( which_input_changed( ))
         print("CLICKED!", course_id)
         this_course = course_data_with_id(course_id)
         if type(this_course) != None:
             # TODO: get the actual block and year selected, if there were choices. for now, grab first letter
-            course_year = int(this_course['year'][0])
+            course_year = int(this_course['year'][0]) # "1 or 2" --> "1"
             course_block = int(this_course['block'][0])
 
             add_course( this_course['course_id'],course_year,course_block )
@@ -212,28 +227,24 @@ def server(input, output, session):
     # Function to initialize the app
     @reactive.Effect
     def init():
-        # this is an awful hack to execture something once, once app is initialised, and then never again
+        print("init", initialized.get())
+        # this is an awful hack to exectute something once, once app is initialised, and then never again
         if initialized.get() == 0:
             initialized.set(1)
         elif initialized.get() == 1:
             init_set_input_states()
             initialized.set(2)
-        # print("initialized.get()", initialized.get())
-
-
-    # def init():
-    #     # run once the session is created
-    #     print("init")
-    #     # get_all_input_info() # refresh button press counts
-    #     init_set_input_states()
-            
-    # session.on_flush(init, once=False)
 
 
     @render.table
+    @reactive.calc
     def courses_table():
         global selected_courses
         global courses_df
+        print("%%%%%%%%%", selected_courses.get())
+        # return pd.DataFrame({"nums":[1,2,3]})
         return create_output_df(courses_df.get(), selected_courses.get())
     
+ 
+
 app = App(app_ui, server)
