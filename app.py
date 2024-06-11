@@ -4,20 +4,60 @@ import pandas as pd
 
 version = "0.3.2" # major.sprint.release
 
+global string_to_list
+def string_to_list(string_to_parse):
+    if "or" in string_to_parse:
+        return [(int(item.strip()), 'or') for item in string_to_parse.split('or')]
+    elif "and" in string_to_parse:
+        return [(list(map(int, string_to_parse.split('and'))), 'and')]
+    else:
+        try:
+            return [(int(string_to_parse), '')]
+        except:
+            return []
 # global courses_df # can we move this to server? ui.sidebar("Courses",  would need to be dynamicly generated UI
-courses_df = pd.read_csv(f'./data/example_course_outline.csv')    
+global load_data
+def load_data():
+    loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
+    loaded_df['year'] = loaded_df['year'].apply(string_to_list)
+    loaded_df['block'] = loaded_df['block'].apply(string_to_list)
+    
+    loaded_df = loaded_df.explode('year').reset_index(drop=True)
+
+    loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
+    loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
+
+    loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
+
+    # new code to combine year and block data in the course id so that when creating buttons from course ids the ids are unique 
+    for index, row in loaded_df.iterrows():
+        if 2 in row['year']:
+            loaded_df.at[index, 'block'] = [x+6 for x in row['block']] # this adds 6 onto any block that is in year 2, so blocks 1-6 represent year 1 blocks and blocks 7-12 represent year 2 blocks
+
+    loaded_df['course_id_with_info'] = loaded_df.apply(lambda row: row['course_id'] + '_' + '_'.join(map(str, row['block'])), axis=1)
+    return loaded_df
+
+courses_df = load_data()    
 
 def button_for_course(course):
-    button_uid = f"button_{course['course_id']}"
+    
     button_label = f"{course['course_name']}"
+    course_id = f"{course['course_id']}"
 
-    if 'year' in course and len(course['year']) > 1:
+    duplicates = courses_df[courses_df['course_name'].duplicated()]
+    if course['course_name'] in duplicates['course_name'].tolist():
+        button_uid = [f"button_{course_id_info}" for course_id_info in courses_df[courses_df['course_name'] == course['course_name']]['course_id_with_info'].tolist()]
         card = [
-                ui.input_action_button(button_uid, "➕ YEAR 1"),
-                ui.input_action_button(f'{button_uid}_2', "➕ YEAR 2"),
+                [ui.input_action_button(button_uid[i], f"➕ YEAR {i+1}") for i in range(len(button_uid))],
                 ]
     else:
-        card = ui.input_action_button(button_uid, "➕ YEAR 1"),
+        button_uid = f"button_{course['course_id_with_info']}"
+        if int(button_uid.split('_')[-1]) > 6:
+            year = 2
+        else:
+            year = 1
+        card = ui.input_action_button(button_uid, f"➕ YEAR {year}"),
+
     return ui.card(
         ui.card_header(button_label),
         ui.p("some course description"),
@@ -25,12 +65,14 @@ def button_for_course(course):
         # should this be server side?
         # ui.layout_columns(*card),
         card,
-        ui.card_footer(f"Course id: {button_uid}"),
+        ui.card_footer(f"Course id: {course_id}"),
         full_screen=True,
     ),
-    
+
 
 def get_all_courses_as_buttons(courses_df):
+    courses_df = courses_df.drop_duplicates(subset='course_name')
+
     return [
           button_for_course(course) 
           for _, course in courses_df.iterrows()
@@ -73,32 +115,38 @@ def server(input, output, session):
                             if course != one_to_remove]
     
     # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
-    def string_to_list(string_to_parse):
-        if "or" in string_to_parse:
-            return [(int(item.strip()), 'or') for item in string_to_parse.split('or')]
-        elif "and" in string_to_parse:
-            return [(list(map(int, string_to_parse.split('and'))), 'and')]
-        else:
-            try:
-                return [(int(string_to_parse), '')]
-            except:
-                return []
+    # def string_to_list(string_to_parse):
+    #     if "or" in string_to_parse:
+    #         return [(int(item.strip()), 'or') for item in string_to_parse.split('or')]
+    #     elif "and" in string_to_parse:
+    #         return [(list(map(int, string_to_parse.split('and'))), 'and')]
+    #     else:
+    #         try:
+    #             return [(int(string_to_parse), '')]
+    #         except:
+    #             return []
  
     # @render.ui
-    def load_data():
-        loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
-        loaded_df['year'] = loaded_df['year'].apply(string_to_list)
-        loaded_df['block'] = loaded_df['block'].apply(string_to_list)
+    # def load_data():
+    #     loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
+    #     loaded_df['year'] = loaded_df['year'].apply(string_to_list)
+    #     loaded_df['block'] = loaded_df['block'].apply(string_to_list)
         
-        loaded_df = loaded_df.explode('year').reset_index(drop=True)
+    #     loaded_df = loaded_df.explode('year').reset_index(drop=True)
 
-        loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
-        loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
+    #     loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
+    #     loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
 
-        loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
-        print("loaded_df")
+    #     loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
 
-        return loaded_df
+    #     # new code to combine year and block data in the course id so that when creating buttons from course ids the ids are unique 
+    #     for index, row in loaded_df.iterrows():
+    #         if 2 in row['year']:
+    #             loaded_df.at[index, 'block'] = [x+6 for x in row['block']] # this adds 6 onto any block that is in year 2, so blocks 1-6 represent year 1 blocks and blocks 7-12 represent year 2 blocks
+
+    #     loaded_df['course_id_with_info'] = loaded_df.apply(lambda row: row['course_id'] + '_' + '_'.join(map(str, row['block'])), axis=1)
+    #     return loaded_df
+
 
     def load_selected_courses():
            # for testing 
@@ -157,7 +205,7 @@ def server(input, output, session):
 
     def course_data_with_id(course_id):
         global courses_df
-        selected_courses = [course for _, course in courses_df.get().iterrows() if course['course_id'] ==  course_id]
+        selected_courses = [course for _, course in courses_df.get().iterrows() if course['course_id_with_info'] ==  course_id]
         return selected_courses[0] if len(selected_courses) > 0 else None
 
     # tod cleanup two below finctions into something more DRY
@@ -165,7 +213,7 @@ def server(input, output, session):
     def get_all_inputs( start_string = "button_"):
         # global courses_df
         loaded_data = load_data() #this is not from global for now, because of reactive drama
-        button_ids = [f"button_{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        button_ids = [f"{start_string}{course_id}" for course_id in loaded_data['course_id_with_info'].tolist() ]
         # button_ids = button_ids + [f"button_{course_id}_2" for course_id in loaded_data['course_id'].tolist()]# if len(course_data_with_id(course_id)['year']) > 1
         
         input_values = [getattr(input, button_id) for button_id in button_ids]
@@ -174,7 +222,7 @@ def server(input, output, session):
     def get_all_input_info( start_string = "button_"):
         # global courses_df
         loaded_data = load_data() #this is not from global for now, because of reactive drama
-        button_ids = [f"button_{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        button_ids = [f"{start_string}{course_id}" for course_id in loaded_data['course_id_with_info'].tolist() ]
         # button_ids = button_ids + [f"button_{course_id}_2" for course_id in loaded_data['course_id'].tolist()]# if len(course_data_with_id(course_id)['year']) > 1
 
         input_values = {button_id: getattr(input, button_id) for button_id in button_ids}
