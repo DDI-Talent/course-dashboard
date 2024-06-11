@@ -10,12 +10,21 @@ courses_df = pd.read_csv(f'./data/example_course_outline.csv')
 def button_for_course(course):
     button_uid = f"button_{course['course_id']}"
     button_label = f"{course['course_name']}"
+
+    if 'year' in course and len(course['year']) > 1:
+        card = [
+                ui.input_action_button(button_uid, "➕ YEAR 1"),
+                ui.input_action_button(f'{button_uid}_2', "➕ YEAR 2"),
+                ]
+    else:
+        card = ui.input_action_button(button_uid, "➕ YEAR 1"),
     return ui.card(
         ui.card_header(button_label),
         ui.p("some course description"),
         # here figure out if it can be taken in manu years/blocks and add more buttons
         # should this be server side?
-        ui.input_action_button(button_uid, "➕ YEAR 1"),
+        # ui.layout_columns(*card),
+        card,
         ui.card_footer(f"Course id: {button_uid}"),
         full_screen=True,
     ),
@@ -157,6 +166,8 @@ def server(input, output, session):
         # global courses_df
         loaded_data = load_data() #this is not from global for now, because of reactive drama
         button_ids = [f"button_{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        # button_ids = button_ids + [f"button_{course_id}_2" for course_id in loaded_data['course_id'].tolist()]# if len(course_data_with_id(course_id)['year']) > 1
+        
         input_values = [getattr(input, button_id) for button_id in button_ids]
         return input_values
 
@@ -164,6 +175,8 @@ def server(input, output, session):
         # global courses_df
         loaded_data = load_data() #this is not from global for now, because of reactive drama
         button_ids = [f"button_{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        # button_ids = button_ids + [f"button_{course_id}_2" for course_id in loaded_data['course_id'].tolist()]# if len(course_data_with_id(course_id)['year']) > 1
+
         input_values = {button_id: getattr(input, button_id) for button_id in button_ids}
         return input_values
 
@@ -189,6 +202,7 @@ def server(input, output, session):
         return keys_that_changed[0]
 
     def id_button_to_course(button_id):
+        # button_id = button_id.replace("_2","")
         return button_id.replace("button_","")
 
     @reactive.Effect
