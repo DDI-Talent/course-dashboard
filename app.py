@@ -81,7 +81,8 @@ def get_all_courses_as_buttons(courses_df):
     
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
-               get_all_courses_as_buttons(courses_df)
+               get_all_courses_as_buttons(courses_df),
+               width=400
                ),
     ui.panel_title(f"Course Dashbaord v{version}"),
         ui.output_table('courses_table')
