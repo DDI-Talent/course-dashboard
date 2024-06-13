@@ -82,10 +82,26 @@ def get_all_courses_as_buttons(courses_df):
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
                get_all_courses_as_buttons(courses_df),
-               width=400
+               width=400,
+               bg = '#579a9f6d',
                ),
-    ui.panel_title(f"Course Dashbaord v{version}"),
-        ui.output_table('courses_table')
+    ui.panel_title(f"Course Dashboard v{version}"),
+        ui.layout_columns(
+            # ui.output_ui('test_card'),
+            ui.output_text('block_header'),ui.output_text('y1_header'),ui.output_text('y2_header'),
+            ui.output_text('block1'),ui.output_text('block_y1b1'),ui.output_text('block_y2b1'),
+            ui.output_text('block2'),ui.output_text('block_y1b2'),ui.output_text('block_y2b2'),
+            ui.output_text('block3'),ui.output_text('block_y1b3'),ui.output_text('block_y2b3'),
+            ui.output_text('block4'),ui.output_text('block_y1b4'),ui.output_text('block_y2b4'),
+            ui.output_text('block5'),ui.output_text('block_y1b5'),ui.output_text('block_y2b5'),
+            ui.output_text('block6'),ui.output_text('block_y1b6'),ui.output_text('block_y2b6'),
+
+            # ui.output_table('courses_table'),
+
+            col_widths=[2, 5, 5],
+        )
+
+        
 )
 
 
@@ -201,6 +217,8 @@ def server(input, output, session):
                 block_taken = block+(year-1)*6 # blocks are now 1-12, so year 1 is 1-6, year 2 is 7-12, so we need to adjust block number according to this, year 1 - number doesn't change, year 2 - just add 6
                 courses = get_courses(courses_df, year=year, block=block_taken)
                 row[f'Year {year}'] = ', '.join([f'{course[0]} ({course[1]})' for course in courses])
+                # row[f'Year {year}'] = ', '.join([ui.card(ui.card_header(course[0])) for course in courses])
+
                 # print(row)
                 df_output.loc[block] = row
         df_output = df_output.reset_index().rename(columns={'index': 'Block'})
@@ -262,6 +280,7 @@ def server(input, output, session):
         course_id = id_button_to_course( which_input_changed( ))
         print("CLICKED!", course_id)
         this_course = course_data_with_id(course_id)
+        ui.insert_ui(ui.card('test'), '#block_e1')
         if type(this_course) != None:
             # TODO: get the actual block and year selected, if there were choices. for now, grab first letter
             course_year = int(this_course['year'][0])
@@ -296,9 +315,82 @@ def server(input, output, session):
 
 
     @render.table
+    # def courses_table():
+    #     global selected_courses
+    #     global courses_df
+    #     return create_output_df(courses_df.get(), selected_courses.get())
     def courses_table():
         global selected_courses
         global courses_df
-        return create_output_df(courses_df.get(), selected_courses.get())
+        output_df = create_output_df(courses_df.get(), selected_courses.get())
+        output_df.iloc[0,1] = ui.card(ui.card_header(output_df.iloc[0,1]))
+        return output_df
     
+    @render.text
+    def block_header():
+        return 'Block'
+    @render.text
+    def y1_header():
+        return 'Year 1'
+    @render.text
+    def y2_header():
+        return 'Year 2'
+    @render.text
+    def block1():
+        return '1'  
+    @render.text
+    def block_y1b1():
+        return ''
+    @render.text
+    def block_y2b1():
+        return ''
+    @render.text
+    def block2():
+        return '2' 
+    @render.text
+    def block_y1b2():
+        return ''
+    @render.text
+    def block_y2b2():
+        return '' 
+    @render.text
+    def block3():
+        return '3'  
+    @render.text
+    def block_y1b3():
+        return ''
+    @render.text
+    def block_y2b3():
+        return '' 
+    @render.text
+    def block4():
+        return '4' 
+    @render.text
+    def block_y1b4():
+        return ''
+    @render.text
+    def block_y2b4():
+        return ''  
+    @render.text
+    def block5():
+        return '5'  
+    @render.text
+    def block_y1b5():
+        return ''
+    @render.text
+    def block_y2b5():
+        return '' 
+    @render.text
+    def block6():
+        return '6'  
+    @render.text
+    def block_y1b6():
+        return ''
+    @render.text
+    def block_y2b6():
+        return ''   
+    
+    # ui.insert_ui(ui.card('test'), '#block_e1')
+
+
 app = App(app_ui, server)
