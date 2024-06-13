@@ -34,6 +34,7 @@ def load_data():
         if 2 in row['year']:
             loaded_df.at[index, 'block'] = [x+6 for x in row['block']] # this adds 6 onto any block that is in year 2, so blocks 1-6 represent year 1 blocks and blocks 7-12 represent year 2 blocks
 
+    # create new column 'course_id_with_info' so that each id is unique - will be HEIN0000_1_2 for a course that runs in year 1 block 1 and 2, or HEIN0000_7_8 for a course that runs in year 2 block 1 and 2
     loaded_df['course_id_with_info'] = loaded_df.apply(lambda row: row['course_id'] + '_' + '_'.join(map(str, row['block'])), axis=1)
     return loaded_df
 
@@ -47,7 +48,7 @@ def button_for_course(course):
     duplicates = courses_df[courses_df['course_name'].duplicated()]
     if course['course_name'] in duplicates['course_name'].tolist():
         button_uid = [f"button_{course_id_info}" for course_id_info in courses_df[courses_df['course_name'] == course['course_name']]['course_id_with_info'].tolist()]
-        card = [
+        choose_button = [
                 [ui.input_action_button(button_uid[i], f"➕ YEAR {i+1}") for i in range(len(button_uid))],
                 ]
     else:
@@ -56,7 +57,7 @@ def button_for_course(course):
             year = 2
         else:
             year = 1
-        card = ui.input_action_button(button_uid, f"➕ YEAR {year}"),
+        choose_button = ui.input_action_button(button_uid, f"➕ YEAR {year}"),
 
     return ui.card(
         ui.card_header(button_label),
@@ -64,7 +65,7 @@ def button_for_course(course):
         # here figure out if it can be taken in manu years/blocks and add more buttons
         # should this be server side?
         # ui.layout_columns(*card),
-        card,
+        choose_button,
         ui.card_footer(f"Course id: {course_id}"),
         full_screen=True,
     ),
@@ -196,7 +197,8 @@ def server(input, output, session):
             for year in range(1,3):
                 # filter just selected 
                 # taken_courses = courses_df[ courses_df.course_id.isin(selected_courses_ids) ]
-                courses = get_courses(courses_df, year=year, block=block)
+                block_taken = block+(year-1)*6 # blocks are now 1-12, so year 1 is 1-6, year 2 is 7-12, so we need to adjust block number according to this, year 1 - number doesn't change, year 2 - just add 6
+                courses = get_courses(courses_df, year=year, block=block_taken)
                 row[f'Year {year}'] = ', '.join([f'{course[0]} ({course[1]})' for course in courses])
                 # print(row)
                 df_output.loc[block] = row
