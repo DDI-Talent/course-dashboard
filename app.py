@@ -5,6 +5,7 @@ import pandas as pd
 version = "0.3.2" # major.sprint.release
 
 global string_to_list
+# turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
 def string_to_list(string_to_parse):
     if "or" in string_to_parse:
         return [(int(item.strip()), 'or') for item in string_to_parse.split('or')]
@@ -99,9 +100,7 @@ app_ui = ui.page_sidebar(
             # ui.output_table('courses_table'),
 
             col_widths=[2, 5, 5],
-        )
-
-        
+        )   
 )
 
 
@@ -132,40 +131,6 @@ def server(input, output, session):
                             for course in selected_courses
                             if course != one_to_remove]
     
-    # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
-    # def string_to_list(string_to_parse):
-    #     if "or" in string_to_parse:
-    #         return [(int(item.strip()), 'or') for item in string_to_parse.split('or')]
-    #     elif "and" in string_to_parse:
-    #         return [(list(map(int, string_to_parse.split('and'))), 'and')]
-    #     else:
-    #         try:
-    #             return [(int(string_to_parse), '')]
-    #         except:
-    #             return []
- 
-    # @render.ui
-    # def load_data():
-    #     loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
-    #     loaded_df['year'] = loaded_df['year'].apply(string_to_list)
-    #     loaded_df['block'] = loaded_df['block'].apply(string_to_list)
-        
-    #     loaded_df = loaded_df.explode('year').reset_index(drop=True)
-
-    #     loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
-    #     loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
-
-    #     loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
-
-    #     # new code to combine year and block data in the course id so that when creating buttons from course ids the ids are unique 
-    #     for index, row in loaded_df.iterrows():
-    #         if 2 in row['year']:
-    #             loaded_df.at[index, 'block'] = [x+6 for x in row['block']] # this adds 6 onto any block that is in year 2, so blocks 1-6 represent year 1 blocks and blocks 7-12 represent year 2 blocks
-
-    #     loaded_df['course_id_with_info'] = loaded_df.apply(lambda row: row['course_id'] + '_' + '_'.join(map(str, row['block'])), axis=1)
-    #     return loaded_df
-
-
     def load_selected_courses():
            # for testing 
         selected_courses = [ 
@@ -280,14 +245,26 @@ def server(input, output, session):
         course_id = id_button_to_course( which_input_changed( ))
         print("CLICKED!", course_id)
         this_course = course_data_with_id(course_id)
-        ui.insert_ui(ui.card('test'), '#block_e1')
+        
         if type(this_course) != None:
             # TODO: get the actual block and year selected, if there were choices. for now, grab first letter
             course_year = int(this_course['year'][0])
-            course_block = int(this_course['block'][0])
+            course_block = int(this_course['block'][0]) # does this also need to be adjusted for year 2? - block+(year-1)*6?
 
-            add_course( this_course['course_id'],course_year,course_block )
-        
+            add_course( this_course['course_id'],course_year,course_block)
+
+            block_taken = course_block-(course_year-1)*6 # blocks are now 1-12, so we need to adjust block number according to this, year 1 - number doesn't change, year 2 - just minus 6
+            print(f"course taken: year {course_year}, block {block_taken}")
+            card_selector = f'#block_y{course_year}b{block_taken}'
+            ui.insert_ui(
+                ui.card(f'{this_course['course_name']}',
+                        # to do - make remove button remove_ui from table
+                        ui.input_action_button(f'remove_button_{this_course['course_id_with_info']}_{card_selector[1:]}', f"➖")
+                        ),
+                        
+                f'{card_selector}')
+                
+
 
     # refresh items state at the beginning 
 
