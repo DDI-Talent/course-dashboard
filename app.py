@@ -257,9 +257,9 @@ def server(input, output, session):
             print(f"course taken: year {course_year}, block {block_taken}")
             card_selector = f'#block_y{course_year}b{block_taken}'
             ui.insert_ui(
-                ui.card(f'{this_course['course_name']}',
+                ui.card(f"{this_course['course_name']}",
                         # to do - make remove button remove_ui from table
-                        ui.input_action_button(f'remove_button_{this_course['course_id_with_info']}_{card_selector[1:]}', f"➖")
+                        ui.input_action_button(f"remove_button_{this_course['course_id_with_info']}_{card_selector[1:]}", f"➖")
                         ),
                         
                 f'{card_selector}')
