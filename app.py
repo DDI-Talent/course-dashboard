@@ -87,17 +87,18 @@ app_ui = ui.page_sidebar(
                bg = '#579a9f6d',
                ),
     ui.panel_title(f"Course Dashboard v{version}"),
+    ui.output_ui('block_banana1'),
+
         ui.layout_columns(
             # ui.output_ui('test_card'),
-            ui.output_text('block_header'),ui.output_text('y1_header'),ui.output_text('y2_header'),
-            ui.output_text('block1'),ui.output_text('block_y1b1'),ui.output_text('block_y2b1'),
-            ui.output_text('block2'),ui.output_text('block_y1b2'),ui.output_text('block_y2b2'),
-            ui.output_text('block3'),ui.output_text('block_y1b3'),ui.output_text('block_y2b3'),
-            ui.output_text('block4'),ui.output_text('block_y1b4'),ui.output_text('block_y2b4'),
-            ui.output_text('block5'),ui.output_text('block_y1b5'),ui.output_text('block_y2b5'),
-            ui.output_text('block6'),ui.output_text('block_y1b6'),ui.output_text('block_y2b6'),
-
-            # ui.output_table('courses_table'),
+            # ui.output_text('block_header'),ui.output_text('y1_header'),ui.output_text('y2_header'),
+            # ui.output_text('block1'),ui.output_text('block_y1b1'),ui.output_text('block_y2b1'),
+            # ui.output_text('block2'),ui.output_text('block_y1b2'),ui.output_text('block_y2b2'),
+            # ui.output_text('block3'),ui.output_text('block_y1b3'),ui.output_text('block_y2b3'),
+            # ui.output_text('block4'),ui.output_text('block_y1b4'),ui.output_text('block_y2b4'),
+            # ui.output_text('block5'),ui.output_text('block_y1b5'),ui.output_text('block_y2b5'),
+            # ui.output_text('block6'),ui.output_text('block_y1b6'),ui.output_text('block_y2b6'),
+            # ui.output_ui('courses_table'),
 
             col_widths=[2, 5, 5],
         )   
@@ -108,6 +109,31 @@ def server(input, output, session):
     global selected_courses
     global courses_df
     global input_states
+
+    @output
+    @render.ui
+    def block_banana1():
+        global selected_courses
+        return ui.row( [
+            ui.input_action_button(f"button_{course_dict['course_id']}",course_dict['course_id'])
+            for course_dict in selected_courses.get()
+            ])
+
+
+    def respond_to_those():
+        return [input.button_orange,input.button_kiwi ]
+
+    @reactive.Effect
+    @reactive.event(*respond_to_those(), ignore_init=True) 
+    def generated_button_clicked():
+        print("YAY")
+
+
+
+    @reactive.Effect
+    def df_changed_function():
+        something = selected_courses.get()
+        print("CHANGED!!", something)
 
     courses_df = reactive.value([])
     selected_courses = reactive.value([])
@@ -186,6 +212,7 @@ def server(input, output, session):
 
                 # print(row)
                 df_output.loc[block] = row
+        print("df_output",df_output)
         df_output = df_output.reset_index().rename(columns={'index': 'Block'})
         return df_output 
 
@@ -239,6 +266,8 @@ def server(input, output, session):
         # button_id = button_id.replace("_2","")
         return button_id.replace("button_","")
 
+
+
     @reactive.Effect
     @reactive.event(*get_all_inputs(), ignore_init=True) 
     def any_course_button_clicked():
@@ -290,8 +319,8 @@ def server(input, output, session):
             
     # session.on_flush(init, once=False)
 
-
-    @render.table
+    @output
+    @render.ui
     # def courses_table():
     #     global selected_courses
     #     global courses_df
@@ -299,9 +328,12 @@ def server(input, output, session):
     def courses_table():
         global selected_courses
         global courses_df
-        output_df = create_output_df(courses_df.get(), selected_courses.get())
-        output_df.iloc[0,1] = ui.card(ui.card_header(output_df.iloc[0,1]))
-        return output_df
+        detailed_course_df = create_output_df(courses_df.get(), selected_courses.get())
+        print("detailed_course_df",detailed_course_df)
+        ui_components_to_return = [
+            ui.card(ui.card_header("baaa"))
+            for index, course in detailed_course_df.iterrows()]
+        return ui_components_to_return
     
     @render.text
     def block_header():
