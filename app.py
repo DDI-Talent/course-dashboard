@@ -14,6 +14,7 @@ app_ui = ui.page_sidebar(
 
 
 
+
 def server(input, output, session):
     global selected_courses
     global courses_df
@@ -23,8 +24,22 @@ def server(input, output, session):
     selected_courses = reactive.value([])
     input_states = reactive.value({})
 
+    def course_as_dict(course_id, year, block):
+        return {'course_id':course_id, 'year': year, 'block': block}
+
+    def course_to_button_id(course):
+        year = "".join([f"{year}" for year in course['year']]) # turn [1] into "1" and [1,2] into "12"
+        block = "".join([f"{block}" for block in course['block']]) # turn [1] into "1" and [1,2] into "12"
+        return f"button_{course['course_id']}_{year}_{block[0]}"
+
+    def course_from_button_id(button_id):
+        button_id = button_id.replace("button_","")#"button_{course['course_id']}_{year}_{block}"
+        course_id, year, block = button_id.split("_")
+        return {'course_id':course_id, 'year': int(year), 'block': int(block)}
+
+
     def button_for_course(course):
-        button_uid = f"button_{course['course_id']}"
+        button_uid = course_to_button_id(course)
         button_label = f"{course['course_name']}"
         return ui.card(
                 ui.card_header(button_label),
@@ -36,6 +51,7 @@ def server(input, output, session):
                 full_screen=True,
             )
 
+    @output
     @render.ui
     def buttons_course_add():
         global courses_df
@@ -44,15 +60,11 @@ def server(input, output, session):
           for _, course in courses_df.get().iterrows()
         ]
 
-    def course_as_dict(course_id, year, block):
-        return {'course_id':course_id, 'year': year, 'block': block}
-
-    def add_course( course_id, year, block):
+    def add_course( course_as_dictionary):
         global selected_courses
-        print("selected_courses", selected_courses)
-        course_as_dictionary = course_as_dict(course_id, year, block) 
         if course_as_dictionary not in selected_courses.get() : 
             selected_courses.set(selected_courses.get() + [course_as_dictionary])
+            print("selected_courses.get()",selected_courses.get())
 
     def remove_course( course_id, year, block):
         global selected_courses
@@ -144,50 +156,80 @@ def server(input, output, session):
         df_output = df_output.reset_index().rename(columns={'index': 'Block'})
         return df_output 
 
-    def course_data_with_id(course_id):
+    def course_data_from_button_id(button_id):
         global courses_df
-        selected_courses = [course for _, course in courses_df.get().iterrows() if course['course_id'] ==  course_id]
+        selected_courses = [course for _, course in courses_df.get().iterrows() if course_to_button_id(course) ==  button_id]
         return selected_courses[0] if len(selected_courses) > 0 else None
 
     # tod cleanup two below finctions into something more DRY
 
+    
     def get_all_inputs( start_string = "button_"):
         # global courses_df
         print("get_all_inputs")
         loaded_data = load_data() #this is not from global for now, because of reactive drama
-        button_ids = [f"{start_string}{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        # WARNINNG: if any buttin id is wrong everything stips working
+        button_ids = [course_to_button_id(course) for _, course in loaded_data.iterrows()]
         input_values = [getattr(input, button_id) for button_id in button_ids]
+    
         return input_values
 
     def get_all_input_info( start_string = "button_"):
         # global courses_df
         print("get_all_input_info")
         loaded_data = load_data() #this is not from global for now, because of reactive drama
-        button_ids = [f"{start_string}{course_id}" for course_id in loaded_data['course_id'].tolist() ]
-        input_values = {button_id: getattr(input, button_id) 
-						for button_id in button_ids}
-        return input_values
 
-    def init_set_input_states( ):
-        global input_states
-        print("init states - this should happen only")
-        new_states = { input_id: input_object.get() 
-						for input_id, input_object in get_all_input_info().items()}
-        input_states.set(new_states)
+        button_ids = [course_to_button_id(course) for _, course in loaded_data.iterrows()]
+        input_values_dict = {button_id: getattr(input, button_id) for button_id in button_ids}
+
+
+
+        # button_ids = [f"{start_string}{course_id}" for course_id in loaded_data['course_id'].tolist() ]
+        # input_values = {button_id: getattr(input, button_id) 
+		# 				for button_id in button_ids}
+        # print("get_all_input_info2", input_values_dict)
+        
+        return input_values_dict
+
+    # def init_set_input_states( ):
+    #     global input_states
+    #     print("init states - this should happen only")
+    #     new_states = { input_id: input_object.get() 
+	# 					for input_id, input_object in get_all_input_info().items()}
+    #     input_states.set(new_states)
 
     def which_input_changed( ):
         global input_states
-        new_states = { 
-						input_id: input_object.get()  # value of a button is a number of times it was clicked
-						for input_id, input_object in get_all_input_info().items()
-						}
+        print("which_input_changed1")
+
+        new_states = {}
+        all_inputs = get_all_input_info()
+        # print("which_input_changed+",all_inputs,len(all_inputs.items()))
+        for input_id, input_object in all_inputs.items():
+            new_states[input_id] = input_object()
+
+        print("---input_id DONE")
+        # new_states = { 
+		# 				input_id: 0  # value of a button is a number of times it was clicked
+		# 				# input_id: input_object.get()  # value of a button is a number of times it was clicked
+		# 				for input_id, input_object in get_all_input_info().items()
+		# 				}
+        # print("which_input_changed+",list(get_all_input_info().values())[0].get())
+        # print("which_input_changed+",list(get_all_input_info().values()))
+        # print("which_input_changed2",new_states)
+
 		# {"but_45678": button_oibject} # turn those into
 		# {"but_45678": 2}  # those. where number is how many times I was clicked
 		
 		# old [0,0,1]
 		# new [0,0,2]
+        print("input_states.get()",input_states.get())
+        if (len(input_states.get().keys()) == 0):
+            old_states = {new_state_key: 0
+                for new_state_key, new_state_value in new_states.items()}
+        else:
+            old_states = input_states.get()
 
-        old_states = input_states.get()
         print("old_states??",old_states)
         keys_that_changed = [old_state_key
                             for old_state_key, old_state_value in old_states.items()
@@ -197,7 +239,7 @@ def server(input, output, session):
         print(new_states)
         print("keys_that_changed", keys_that_changed)
 		# "but_45678"
-        return keys_that_changed[0]
+        return keys_that_changed[0] if len(keys_that_changed) > 0 else None
 
     def id_button_to_course(button_id):
         return button_id.replace("button_","")
@@ -206,35 +248,24 @@ def server(input, output, session):
 	# [1,0,0,0,1,0,0]
 	
     @reactive.Effect
-    @reactive.event(*get_all_inputs(), ignore_init=True) 
-    # @reactive.event("button_HEIN11037", ignore_init=True) 
+    @reactive.event(*get_all_inputs()) 
+    # @reactive.event(*get_all_inputs(), ignore_init=True) 
+    # @reactive.event(input.button_HEIN11037, ignore_init=True) 
     def any_course_button_clicked():
-        course_id = id_button_to_course( which_input_changed( ))
-        print("CLICKED!", course_id)
-        this_course = course_data_with_id(course_id)
-        if type(this_course) != None:
+        print("CLICKED!1")
+        clicked_button = which_input_changed( )
+        if clicked_button == None:
+            print("--- any_course_button_clicked Isssue, nothing changes")
+            return
+        this_course = course_data_from_button_id(clicked_button)
+        print("this_course",this_course, type(this_course),"@")
+        if not (this_course is None):
+            print("this_course",this_course)
             # TODO: get the actual block and year selected, if there were choices. for now, grab first letter
-            course_year = int(this_course['year'][0]) # "1 or 2" --> "1"
-            course_block = int(this_course['block'][0])
-
-            add_course( this_course['course_id'],course_year,course_block )
-        
-
-    # refresh items state at the beginning 
-
-
-    initialized = reactive.Value(0) # 0 = no context, 1 initialising, 2 initialised
-    # Function to initialize the app
-    @reactive.Effect
-    def init():
-        print("init", initialized.get())
-        # this is an awful hack to exectute something once, once app is initialised, and then never again
-        if initialized.get() == 0:
-            initialized.set(1)
-        elif initialized.get() == 1:
-            init_set_input_states()
-            initialized.set(2)
-
+            # course_year = int(this_course['year'][0]) # "1 or 2" --> "1"
+            # course_block = int(this_course['block'][0])
+            added_course_dict = course_from_button_id(clicked_button)
+            add_course( added_course_dict )
 
     @render.table
     @reactive.calc
@@ -242,7 +273,6 @@ def server(input, output, session):
         global selected_courses
         global courses_df
         print("%%%%%%%%%", selected_courses.get())
-        # return pd.DataFrame({"nums":[1,2,3]})
         return create_output_df(courses_df.get(), selected_courses.get())
     
  
