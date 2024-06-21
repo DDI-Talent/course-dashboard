@@ -32,10 +32,16 @@ def server(input, output, session):
     def course_df_as_dict(course):
         return course_as_dict(course.course_id, course.year, course.block)
 
-    def course_to_button_id(course, action = "buttonadd_"):
-        year = "".join([f"{year}" for year in course['year']]) # turn [1] into "1" and [1,2] into "12"
-        block = "".join([f"{block}" for block in course['block']]) # turn [1] into "1" and [1,2] into "12"
-        return f"{action}{course['course_id']}_{year}_{block[0]}"
+    def number_list_to_string(number_list):
+        return "&".join([f"{year}" for year in number_list])
+
+    def course_to_button_id(course, year, block, action = "buttonadd_"):
+        # year = "".join([f"{year}" for year in course['year']]) # turn [1] into "1" and [1,2] into "12"
+        # block = "".join([f"{block}" for block in course['block']]) # turn [1] into "1" and [1,2] into "12"
+        # year = number_list_to_string(course['year'])
+        # block = number_list_to_string(course['block'])
+
+        return f"{action}{course['course_id']}_{year}_{block}"
 
     def course_dict_to_button_id(course_dict, action = "buttonadd_"):
         return f"{action}{course_dict['course_id']}_{course_dict['year']}_{course_dict['block']}"
@@ -51,6 +57,7 @@ def server(input, output, session):
         return {'course_id':course_id, 'year': int(year), 'block': int(block)}
 
 
+
     def card_for_course_info(course):
         button_label = f"{course['course_name']}"
         courses_df_temp = courses_df.get()
@@ -58,16 +65,17 @@ def server(input, output, session):
         course_instances = courses_df_temp[courses_df_temp['course_name'] == course['course_name']]
         buttons = []
         for index, course_instance in course_instances.iterrows():
-            button_uid = course_to_button_id(course) #TODO: use course year and block in id
-            buttons.append(ui.input_action_button(button_uid, f"+ YEAR {course_instance['year']}"))
+            for year in course_instance['year']:
+                for block in course_instance['block']:
+                    button_uid = course_to_button_id(course, year, block) #TODO: use course year and block in id
+                    buttons.append(ui.input_action_button(button_uid, 
+                                    f"TAKE in Y{year} B{block}")
+                                )
 
         return ui.card(
                 ui.card_header(button_label),
-                ui.p("some course description"),
-                # here figure out if it can be taken in manu years/blocks and add more buttons
-                # should this be server side?
                 *buttons,
-                ui.card_footer(f"Course id: {button_uid}"),
+                ui.card_footer(f"some course description here"),
                 full_screen=True,
             )
 
@@ -111,8 +119,8 @@ def server(input, output, session):
     # @render.ui
     def load_data():
         loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
-        print("loaded_df1")
-        print(loaded_df)
+        # print("loaded_df1")
+        # print(loaded_df)
 
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
         loaded_df['block'] = loaded_df['block'].apply(string_to_list)
@@ -124,8 +132,8 @@ def server(input, output, session):
         loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
 
         loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
-        print("loaded_df2")
-        print(loaded_df)
+        # print("loaded_df2")
+        # print(loaded_df)
 
         return loaded_df
 
@@ -192,12 +200,14 @@ def server(input, output, session):
                 for course in year1_courses:
                     hide = course_df_as_dict(course) not in taken_courses
                     year1_widget.append( taken_course_to_widget(course, hide = hide))
+
             year2_courses = get_courses(courses_df, year=2, block=block)
             if len(year2_courses) > 0:
                 year2_widget = []
                 for course in year2_courses:
                     hide = course_df_as_dict(course) not in taken_courses
-                    year2_widget.append( taken_course_to_widget(course, hide = hide))                          
+                    year2_widget.append( taken_course_to_widget(course, hide = hide))        
+
             new_row = ui.row(
                 ui.column(2, ui.p(block)),
                 ui.column(5, year1_widget),
@@ -233,33 +243,32 @@ def server(input, output, session):
 
         selected_courses = [course 
                             for _, course in courses_df.get().iterrows() 
-                            if course_to_button_id(course, action=action) ==  button_id]
+                            for year in course['year'] 
+                            for block in course['block']
+                            if course_to_button_id(course,year,block, action=action) ==  button_id]
         return selected_courses[0] if len(selected_courses) > 0 else None
 
     # tod cleanup two below finctions into something more DRY
 
-    
-    def get_all_inputs( start_string = "button_"):
+
+    def get_all_inputs_ids( ):
         # global courses_df
         loaded_data = load_data() #this is not from global for now, because of reactive drama
         # WARNINNG: if any button id is wrong everything stips working
-        button_ids = [course_to_button_id(course, action = action) 
+        button_ids = [course_to_button_id(course,year, block, action = action) 
                     for _, course in loaded_data.iterrows()
+                    for year in course['year']
+                    for block in course['block']
                     for action in ["buttonadd_", "buttonremove_"]]
-        input_values = [getattr(input, button_id) for button_id in button_ids]
+        return button_ids
+        # TODO deal with courses that take more than 1 block
+
     
-        return input_values
+    def get_all_inputs():
+        return get_all_input_info().values()
 
-    def get_all_input_info( start_string = "button_"):
-        # global courses_df
-        print("get_all_input_info")
-        loaded_data = load_data() #this is not from global for now, because of reactive drama
-
-        button_ids = [course_to_button_id(course, action = action) 
-                    for _, course in loaded_data.iterrows()
-                    for action in ["buttonadd_", "buttonremove_"]]        
-        input_values_dict = {button_id: getattr(input, button_id) for button_id in button_ids}
-        
+    def get_all_input_info():
+        input_values_dict = {button_id: getattr(input, button_id) for button_id in get_all_inputs_ids( )}
         return input_values_dict
 
     def which_input_changed( ):
