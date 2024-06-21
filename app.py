@@ -105,16 +105,16 @@ def server(input, output, session):
 
     
     # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
-    # def string_to_list(string_to_parse):
-    #     if "or" in string_to_parse:
-    #         return [(int(item.strip()), 'or') for item in string_to_parse.split('or')]
-    #     elif "and" in string_to_parse:
-    #         return [(list(map(int, string_to_parse.split('and'))), 'and')]
-    #     else:
-    #         try:
-    #             return [(int(string_to_parse), '')]
-    #         except:
-    #             return []
+    def string_to_list(string_to_parse):
+        if "or" in string_to_parse:
+            return [(int(item.strip()), 'or') for item in string_to_parse.split('or')]
+        elif "and" in string_to_parse:
+            return [(list(map(int, string_to_parse.split('and'))), 'and')]
+        else:
+            try:
+                return [(int(string_to_parse), '')]
+            except:
+                return []
  
     # @render.ui
     def load_data():
@@ -126,13 +126,11 @@ def server(input, output, session):
         # TODO: at what point do we need to duplicate two-year-option courses
         loaded_df = loaded_df.explode('year').reset_index(drop=True)
 
-
-    #     loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
-    #     loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
+        loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
+        loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
 
         loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
         return loaded_df
-
 
     def load_selected_courses():
            # for testing 
@@ -243,11 +241,9 @@ def server(input, output, session):
                             for year in course['year'] 
                             for block in course['block']
                             if course_to_button_id(course,year,block, action=action) ==  button_id]
-
         return selected_courses[0] if len(selected_courses) > 0 else None
 
     # tod cleanup two below finctions into something more DRY
-
 
 
     def get_all_inputs_ids( ):
@@ -261,7 +257,6 @@ def server(input, output, session):
                     for action in ["buttonadd_", "buttonremove_"]]
         return button_ids
         # TODO deal with courses that take more than 1 block
-
 
     
     def get_all_inputs():
@@ -298,7 +293,6 @@ def server(input, output, session):
         return keys_that_changed[0] if len(keys_that_changed) > 0 else None
 
     def id_button_to_course(button_id):
-        # button_id = button_id.replace("_2","")
         return button_id.replace("button_","")
 
 	# [0,0,0,0,0,0,0] 
