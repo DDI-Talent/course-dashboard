@@ -31,7 +31,7 @@ authorise (this requires token - talk to Pawel to get it set up)
 
 ```
 
-rsconnect add --account ddi-talent --name ddi-talent --token 08A88A6579E22FA92788487D15849722 --secret <SECRET>
+rsconnect add --account ddi-talent --name ddi-talent --token 234567898765432456789 --secret <SECRET>
 
 ```
 
