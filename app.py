@@ -2,11 +2,13 @@ from shiny import App, render, ui, reactive, session
 import pandas as pd
 
 
-version = "0.3.5" # major.sprint.release
+version = "0.3.6" # major.sprint.release
     
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
                ui.output_ui("panel_all_courses_info"),
+               width=400,
+               bg = '#579a9f6d',
                ),
     ui.panel_title(f"Course Dashbaord v{version}"),
     ui.output_table('panel_taken_courses_info')
@@ -50,14 +52,21 @@ def server(input, output, session):
 
 
     def card_for_course_info(course):
-        button_uid = course_to_button_id(course)
         button_label = f"{course['course_name']}"
+        courses_df_temp = courses_df.get()
+        # course_instances is one or more
+        course_instances = courses_df_temp[courses_df_temp['course_name'] == course['course_name']]
+        buttons = []
+        for index, course_instance in course_instances.iterrows():
+            button_uid = course_to_button_id(course) #TODO: use course year and block in id
+            buttons.append(ui.input_action_button(button_uid, f"+ YEAR {course_instance['year']}"))
+
         return ui.card(
                 ui.card_header(button_label),
                 ui.p("some course description"),
                 # here figure out if it can be taken in manu years/blocks and add more buttons
                 # should this be server side?
-                ui.input_action_button(button_uid, "+ YEAR 1"),
+                *buttons,
                 ui.card_footer(f"Course id: {button_uid}"),
                 full_screen=True,
             )
@@ -66,9 +75,11 @@ def server(input, output, session):
     @render.ui
     def panel_all_courses_info():
         global courses_df
+        courses_df_no_duplicates = courses_df.get().drop_duplicates(subset='course_name')
+
         return [
           card_for_course_info(course) 
-          for _, course in courses_df.get().iterrows()
+          for _, course in courses_df_no_duplicates.iterrows()
         ]
 
     def add_course( course_as_dictionary):
@@ -100,16 +111,21 @@ def server(input, output, session):
     # @render.ui
     def load_data():
         loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
+        print("loaded_df1")
+        print(loaded_df)
+
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
         loaded_df['block'] = loaded_df['block'].apply(string_to_list)
         
+        # TODO: at what point do we need to duplicate two-year-option courses
         loaded_df = loaded_df.explode('year').reset_index(drop=True)
 
         loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
         loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
 
         loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
-        print("loaded_df")
+        print("loaded_df2")
+        print(loaded_df)
 
         return loaded_df
 
