@@ -2,7 +2,7 @@ from shiny import App, render, ui, reactive, session
 import pandas as pd
 
 
-version = "0.3.6" # major.sprint.release
+version = "0.4.1" # major.sprint.release
     
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
@@ -32,7 +32,7 @@ def server(input, output, session):
     def course_df_as_dict(course):
         return course_as_dict(course.course_id, course.year, course.block)
 
-    def number_list_to_string(number_list):
+    def list_to_str(number_list):
         return "&".join([f"{year}" for year in number_list])
 
     def course_to_button_id(course, year, block, action = "buttonadd_"):
@@ -94,7 +94,7 @@ def server(input, output, session):
         global selected_courses
         if course_as_dictionary not in selected_courses.get() : 
             selected_courses.set(selected_courses.get() + [course_as_dictionary])
-            print("selected_courses.get()",selected_courses.get())
+            # print("selected_courses.get()",selected_courses.get())
 
     def remove_course(course_as_dictionary):
         global selected_courses
@@ -119,8 +119,6 @@ def server(input, output, session):
     # @render.ui
     def load_data():
         loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
-        # print("loaded_df1")
-        # print(loaded_df)
 
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
         loaded_df['block'] = loaded_df['block'].apply(string_to_list)
@@ -132,9 +130,6 @@ def server(input, output, session):
         loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
 
         loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
-        # print("loaded_df2")
-        # print(loaded_df)
-
         return loaded_df
 
     def load_selected_courses():
@@ -273,15 +268,12 @@ def server(input, output, session):
 
     def which_input_changed( ):
         global input_states
-        print("which_input_changed1")
-
         new_states = {}
         all_inputs = get_all_input_info()
         # print("which_input_changed+",all_inputs,len(all_inputs.items()))
         for input_id, input_object in all_inputs.items():
             new_states[input_id] = input_object()
 
-        print("---input_id DONE")
 		# {"but_45678": button_oibject} # turn those into
 		# {"but_45678": 2}  # those. where number is how many times I was clicked
 		
@@ -293,15 +285,11 @@ def server(input, output, session):
         else:
             old_states = input_states.get()
 
-        print("old_states??",old_states)
         keys_that_changed = [old_state_key
                             for old_state_key, old_state_value in old_states.items()
                             if old_state_value != new_states[old_state_key]]
         
         input_states.set(new_states)
-        print(new_states)
-        print("keys_that_changed", keys_that_changed)
-		# "but_45678"
         return keys_that_changed[0] if len(keys_that_changed) > 0 else None
 
     def id_button_to_course(button_id):
@@ -313,15 +301,13 @@ def server(input, output, session):
     @reactive.Effect
     @reactive.event(*get_all_inputs()) 
     def any_course_button_clicked():
-        print("CLICKED!1")
+        # print("CLICKED!1")
         clicked_button = which_input_changed( )
         if clicked_button == None:
             print("--- any_course_button_clicked Isssue, nothing changes")
             return
         this_course = course_data_from_button_id(clicked_button)
-        print("this_course",this_course, type(this_course),"@")
         if not (this_course is None):
-            print("this_course",this_course)
             # TODO: get the actual block and year selected, if there were choices. for now, grab first letter
             added_course_dict = course_from_button_id(clicked_button)
             if is_this_add_button(clicked_button):
@@ -334,7 +320,7 @@ def server(input, output, session):
     def panel_taken_courses_info():
         global selected_courses
         global courses_df
-        print("%%%%%%%%%", selected_courses.get())
+        # print("%%%%%%%%%", selected_courses.get())
         
         return create_taken_courses_output_ui_all_experiment(courses_df.get(), selected_courses.get())
         # return create_taken_courses_output_ui(courses_df.get(), selected_courses.get())
