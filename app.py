@@ -10,7 +10,7 @@ app_ui = ui.page_sidebar(
                width=400,
                bg = '#579a9f6d',
                ),
-    ui.panel_title(f"Course Dashbaord v{version}"),
+    ui.panel_title(f"Course Dashboard v{version}"),
     ui.output_table('panel_taken_courses_info')
     )
 
@@ -118,7 +118,7 @@ def server(input, output, session):
  
     # @render.ui
     def load_data():
-        loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
+        loaded_df = pd.read_csv(f'./data/all_courses.csv')
 
         loaded_df['year'] = loaded_df['year'].apply(string_to_list)
         loaded_df['block'] = loaded_df['block'].apply(string_to_list)
