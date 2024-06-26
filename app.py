@@ -54,9 +54,15 @@ def server(input, output, session):
         button_id = button_id.replace("buttonremove_","")
         #"button_{course['course_id']}_{year}_{block}"
         course_id, year, block = button_id.split("_")
+
         return {'course_id':course_id, 'year': int(year), 'block': int(block)}
 
-
+    def get_block(course):
+        if len(course['block']) > 1:
+            block = ''.join(str(number) for number in course['block'])
+        else:
+            block = f'{course['block'][0]}'
+        return block
 
     def card_for_course_info(course):
         button_label = f"{course['course_name']}"
@@ -71,6 +77,12 @@ def server(input, output, session):
                     buttons.append(ui.input_action_button(button_uid, 
                                     f"TAKE in Y{year} B{block}")
                                 )
+                # block = get_block(course_instance)
+                # button_uid = course_to_button_id(course, year, block) #TODO: use course year and block in id
+                # buttons.append(ui.input_action_button(button_uid, 
+                #                 f"TAKE in Y{year} B{' and B'.join(map(str, block)) if len(block) > 1 else block[0]}")
+                #             )
+
 
         return ui.card(
                 ui.card_header(button_label),
@@ -240,7 +252,8 @@ def server(input, output, session):
                             for _, course in courses_df.get().iterrows() 
                             for year in course['year'] 
                             for block in course['block']
-                            if course_to_button_id(course,year,block, action=action) ==  button_id]
+                            if course_to_button_id(course,year, block, action=action) ==  button_id]
+
         return selected_courses[0] if len(selected_courses) > 0 else None
 
     # tod cleanup two below finctions into something more DRY
@@ -249,12 +262,15 @@ def server(input, output, session):
     def get_all_inputs_ids( ):
         # global courses_df
         loaded_data = load_data() #this is not from global for now, because of reactive drama
-        # WARNINNG: if any button id is wrong everything stips working
+        print(loaded_data['block'])
+        # WARNINNG: if any button id is wrong everything stops working
         button_ids = [course_to_button_id(course,year, block, action = action) 
                     for _, course in loaded_data.iterrows()
                     for year in course['year']
                     for block in course['block']
                     for action in ["buttonadd_", "buttonremove_"]]
+        
+        # print(button_ids)
         return button_ids
         # TODO deal with courses that take more than 1 block
 
@@ -297,11 +313,11 @@ def server(input, output, session):
 
 	# [0,0,0,0,0,0,0] 
 	# [1,0,0,0,1,0,0]
-	
+    print(get_all_inputs())
     @reactive.Effect
     @reactive.event(*get_all_inputs()) 
     def any_course_button_clicked():
-        # print("CLICKED!1")
+        print("CLICKED!1")
         clicked_button = which_input_changed( )
         if clicked_button == None:
             print("--- any_course_button_clicked Isssue, nothing changes")
