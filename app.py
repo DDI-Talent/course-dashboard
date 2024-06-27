@@ -1,20 +1,19 @@
 from shiny import App, render, ui, reactive, session
 import pandas as pd
+from models.course import Course
 
 
 version = "0.4.1" # major.sprint.release
     
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
-               ui.output_ui("panel_all_courses_info"),
+               ui.output_ui("list_all_courses"),
                width=400,
                bg = '#579a9f6d',
                ),
     ui.panel_title(f"Course Dashbaord v{version}"),
-    ui.output_table('panel_taken_courses_info')
-    )
-
-
+    ui.output_table('grid_selected_courses')
+)
 
 
 def server(input, output, session):
@@ -26,21 +25,10 @@ def server(input, output, session):
     selected_courses = reactive.value([])
     input_states = reactive.value({})
 
-    def course_as_dict(course_id, year, block):
-        return {'course_id':course_id, 'year': year, 'block': block}
-
-    def course_df_as_dict(course):
-        return course_as_dict(course.course_id, course.year, course.block)
-
     def list_to_str(number_list):
         return "&".join([f"{year}" for year in number_list])
 
     def course_to_button_id(course, year, block, action = "buttonadd_"):
-        # year = "".join([f"{year}" for year in course['year']]) # turn [1] into "1" and [1,2] into "12"
-        # block = "".join([f"{block}" for block in course['block']]) # turn [1] into "1" and [1,2] into "12"
-        # year = number_list_to_string(course['year'])
-        # block = number_list_to_string(course['block'])
-
         return f"{action}{course['course_id']}_{year}_{block}"
 
     def course_dict_to_button_id(course_dict, action = "buttonadd_"):
@@ -81,7 +69,7 @@ def server(input, output, session):
 
     @output
     @render.ui
-    def panel_all_courses_info():
+    def list_all_courses():
         global courses_df
         courses_df_no_duplicates = courses_df.get().drop_duplicates(subset='course_name')
 
@@ -176,15 +164,15 @@ def server(input, output, session):
     def taken_course_to_widget(course, hide = False):
         # print("taken_course_to_widget",course, hide)
         return ui.card(
-            ui.card_header(course['course_id']),
-            ui.p(course['course_name']),
-            ui.input_action_button(course_dict_to_button_id(course, action="buttonremove_"), "remove"),
+            ui.card_header(course.id),
+            ui.p(course.name),
+            ui.input_action_button(course.as_button(action="buttonremove_"), "remove"),
             hidden = hide
         )
         
     def create_taken_courses_output_ui_all_experiment(courses_df, taken_courses):
         courses_df = filter_taken_courses(courses_df, taken_courses, include_all=True) # what if we don;t filter
-        print("taken_courses",len(taken_courses))
+     
         rows  = []
         for block in range(1,7):
             # DRY this up
@@ -317,7 +305,7 @@ def server(input, output, session):
 
     @render.ui
     @reactive.calc
-    def panel_taken_courses_info():
+    def grid_selected_courses():
         global selected_courses
         global courses_df
         # print("%%%%%%%%%", selected_courses.get())
