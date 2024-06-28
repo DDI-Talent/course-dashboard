@@ -8,20 +8,21 @@ version = "0.4.1" # major.sprint.release
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
                ui.output_ui("list_all_courses"),
+               ui.input_action_button("clickme","click me"),
                width=400,
                bg = '#579a9f6d',
                ),
     ui.panel_title(f"Course Dashbaord v{version}"),
-    ui.output_table('grid_selected_courses')
+    # ui.output_table('grid_selected_courses')
 )
 
 
 def server(input, output, session):
     global selected_courses
-    global courses_df
+    global courses_objects
     global input_states
 
-    courses_df = reactive.value([]) 
+    courses_objects = reactive.value([]) 
     selected_courses = reactive.value([])
     input_states = reactive.value({})
 
@@ -46,36 +47,36 @@ def server(input, output, session):
 
 
 
-    def card_for_course_info(course):
-        button_label = f"{course['course_name']}"
-        courses_df_temp = courses_df.get()
-        # course_instances is one or more
-        course_instances = courses_df_temp[courses_df_temp['course_name'] == course['course_name']]
-        buttons = []
-        for index, course_instance in course_instances.iterrows():
-            for year in course_instance['year']:
-                for block in course_instance['block']:
-                    button_uid = course_to_button_id(course, year, block) #TODO: use course year and block in id
-                    buttons.append(ui.input_action_button(button_uid, 
-                                    f"TAKE in Y{year} B{block}")
-                                )
+    # def card_for_course_info(course):
+    #     button_label = f"{course['course_name']}"
+    #     courses_df_temp = courses_objects.get()
+    #     # course_instances is one or more
+    #     course_instances = courses_df_temp[courses_df_temp['course_name'] == course['course_name']]
+    #     buttons = []
+    #     for index, course_instance in course_instances.iterrows():
+    #         for year in course_instance['year']:
+    #             for block in course_instance['block']:
+    #                 button_uid = course_to_button_id(course, year, block) #TODO: use course year and block in id
+    #                 buttons.append(ui.input_action_button(button_uid, 
+    #                                 f"TAKE in Y{year} B{block}")
+    #                             )
 
-        return ui.card(
-                ui.card_header(button_label),
-                *buttons,
-                ui.card_footer(f"some course description here"),
-                full_screen=True,
-            )
+    #     return ui.card(
+    #             ui.card_header(button_label),
+    #             *buttons,
+    #             ui.card_footer(f"some course description here"),
+    #             full_screen=True,
+    #         )
 
     @output
     @render.ui
     def list_all_courses():
-        global courses_df
-        courses_df_no_duplicates = courses_df.get().drop_duplicates(subset='course_name')
+        global courses_objects
+        # courses_df_no_duplicates = courses_objects.get().drop_duplicates(subset='course_name')
 
         return [
-          card_for_course_info(course) 
-          for _, course in courses_df_no_duplicates.iterrows()
+            course_obj.as_card() 
+          for course_obj in courses_objects.get()
         ]
 
     def add_course( course_as_dictionary):
@@ -108,17 +109,16 @@ def server(input, output, session):
     def load_data():
         loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
 
-        loaded_df['year'] = loaded_df['year'].apply(string_to_list)
-        loaded_df['block'] = loaded_df['block'].apply(string_to_list)
+        # loaded_df['year'] = loaded_df['year'].apply(string_to_list)
+        # loaded_df['block'] = loaded_df['block'].apply(string_to_list)
         
         # TODO: at what point do we need to duplicate two-year-option courses
-        loaded_df = loaded_df.explode('year').reset_index(drop=True)
+        # loaded_df = loaded_df.explode('year').reset_index(drop=True)
 
-        loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
-        loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
-
-        loaded_df['block'] = loaded_df['block'].apply(lambda x: [x] if isinstance(x, int) else x)
-        return loaded_df
+        # loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
+        # loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
+        return [ Course(row)
+                for _, row in loaded_df.iterrows()]
 
     def load_selected_courses():
            # for testing 
@@ -126,7 +126,7 @@ def server(input, output, session):
         return selected_courses
 
 
-    courses_df.set(load_data())
+    courses_objects.set(load_data())
     selected_courses.set(load_selected_courses())
 
 
@@ -218,14 +218,14 @@ def server(input, output, session):
     
 
     def course_data_from_button_id(button_id):
-        global courses_df
+        global courses_objects
         if "buttonadd_" in button_id:
             action = "buttonadd_"
         else:
             action = "buttonremove_"
 
         selected_courses = [course 
-                            for _, course in courses_df.get().iterrows() 
+                            for _, course in courses_objects.get().iterrows() 
                             for year in course['year'] 
                             for block in course['block']
                             if course_to_button_id(course,year,block, action=action) ==  button_id]
@@ -235,6 +235,16 @@ def server(input, output, session):
 
 
     def get_all_inputs_ids( ):
+        global courses_objects
+        print("worled!1")
+        print(courses_objects.get())
+        print("worled!2")
+        return [   button_id
+            for course in courses_objects.get()
+            for button_id in course.all_possible_button_ids()
+        ]
+
+
         # global courses_df
         loaded_data = load_data() #this is not from global for now, because of reactive drama
         # WARNINNG: if any button id is wrong everything stips working
@@ -248,10 +258,20 @@ def server(input, output, session):
 
     
     def get_all_inputs():
-        return get_all_input_info().values()
+
+        inputs_stuff = get_all_input_info().values()
+        print("inputs_stuff")
+        print(inputs_stuff)
+        # return inputs_stuff
+
+        return [input.clickme] # TODO!
+
 
     def get_all_input_info():
-        input_values_dict = {button_id: getattr(input, button_id) for button_id in get_all_inputs_ids( )}
+        all_ids = get_all_inputs_ids( )
+        print("all_ids",all_ids)
+        input_values_dict = {button_id: getattr(input, button_id) 
+                             for button_id in  all_ids}
         return input_values_dict
 
     def which_input_changed( ):
@@ -287,7 +307,7 @@ def server(input, output, session):
 	# [1,0,0,0,1,0,0]
 	
     @reactive.Effect
-    @reactive.event(*get_all_inputs()) 
+    @reactive.event(*get_all_inputs())
     def any_course_button_clicked():
         # print("CLICKED!1")
         clicked_button = which_input_changed( )
@@ -307,10 +327,10 @@ def server(input, output, session):
     @reactive.calc
     def grid_selected_courses():
         global selected_courses
-        global courses_df
+        global courses_objects
         # print("%%%%%%%%%", selected_courses.get())
         
-        return create_taken_courses_output_ui_all_experiment(courses_df.get(), selected_courses.get())
+        return create_taken_courses_output_ui_all_experiment(courses_objects.get(), selected_courses.get())
         # return create_taken_courses_output_ui(courses_df.get(), selected_courses.get())
     
  
