@@ -25,7 +25,7 @@ def server(input, output, session):
     courses_objects = reactive.value([]) 
     selected_courses = reactive.value([])
     input_states = reactive.value({})
-
+    
     def list_to_str(number_list):
         return "&".join([f"{year}" for year in number_list])
 
@@ -71,9 +71,10 @@ def server(input, output, session):
     @output
     @render.ui
     def list_all_courses():
-        global courses_objects
+        # global courses_objects
         # courses_df_no_duplicates = courses_objects.get().drop_duplicates(subset='course_name')
-
+        print('test')
+        print(courses_objects.get())
         return [
             course_obj.as_card() 
           for course_obj in courses_objects.get()
@@ -236,7 +237,10 @@ def server(input, output, session):
 
     def get_all_inputs_ids( ):
         global courses_objects
+        
         print("worled!1")
+
+        return ["fruit","apple","banana"]
         print(courses_objects.get())
         print("worled!2")
         return [   button_id
