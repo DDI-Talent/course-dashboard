@@ -13,7 +13,7 @@ app_ui = ui.page_sidebar(
                bg = '#579a9f6d',
                ),
     ui.panel_title(f"Course Dashbaord v{version}"),
-    # ui.output_table('grid_selected_courses')
+    ui.output_table('grid_selected_courses')
 )
 
 
@@ -139,31 +139,31 @@ def server(input, output, session):
         return [course for _, course in courses_df.iterrows()]
         # return courses_df[columns_to_keep].values.tolist() if courses_df.shape[0] > 0 else  []
 
-    def filter_taken_courses(courses_df, taken_courses, include_all = False):
+    def filter_selected_courses(courses_df, selected_courses, include_all = False):
         if include_all:
-            taken_courses_to_use = [
+            selected_courses_to_use = [
                 course_as_dict(course.course_id, year, block) 
-                for _, course in courses_df.iterrows()
-                for year in course['year']
-                for block in course['block']
+                for course in courses_df
+                for year in course.years
+                for block in course.blocks
             ]
         else:
-            taken_courses_to_use = taken_courses
+            selected_courses_to_use = selected_courses
 
         final_df = pd.DataFrame()
-        for course_info in taken_courses_to_use:
+        for course_info in selected_courses_to_use:
             new_item_df = courses_df.loc[
                         (courses_df['year'].apply(lambda items: course_info['year'] in items)) &
                         (courses_df['block'].apply(lambda items: course_info['block'] in items)) &
                         (courses_df['course_id'].eq(course_info['course_id']))].copy()
-            # once we know course is being taken, modify it in output to only include desired year and block
+            # once we know course is being selected, modify it in output to only include desired year and block
             new_item_df['year'] = int(course_info['year'])
             new_item_df['block'] = course_info['block']
             final_df = pd.concat([final_df, new_item_df ])
         return final_df
 
-    def taken_course_to_widget(course, hide = False):
-        # print("taken_course_to_widget",course, hide)
+    def selected_course_to_widget(course, hide = False):
+        # print("selected_course_to_widget",course, hide)
         return ui.card(
             ui.card_header(course.id),
             ui.p(course.name),
@@ -171,8 +171,8 @@ def server(input, output, session):
             hidden = hide
         )
         
-    def create_taken_courses_output_ui_all_experiment(courses_df, taken_courses):
-        courses_df = filter_taken_courses(courses_df, taken_courses, include_all=True) # what if we don;t filter
+    def create_selected_courses_output_ui_all_experiment(courses_df, selected_courses):
+        courses_df = filter_selected_courses(courses_df, selected_courses, include_all=True) # what if we don;t filter
      
         rows  = []
         for block in range(1,7):
@@ -182,15 +182,15 @@ def server(input, output, session):
                 # course = year1_courses[0]
                 year1_widget = []
                 for course in year1_courses:
-                    hide = course_df_as_dict(course) not in taken_courses
-                    year1_widget.append( taken_course_to_widget(course, hide = hide))
+                    hide = course_df_as_dict(course) not in selected_courses
+                    year1_widget.append( selected_course_to_widget(course, hide = hide))
 
             year2_courses = get_courses(courses_df, year=2, block=block)
             if len(year2_courses) > 0:
                 year2_widget = []
                 for course in year2_courses:
-                    hide = course_df_as_dict(course) not in taken_courses
-                    year2_widget.append( taken_course_to_widget(course, hide = hide))        
+                    hide = course_df_as_dict(course) not in selected_courses
+                    year2_widget.append( selected_course_to_widget(course, hide = hide))        
 
             new_row = ui.row(
                 ui.column(2, ui.p(block)),
@@ -201,8 +201,8 @@ def server(input, output, session):
         return ui.column(12, rows)
 
 
-    def create_taken_courses_output_ui(courses_df, taken_courses):
-        courses_df = filter_taken_courses(courses_df, taken_courses)
+    def create_selected_courses_output_ui(courses_df, selected_courses):
+        courses_df = filter_selected_courses(courses_df, selected_courses)
 
         rows  = []
         for block in range(1,7):
@@ -211,8 +211,8 @@ def server(input, output, session):
             print(year1)
             new_row = ui.row(
                 ui.column(2, ui.p(block)),
-                ui.column(5, taken_course_to_widget(year1[0]) if len(year1) > 0 else ""),
-                ui.column(5, taken_course_to_widget(year2[0]) if len(year2) > 0 else "")
+                ui.column(5, selected_course_to_widget(year1[0]) if len(year1) > 0 else ""),
+                ui.column(5, selected_course_to_widget(year2[0]) if len(year2) > 0 else "")
             )
             rows.append(new_row)
         return ui.column(12, rows)
@@ -314,8 +314,8 @@ def server(input, output, session):
         global courses_objects
         # print("%%%%%%%%%", selected_courses.get())
         
-        return create_taken_courses_output_ui_all_experiment(courses_objects.get(), selected_courses.get())
-        # return create_taken_courses_output_ui(courses_df.get(), selected_courses.get())
+        return create_selected_courses_output_ui_all_experiment(courses_objects.get(), selected_courses.get())
+        # return create_selected_courses_output_ui(courses_df.get(), selected_courses.get())
     
  
 
