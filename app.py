@@ -1,6 +1,8 @@
 from shiny import App, render, ui, reactive, session
 import pandas as pd
 from models.course import Course
+from models.selected_course import SelectedCourse
+from models.selected_courses import SelectedCourses
 
 
 version = "0.4.1" # major.sprint.release
@@ -18,12 +20,12 @@ app_ui = ui.page_sidebar(
 
 
 def server(input, output, session):
-    global selected_courses
+    global selected_courses_objects
     global courses_objects
     global input_states
 
     courses_objects = reactive.value([]) 
-    selected_courses = reactive.value([])
+    selected_courses_objects = reactive.value(SelectedCourses())
     input_states = reactive.value({})
     
     def list_to_str(number_list):
@@ -81,17 +83,17 @@ def server(input, output, session):
         ]
 
     def add_course( course_as_dictionary):
-        global selected_courses
-        if course_as_dictionary not in selected_courses.get() : 
-            selected_courses.set(selected_courses.get() + [course_as_dictionary])
+        global selected_courses_objects
+        if course_as_dictionary not in selected_courses_objects.get() : 
+            selected_courses_objects.set(selected_courses_objects.get() + [course_as_dictionary])
             # print("selected_courses.get()",selected_courses.get())
 
     def remove_course(course_as_dictionary):
-        global selected_courses
+        global selected_courses_objects
         selected_courses_new = [course 
-                            for course in selected_courses.get()
+                            for course in selected_courses_objects.get()
                             if course != course_as_dictionary]
-        selected_courses.set(selected_courses_new)
+        selected_courses_objects.set(selected_courses_new)
 
     
     # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
@@ -128,7 +130,7 @@ def server(input, output, session):
 
 
     courses_objects.set(load_data())
-    selected_courses.set(load_selected_courses())
+    selected_courses_objects.set(load_selected_courses())
 
 
     def get_courses(courses_df, year=None, block=None, columns_to_keep = ['course_name', 'course_id']):
@@ -171,48 +173,37 @@ def server(input, output, session):
             hidden = hide
         )
         
-    def create_selected_courses_output_ui_all_experiment(courses_df, selected_courses):
-        courses_df = filter_selected_courses(courses_df, selected_courses, include_all=True) # what if we don;t filter
+    def create_selected_courses_output_ui():
+        global selected_courses_objects
+        global courses_objects
+
+        selected_courses = selected_courses_objects.get()
+        courses_objs = courses_objects.get()
+
      
         rows  = []
         for block in range(1,7):
             # DRY this up
-            year1_courses = get_courses(courses_df, year=1, block=block)
+            year1_courses = get_courses(courses_objs, year=1, block=block)
             if len(year1_courses) > 0:
                 # course = year1_courses[0]
                 year1_widget = []
                 for course in year1_courses:
-                    hide = course_df_as_dict(course) not in selected_courses
-                    year1_widget.append( selected_course_to_widget(course, hide = hide))
+                    is_hidden = selected_courses.contains(course, 1, block)
+                    year1_widget.append(course.as_card_selected(is_hidden))
+
 
             year2_courses = get_courses(courses_df, year=2, block=block)
             if len(year2_courses) > 0:
                 year2_widget = []
                 for course in year2_courses:
-                    hide = course_df_as_dict(course) not in selected_courses
+                    hide = course_df_as_dict(course) not in selected_courses_objects
                     year2_widget.append( selected_course_to_widget(course, hide = hide))        
 
             new_row = ui.row(
                 ui.column(2, ui.p(block)),
                 ui.column(5, year1_widget),
                 ui.column(5, year2_widget)
-            )
-            rows.append(new_row)
-        return ui.column(12, rows)
-
-
-    def create_selected_courses_output_ui(courses_df, selected_courses):
-        courses_df = filter_selected_courses(courses_df, selected_courses)
-
-        rows  = []
-        for block in range(1,7):
-            year1 = get_courses(courses_df, year=1, block=block)
-            year2 = get_courses(courses_df, year=2, block=block)
-            print(year1)
-            new_row = ui.row(
-                ui.column(2, ui.p(block)),
-                ui.column(5, selected_course_to_widget(year1[0]) if len(year1) > 0 else ""),
-                ui.column(5, selected_course_to_widget(year2[0]) if len(year2) > 0 else "")
             )
             rows.append(new_row)
         return ui.column(12, rows)
@@ -310,11 +301,11 @@ def server(input, output, session):
     @render.ui
     @reactive.calc
     def grid_selected_courses():
-        global selected_courses
+        global selected_courses_objects
         global courses_objects
         # print("%%%%%%%%%", selected_courses.get())
         
-        return create_selected_courses_output_ui_all_experiment(courses_objects.get(), selected_courses.get())
+        return create_selected_courses_output_ui(courses_objects.get(), selected_courses_objects.get())
         # return create_selected_courses_output_ui(courses_df.get(), selected_courses.get())
     
  
