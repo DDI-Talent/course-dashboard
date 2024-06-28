@@ -30,10 +30,10 @@ def server(input, output, session):
         return "&".join([f"{year}" for year in number_list])
 
     def course_to_button_id(course, year, block, action = "buttonadd_"):
-        return f"{action}{course['course_id']}_{year}_{block}"
+        return f"{action}{course.id}_{year}_{block}"
 
     def course_dict_to_button_id(course_dict, action = "buttonadd_"):
-        return f"{action}{course_dict['course_id']}_{course_dict['year']}_{course_dict['block']}"
+        return f"{action}{course_dict.id}_{course_dict['year']}_{course_dict['block']}"
 
     def is_this_add_button(button_id):
         return "buttonadd_" in button_id
@@ -226,39 +226,22 @@ def server(input, output, session):
             action = "buttonremove_"
 
         selected_courses = [course 
-                            for _, course in courses_objects.get().iterrows() 
-                            for year in course['year'] 
-                            for block in course['block']
+                            for course in courses_objects.get() 
+                            for year in course.years
+                            for block in course.blocks
                             if course_to_button_id(course,year,block, action=action) ==  button_id]
         return selected_courses[0] if len(selected_courses) > 0 else None
 
     # tod cleanup two below finctions into something more DRY
 
-
     def get_all_inputs_ids( ):
         global courses_objects
-        
-        print("worled!1")
+        loaded_data = load_data()
 
-        return ["fruit","apple","banana"]
-        print(courses_objects.get())
-        print("worled!2")
         return [   button_id
-            for course in courses_objects.get()
+            for course in loaded_data
             for button_id in course.all_possible_button_ids()
         ]
-
-
-        # global courses_df
-        loaded_data = load_data() #this is not from global for now, because of reactive drama
-        # WARNINNG: if any button id is wrong everything stips working
-        button_ids = [course_to_button_id(course,year, block, action = action) 
-                    for _, course in loaded_data.iterrows()
-                    for year in course['year']
-                    for block in course['block']
-                    for action in ["buttonadd_", "buttonremove_"]]
-        return button_ids
-        # TODO deal with courses that take more than 1 block
 
     
     def get_all_inputs():
@@ -266,10 +249,7 @@ def server(input, output, session):
         inputs_stuff = get_all_input_info().values()
         print("inputs_stuff")
         print(inputs_stuff)
-        # return inputs_stuff
-
-        return [input.clickme] # TODO!
-
+        return inputs_stuff
 
     def get_all_input_info():
         all_ids = get_all_inputs_ids( )
@@ -313,7 +293,7 @@ def server(input, output, session):
     @reactive.Effect
     @reactive.event(*get_all_inputs())
     def any_course_button_clicked():
-        # print("CLICKED!1")
+        print("CLICKED!1")
         clicked_button = which_input_changed( )
         if clicked_button == None:
             print("--- any_course_button_clicked Isssue, nothing changes")
