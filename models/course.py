@@ -38,22 +38,14 @@ class Course:
                 full_screen=True,
             )
 
-    def as_card_selected(self):
-        button_label = self.name
-        buttons = []
-        for year in self.years:
-            for block in self.blocks:
-                button_uid = self.course_to_button_id(year, block) #TODO: use course year and block in id
-                buttons.append(ui.input_action_button(button_uid, 
-                                f"TAKEN in Y{year} B{block}")
-                            )
-
+    def as_card_selected(course, hide = False):
+        # print("taken_course_to_widget",course, hide)
         return ui.card(
-                ui.card_header(button_label),
-                *buttons,
-                ui.card_footer(f"some course description here"),
-                full_screen=True,
-            )
+            ui.card_header(course.id),
+            ui.p(course.name),
+            # ui.input_action_button(course_to_button_id(course, action="buttonremove_"), "remove"),
+            hidden = hide
+        )
     
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"

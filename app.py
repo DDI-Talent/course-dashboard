@@ -84,6 +84,7 @@ def server(input, output, session):
 
     def add_course( course_as_dictionary):
         global selected_courses_objects
+
         if course_as_dictionary not in selected_courses_objects.get() : 
             selected_courses_objects.set(selected_courses_objects.get() + [course_as_dictionary])
             # print("selected_courses.get()",selected_courses.get())
@@ -183,7 +184,7 @@ def server(input, output, session):
         selected_courses = selected_courses_objects.get()
         courses_objs = courses_objects.get()
 
-        print("course objs",courses_objs)
+        print("SELECTED COURSES",selected_courses_objects.get())
         rows  = []
         for block in range(1,7):
             # DRY this up
