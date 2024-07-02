@@ -1,5 +1,6 @@
 import pandas as pd
 from shiny import ui
+from models.course import Course
 
 class SelectedCourse:
 
@@ -36,6 +37,7 @@ class SelectedCourse:
                 ui.card_footer(f"some course description here"),
                 full_screen=True,
             )
+    
 
     
     def __repr__(self) -> str:

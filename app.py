@@ -120,6 +120,7 @@ def server(input, output, session):
 
         # loaded_df['year'] = loaded_df['year'].apply(lambda x: [x[0]])
         # loaded_df['block'] = loaded_df['block'].apply(lambda x: x[0][0])
+
         return [ Course(row)
                 for _, row in loaded_df.iterrows()]
 
@@ -130,15 +131,17 @@ def server(input, output, session):
 
 
     courses_objects.set(load_data())
-    selected_courses_objects.set(load_selected_courses())
-
+    # selected_courses_objects.set(load_selected_courses())
 
     def get_courses(courses_df, year=None, block=None, columns_to_keep = ['course_name', 'course_id']):
-        if "year" in courses_df.columns and  year is not None:
-            courses_df = courses_df[courses_df['year'].eq(year)]
-        if  "block" in courses_df.columns  and block is not None:
-            courses_df = courses_df[courses_df['block'].eq(block)]
-        return [course for _, course in courses_df.iterrows()]
+        # if "year" in courses_df.columns and  year is not None:
+        #     courses_df = courses_df[courses_df['year'].eq(year)]
+        # if  "block" in courses_df.columns  and block is not None:
+        #     courses_df = courses_df[courses_df['block'].eq(block)]
+        # return [course for _, course in courses_df.iterrows()]
+
+        getting_courses = [course for course in courses_df if year in course.years and block in course.blocks]
+        return getting_courses
         # return courses_df[columns_to_keep].values.tolist() if courses_df.shape[0] > 0 else  []
 
     def filter_selected_courses(courses_df, selected_courses, include_all = False):
@@ -180,25 +183,26 @@ def server(input, output, session):
         selected_courses = selected_courses_objects.get()
         courses_objs = courses_objects.get()
 
-     
+        print("course objs",courses_objs)
         rows  = []
         for block in range(1,7):
             # DRY this up
             year1_courses = get_courses(courses_objs, year=1, block=block)
             if len(year1_courses) > 0:
-                # course = year1_courses[0]
                 year1_widget = []
                 for course in year1_courses:
+                    print("COURSE", course)
                     is_hidden = selected_courses.contains(course, 1, block)
+                    print("IS HIDDEN", is_hidden)
                     year1_widget.append(course.as_card_selected(is_hidden))
 
 
-            year2_courses = get_courses(courses_df, year=2, block=block)
+            year2_courses = get_courses(courses_objs, year=2, block=block)
             if len(year2_courses) > 0:
                 year2_widget = []
                 for course in year2_courses:
-                    hide = course_df_as_dict(course) not in selected_courses_objects
-                    year2_widget.append( selected_course_to_widget(course, hide = hide))        
+                    is_hidden = selected_courses.contains(course, 2, block)
+                    year2_widget.append(course.as_card_selected(is_hidden))
 
             new_row = ui.row(
                 ui.column(2, ui.p(block)),
@@ -305,7 +309,7 @@ def server(input, output, session):
         global courses_objects
         # print("%%%%%%%%%", selected_courses.get())
         
-        return create_selected_courses_output_ui(courses_objects.get(), selected_courses_objects.get())
+        return create_selected_courses_output_ui()
         # return create_selected_courses_output_ui(courses_df.get(), selected_courses.get())
     
  
