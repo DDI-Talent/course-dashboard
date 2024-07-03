@@ -148,12 +148,12 @@ def server(input, output, session):
     #         hidden = hide
     #     )
         
-    def create_selected_courses_output_ui(selected_courses_objects,courses_objects):
+    def create_selected_courses_output_ui(selected_courses,courses_objs):
         # global selected_courses_objects
         # global courses_objects
 
-        selected_courses = selected_courses_objects.get()
-        courses_objs = courses_objects.get()
+        # selected_courses = selected_courses_objects.get()
+        # courses_objs = courses_objects.get()
 
         rows  = []
         for block in range(1,7):
@@ -255,9 +255,6 @@ def server(input, output, session):
 
     def id_button_to_course(button_id):
         return button_id.replace("button_","")
-
-	# [0,0,0,0,0,0,0] 
-	# [1,0,0,0,1,0,0]
 	
     @reactive.Effect
     @reactive.event(*get_all_inputs())
@@ -286,11 +283,8 @@ def server(input, output, session):
     def grid_selected_courses():
         global selected_courses_objects
         global courses_objects
-        print("/////", selected_courses_objects.get())
-        # print("%%%%%%%%%", selected_courses.get())
-        
-        return create_selected_courses_output_ui(selected_courses_objects,courses_objects)
-        # return create_selected_courses_output_ui(courses_df.get(), selected_courses.get())
+        print("/////", selected_courses_objects.get())        
+        return create_selected_courses_output_ui(selected_courses_objects.get(),courses_objects.get())
     
  
 
