@@ -39,20 +39,7 @@ class SelectedCourse:
             )
     
 
+    def __str__(self):
+        course_info = f"Course Info: {self.course_info}, Year: {self.year}, Block: {self.block}"
+        return course_info
     
-    def __repr__(self) -> str:
-        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"
-    
-        # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
-    def string_to_list(self, string_to_parse):
-        # "1 or 2"    "1 and 6"    "1"
-        string_to_parse = string_to_parse.replace(" and ", " ").replace(" or ", " ")
-        # "1 2"     "1 6"     "1"
-        return [int(item) 
-                for item in string_to_parse.split(' ')]
-
-loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
-one_row = loaded_df.iloc[0]
-print(one_row)
-databases_course = Course(one_row)
-print(databases_course)
