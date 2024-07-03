@@ -20,6 +20,11 @@ class SelectedCourses:
             new_course = SelectedCourse(course, year, block)
             self.selected_courses.append(new_course)
 
+    def remove_course(self, course, year, block):
+        if not self.contains(course, year, block):
+            new_course = SelectedCourse(course, year, block)
+            self.selected_courses.remove(new_course)
+
     def __str__(self):
         courses_str = ', '.join(str(course) for course in self.selected_courses)
         return f"Selected Courses: [{courses_str}]"
