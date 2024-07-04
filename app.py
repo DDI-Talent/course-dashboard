@@ -25,7 +25,7 @@ def server(input, output, session):
     global input_states
 
     courses_objects = reactive.value([]) 
-    selected_courses_objects = reactive.value(SelectedCourses())
+    selected_courses_objects = reactive.value([])
     input_states = reactive.value({})
     
     # def list_to_str(number_list):
@@ -58,23 +58,23 @@ def server(input, output, session):
           for course_obj in courses_objects.get()
         ]
 
-    def add_course( course_as_dictionary):
-        global selected_courses_objects
-        selected_courses = selected_courses_objects.get()
+    # def add_course( course_as_dictionary):
+    #     global selected_courses_objects
+    #     selected_courses = selected_courses_objects.get()
 
-        if selected_courses.contains(course_as_dictionary, course_as_dictionary['year'], course_as_dictionary['block']) == False:
-            print(selected_courses)
+    #     if selected_courses.contains(course_as_dictionary, course_as_dictionary['year'], course_as_dictionary['block']) == False:
+    #         print(selected_courses)
             
-        # if course_as_dictionary not in selected_courses_objects.get() : 
-        #     selected_courses_objects.set(selected_courses_objects.get() + [course_as_dictionary])
-            # print("selected_courses.get()",selected_courses.get())
+    #     # if course_as_dictionary not in selected_courses_objects.get() : 
+    #     #     selected_courses_objects.set(selected_courses_objects.get() + [course_as_dictionary])
+    #         # print("selected_courses.get()",selected_courses.get())
 
-    def remove_course(course_as_dictionary):
-        global selected_courses_objects
-        selected_courses_new = [course 
-                            for course in selected_courses_objects.get()
-                            if course != course_as_dictionary]
-        selected_courses_objects.set(selected_courses_new)
+    # def remove_course(course_as_dictionary):
+    #     global selected_courses_objects
+    #     selected_courses_new = [course 
+    #                         for course in selected_courses_objects.get()
+    #                         if course != course_as_dictionary]
+    #     selected_courses_objects.set(selected_courses_new)
 
     
     # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
@@ -103,7 +103,8 @@ def server(input, output, session):
 
 
     courses_objects.set(load_data())
-    # selected_courses_objects.set(load_selected_courses())
+    selected_courses_objects.set(SelectedCourses())
+
 
     def get_courses(courses_df, year=None, block=None, columns_to_keep = ['course_name', 'course_id']):
         # if "year" in courses_df.columns and  year is not None:
@@ -274,7 +275,8 @@ def server(input, output, session):
             added_course_dict = course_from_button_id(clicked_button)
             if is_this_add_button(clicked_button):
                 selected_courses.add_course( added_course_dict, added_course_dict['year'], added_course_dict['block'] )
-                print(selected_courses)
+                selected_courses_objects.set(selected_courses)
+                print((selected_courses_objects.get()))
             else:
                 remove_course( added_course_dict )
 
