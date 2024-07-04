@@ -47,21 +47,16 @@ def server(input, output, session):
         print("REFRESH create_selected_courses_output_ui", len(courses_data.get().selected_courses.get()))
         rows  = []
         for block in range(1,7):
-            # DRY this up
-            year = 1
-            year1_widgets = [ 
-                courses_data.get().as_card_selected(SelectedCourse(course, year, block))
-                for course in courses_data.get().all_options_in(year, block)]
-            # print("year1_widgets",len(year1_widgets))
-            year = 2
-            year2_widgets = [ 
-                courses_data.get().as_card_selected(SelectedCourse(course, year, block))
-                for course in courses_data.get().all_options_in(year, block)]
+            years_widgets = []
+            for year in [1,2]:
+                years_widgets.append([ 
+                    courses_data.get().as_card_selected(SelectedCourse(course, year, block))
+                    for course in courses_data.get().all_options_in(year, block)])
 
             new_row = ui.row(
                 ui.column(2, ui.p(block)),
-                ui.column(5, year1_widgets),
-                ui.column(5, year2_widgets)
+                ui.column(5, years_widgets[0]),
+                ui.column(5, years_widgets[1])
             )
             rows.append(new_row)
         return ui.column(12, rows)
