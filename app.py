@@ -30,25 +30,25 @@ def server(input, output, session):
     # print(new_data)
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
-    print("new_data2")
-    print("new_data3")
+    # print("new_data2")
+    # print("new_data3")
 
     # courses_data.set(CoursesData())
 
     @reactive.effect
     def load_data():
         global courses_data
-        print("------------LOAD DATA! 1 @reactive.effect")
-        print("------------LOAD DATA! 1")
-        print(courses_data)
-        print(courses_data.get())
+        # print("------------LOAD DATA! 1 @reactive.effect")
+        # print("------------LOAD DATA! 1")
+        # print(courses_data)
+        # print(courses_data.get())
         data_service = courses_data.get()
         data_service.refresh_data()
         courses_data.set(data_service)
-        print("------------LOAD DATA! 2")
-        print(courses_data)
-        print(courses_data.get())
-        print("------------LOAD DATA! 3")
+        # print("------------LOAD DATA! 2")
+        # print(courses_data)
+        # print(courses_data.get())
+        # print("------------LOAD DATA! 3")
 
 
 
@@ -103,16 +103,17 @@ def server(input, output, session):
         return courses_data.get().all_options_in(year,block)
 
       
-        
+    # @reactive.value
     def create_selected_courses_output_ui():
         global courses_data
+        print("REFRESH create_selected_courses_output_ui", len(courses_data.get().selected_courses.get()))
         rows  = []
         for block in range(1,7):
             # DRY this up
             year = 1
             year1_widgets = [ courses_data.get().as_card_selected(course, year, block)
                 for course in courses_data.get().all_options_in(year, block)]
-            print("year1_widgets",len(year1_widgets))
+            # print("year1_widgets",len(year1_widgets))
             year = 2
             year2_widgets = [ courses_data.get().as_card_selected(course, year, block)
                 for course in courses_data.get().all_options_in(year, block)]
@@ -149,19 +150,17 @@ def server(input, output, session):
     
     def get_all_inputs():
         global courses_data
-        print("######1")
-        print("######2")
+        # print("######1")
+        # print("######2")
         inputs_stuff = get_all_input_info().values()
-        print("######3")
-        print("inputs_stuff")
+        # print("######3")
+        # print("inputs_stuff")
         # inputs_stuff = [input.clickme]
-        print("inputs_stuff",inputs_stuff)
+        # print("inputs_stuff",inputs_stuff)
         return inputs_stuff
 
     def get_all_input_info():
         global courses_data
-        # print(courses_data)
-        # print("######2.1")
         all_ids = get_all_inputs_ids( )
         # print("all_ids",all_ids)
         # print("input", getattr(input, "clickme"))
@@ -205,17 +204,23 @@ def server(input, output, session):
     @reactive.event(*get_all_inputs())
     def any_course_button_clicked():
         global courses_data
-        print("CLICKED!1")
+        # print("CLICKED!1")
         clicked_button_id = which_input_changed( )
-        print("CLICKED!2")
+        # print("CLICKED!2")
         print("CLICKED!2", clicked_button_id)
 
         if clicked_button_id == None:
             print("--- any_course_button_clicked Isssue, nothing changes")
             return
 
-        courses_data.get().respond_to_clicked_button_id( clicked_button_id  )
-        
+        data_service = courses_data.get()
+        # print("len(data_service.selected_courses)")
+        # print(len(data_service.selected_courses))
+        data_service.respond_to_clicked_button_id( clicked_button_id  )
+        # print(len(data_service.selected_courses))
+        courses_data.set(data_service)
+        reactive.invalidate_later(1)
+
         # this_course = course_data_from_button_id(clicked_button)
 
         # if not (this_course is None):
@@ -229,12 +234,12 @@ def server(input, output, session):
         #         remove_course( added_course_dict )
 
     @render.ui
-    @reactive.calc
+    # @reactive.calc
     def grid_selected_courses():
         # global courses_data
         # global selected_courses_objects
         # global courses_objects
-        # print("/////", courses_data.get())        
+        print("///grid_selected_courses//")        
         return create_selected_courses_output_ui()
     
  

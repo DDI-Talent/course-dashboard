@@ -2,16 +2,17 @@ import pandas as pd
 from shiny import ui
 from models.course import Course
 from models.selected_course import SelectedCourse
+from shiny import reactive
 
 class CoursesData:
 
     def __init__(self):
         print("**create CoursesData")
-        self.selected_courses = []
-        self.course_infos = []
+        self.selected_courses = reactive.value([])
+        self.course_infos = reactive.value([])
 
     def refresh_data(self):
-        print("**refresh_data CoursesData")
+        # print("**refresh_data CoursesData")
         self.course_infos = CoursesData.load_data()
 
     def all_inputs_ids():
@@ -19,8 +20,8 @@ class CoursesData:
             for course in CoursesData.load_data()
             for button_id in course.all_possible_button_ids()
         ]
-        print("all_inputs_ids")
-        print("all_inputs_ids",ids)
+        # print("all_inputs_ids")
+        # print("all_inputs_ids",ids)
         return ids
 
 
@@ -38,10 +39,10 @@ class CoursesData:
         return all_options
 
     def is_taken_in(self, course, year, block):
-        print("is_taken_in")
-        print("is_taken_in",len(self.selected_courses), course.id, year, block)
+        # print("is_taken_in")
+        # print("is_taken_in",len(self.selected_courses), course.id, year, block)
 
-        for selected_course in self.selected_courses:
+        for selected_course in self.selected_courses.get():
             if selected_course.course_info.id == course.id and selected_course.year == year and selected_course.block == block:
                 return True
         return False
@@ -77,16 +78,20 @@ class CoursesData:
         # print("add_course", course)
         if not self.is_taken_in(course, year, block):
             new_course = SelectedCourse(course, year, block)
-            self.selected_courses.append(new_course)
+            self.selected_courses.set(self.selected_courses.get() + [new_course])
 
     def remove_course(self, course, year, block):
         if not self.is_taken_in(course, year, block):
             new_course = SelectedCourse(course, year, block)
-            self.selected_courses.remove(new_course)
+
+            data_courses = self.selected_courses.get()
+            data_courses.remove(new_course)
+            self.selected_courses.set(data_courses)
+
 
     def __str__(self):
         courses_str = ', '.join(str(course) for course in self.course_infos)
-        courses_selected_str = ', '.join(str(course) for course in self.selected_courses)
+        courses_selected_str = ', '.join(str(course) for course in self.selected_courses.get())
         return f"Selected Courses: [{courses_str}], {courses_selected_str}"
 
 # selected_courses = SelectedCourses()
