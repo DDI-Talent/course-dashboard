@@ -2,8 +2,8 @@
     "https://api.shinyapps.io": {
         "server_url": "https://api.shinyapps.io",
         "filename": "/Users/pawel/Development/course-dashboard",
-        "app_url": "https://ddi-talent.shinyapps.io/course-dashboard-development/",
-        "app_id": 12215502,
+        "app_url": "https://ddi-talent.shinyapps.io/course-dashboard/",
+        "app_id": 12235352,
         "app_guid": null,
         "title": "course-dashboard",
         "app_mode": "python-shiny",

@@ -9,21 +9,25 @@ This template gives you a more "complete" dashboard for exploring the tips datas
 - each time (you need to be in the main project folder, check in terminal with `pwd`)
 
 ```
-rsconnect deploy shiny ./ --name ddi-talent --title course-dashboard-development
-rsconnect deploy shiny ./ --name ddi-talent --title course-dashboard
-``
+
+rsconnect deploy shiny ./ --name ddi-talent -a 12215502 --title course-dashboard-development  
+rsconnect deploy shiny ./ --name ddi-talent -a 12235352 --title course-dashboard  
+
+```
 
 - just once:
 
- install cli Command Line Interface
+install cli Command Line Interface
 ```
 
 pip install rsconnect-python
 
+```
+
 or 
+```
 
 pip3 install rsconnect-python
-
 
 ```
 

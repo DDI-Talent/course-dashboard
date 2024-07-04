@@ -11,15 +11,14 @@ class Course:
 
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
-        # print(f"takeable_in {year} {block} is {takeable}")
         return takeable
 
-    def course_to_button_id(self, year, block, action = "buttonadd_"):
+    def to_button_id(self, year, block, action):
         return f"{action}{self.id}_{year}_{block}"
     
     def all_possible_button_ids(self):
         return [
-            self.course_to_button_id(year, block, action)
+            self.to_button_id(year, block, action)
             for year in self.years
             for block in self.blocks
             for action in ["buttonadd_", "buttonremove_"]
@@ -31,7 +30,7 @@ class Course:
         buttons = []
         for year in self.years:
             for block in self.blocks:
-                button_uid = self.course_to_button_id(year, block) #TODO: use course year and block in id
+                button_uid = self.to_button_id(year, block, "buttonadd_") #TODO: use course year and block in id
                 buttons.append(ui.input_action_button(button_uid, 
                                 f"TAKE in Y{year} B{block}")
                             )
@@ -43,15 +42,6 @@ class Course:
                 full_screen=True,
             )
 
-    # def as_card_selected(course, show = False):
-    #     print("taken_course_to_widget",course, hide)
-    #     return ui.card(
-    #         ui.card_header(course.id),
-    #         ui.p(course.name),
-    #         ui.input_action_button(course.course_to_button_id(action="buttonremove_"), "remove"),
-    #         hidden = (not show)
-    #     )
-    
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"
     
@@ -62,11 +52,3 @@ class Course:
         # "1 2"     "1 6"     "1"
         return [int(item) 
                 for item in string_to_parse.split(' ')]
-
-# loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
-# one_row = loaded_df.iloc[0]
-# print(one_row)
-# databases_course = Course(one_row)
-# print(databases_course)
-
-# print(databases_course.years)
