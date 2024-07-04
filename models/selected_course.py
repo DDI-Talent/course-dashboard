@@ -13,14 +13,6 @@ class SelectedCourse:
     def course_to_button_id(self, year, block, action = "buttonadd_"):
         return f"{action}{self.id}_{year}_{block}"
     
-    def all_possible_button_ids(self):
-        return [
-            self.course_to_button_id(year, block)
-            for year in self.years
-            for block in self.blocks
-        ]
-       
-
     def as_card(self):
         button_label = self.name
         buttons = []

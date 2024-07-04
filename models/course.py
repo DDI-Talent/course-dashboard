@@ -9,6 +9,10 @@ class Course:
         self.id = row['course_id']
         self.name = row['course_name']
 
+    def takeable_in(self, year, block):
+        takeable = year in self.years and block in self.blocks
+        # print(f"takeable_in {year} {block} is {takeable}")
+        return takeable
 
     def course_to_button_id(self, year, block, action = "buttonadd_"):
         return f"{action}{self.id}_{year}_{block}"
@@ -38,13 +42,13 @@ class Course:
                 full_screen=True,
             )
 
-    def as_card_selected(course, hide = False):
+    def as_card_selected(course, show = False):
         # print("taken_course_to_widget",course, hide)
         return ui.card(
             ui.card_header(course.id),
             ui.p(course.name),
             # ui.input_action_button(course_to_button_id(course, action="buttonremove_"), "remove"),
-            hidden = hide
+            hidden = (not show)
         )
     
     def __repr__(self) -> str:
@@ -58,10 +62,10 @@ class Course:
         return [int(item) 
                 for item in string_to_parse.split(' ')]
 
-loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
-one_row = loaded_df.iloc[0]
-print(one_row)
-databases_course = Course(one_row)
-print(databases_course)
+# loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
+# one_row = loaded_df.iloc[0]
+# print(one_row)
+# databases_course = Course(one_row)
+# print(databases_course)
 
-print(databases_course.years)
+# print(databases_course.years)
