@@ -19,9 +19,10 @@ class Course:
     
     def all_possible_button_ids(self):
         return [
-            self.course_to_button_id(year, block)
+            self.course_to_button_id(year, block, action)
             for year in self.years
             for block in self.blocks
+            for action in ["buttonadd_", "buttonremove_"]
         ]
        
 
@@ -38,18 +39,18 @@ class Course:
         return ui.card(
                 ui.card_header(button_label),
                 *buttons,
-                ui.card_footer(f"some course description here"),
+                ui.card_footer(f"!some course description here"),
                 full_screen=True,
             )
 
-    def as_card_selected(course, show = False):
-        # print("taken_course_to_widget",course, hide)
-        return ui.card(
-            ui.card_header(course.id),
-            ui.p(course.name),
-            # ui.input_action_button(course_to_button_id(course, action="buttonremove_"), "remove"),
-            hidden = (not show)
-        )
+    # def as_card_selected(course, show = False):
+    #     print("taken_course_to_widget",course, hide)
+    #     return ui.card(
+    #         ui.card_header(course.id),
+    #         ui.p(course.name),
+    #         ui.input_action_button(course.course_to_button_id(action="buttonremove_"), "remove"),
+    #         hidden = (not show)
+    #     )
     
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"

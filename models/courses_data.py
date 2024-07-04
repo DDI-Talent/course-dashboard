@@ -71,8 +71,10 @@ class CoursesData:
                             if course.id == course_id]
         return courses_with_id[0] if len(courses_with_id) > 0 else None
 
-    def as_card_selected(self, course, year, block):
-        return course.as_card_selected(self.is_taken_in(course, year, block))
+    def as_card_selected(self, courseSelected):
+        return courseSelected.as_card_selected( self.is_taken_in(courseSelected.course_info, 
+                                                                courseSelected.year,
+                                                                courseSelected.block))
 
     def add_course(self, course, year, block):
         # print("add_course", course)
@@ -80,13 +82,26 @@ class CoursesData:
             new_course = SelectedCourse(course, year, block)
             self.selected_courses.set(self.selected_courses.get() + [new_course])
 
-    def remove_course(self, course, year, block):
-        if not self.is_taken_in(course, year, block):
-            new_course = SelectedCourse(course, year, block)
+        print("$$add$$")
+        print(self.selected_courses.get())
 
-            data_courses = self.selected_courses.get()
-            data_courses.remove(new_course)
-            self.selected_courses.set(data_courses)
+    def remove_course(self, course, year, block):
+        if self.is_taken_in(course, year, block):
+            course_to_remove = SelectedCourse(course, year, block)
+
+            temp_courses = self.selected_courses.get()
+            print("$$remove$$1")
+            print(self.selected_courses.get())
+            print(temp_courses)
+            temp_courses = [selected_course
+                            for selected_course in temp_courses
+                            if selected_course.as_string() != course_to_remove.as_string()]
+            self.selected_courses.set(temp_courses)
+                        
+            print("$$remove$$2")
+            print(self.selected_courses.get())
+            print(temp_courses)
+
 
 
     def __str__(self):

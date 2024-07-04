@@ -55,8 +55,8 @@ def server(input, output, session):
     # def list_to_str(number_list):
     #     return "&".join([f"{year}" for year in number_list])
 
-    def course_to_button_id(course, year, block, action = "buttonadd_"):
-        return f"{action}{course.id}_{year}_{block}"
+    # def course_to_button_id(course, year, block, action = "buttonadd_"):
+    #     return f"{action}{course.id}_{year}_{block}"
 
     # def course_dict_to_button_id(course_dict, action = "buttonadd_"):
     #     return f"{action}{course_dict.id}_{course_dict['year']}_{course_dict['block']}"
@@ -111,11 +111,13 @@ def server(input, output, session):
         for block in range(1,7):
             # DRY this up
             year = 1
-            year1_widgets = [ courses_data.get().as_card_selected(course, year, block)
+            year1_widgets = [ 
+                courses_data.get().as_card_selected(SelectedCourse(course, year, block))
                 for course in courses_data.get().all_options_in(year, block)]
             # print("year1_widgets",len(year1_widgets))
             year = 2
-            year2_widgets = [ courses_data.get().as_card_selected(course, year, block)
+            year2_widgets = [ 
+                courses_data.get().as_card_selected(SelectedCourse(course, year, block))
                 for course in courses_data.get().all_options_in(year, block)]
 
             new_row = ui.row(
@@ -138,7 +140,7 @@ def server(input, output, session):
                             for course in courses_objects.get() 
                             for year in course.years
                             for block in course.blocks
-                            if course_to_button_id(course,year,block, action=action) ==  button_id]
+                            if course.course_to_button_id(year,block, action=action) ==  button_id]
         return selected_courses[0] if len(selected_courses) > 0 else None
 
     # tod cleanup two below finctions into something more DRY
@@ -146,7 +148,6 @@ def server(input, output, session):
     def get_all_inputs_ids():
         all_inputs_ids = CoursesData.all_inputs_ids()
         return all_inputs_ids
-        # return ['buttonadd_HEIN11037_1_1', 'buttonadd_HEIN11037_1_2', 'buttonadd_HEIN11037_2_1', 'buttonadd_HEIN11037_2_2', 'buttonadd_HEIN00000_1_3', 'buttonadd_HEIN00000_1_4', 'buttonadd_HEIN00000_2_3', 'buttonadd_HEIN00000_2_4', 'buttonadd_HEIN11043_1_5', 'buttonadd_HEIN11043_2_5', 'buttonadd_HEIN11068_1_6', 'buttonadd_HEIN11068_2_6', 'buttonadd_HEIN11057_2_1', 'buttonadd_HEIN11057_2_6', 'buttonadd_HEIN11054_2_2', 'buttonadd_HEIN11059_1_3', 'buttonadd_HEIN11059_2_3', 'buttonadd_HEIN11045_1_4', 'buttonadd_HEIN11045_2_4', 'buttonadd_HEIN11062_1_5', 'buttonadd_HEIN11062_2_5']
     
     def get_all_inputs():
         global courses_data
@@ -221,20 +222,8 @@ def server(input, output, session):
         courses_data.set(data_service)
         reactive.invalidate_later(1)
 
-        # this_course = course_data_from_button_id(clicked_button)
-
-        # if not (this_course is None):
-
-        #     # TODO: get the actual block and year selected, if there were choices. for now, grab first letter
-        #     added_course_dict = course_from_button_id(clicked_button)
-        #     if is_this_add_button(clicked_button):
-        #         selected_courses.add_course( added_course_dict, added_course_dict['year'], added_course_dict['block'] )
-        #         print(selected_courses)
-        #     else:
-        #         remove_course( added_course_dict )
 
     @render.ui
-    # @reactive.calc
     def grid_selected_courses():
         # global courses_data
         # global selected_courses_objects
