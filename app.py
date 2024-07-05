@@ -14,7 +14,7 @@ app_ui = ui.page_sidebar(
                width=400,
                bg = '#579a9f6d',
                ),
-    ui.panel_title(f"Course Dashbaord v{version}"),
+    ui.panel_title(f"Course Dashboard v{version}"),
     ui.output_table('grid_selected_courses')
 )
 
