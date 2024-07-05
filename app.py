@@ -21,9 +21,8 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     global courses_data
     global input_states
-
-    
-            
+    global initiated_with_url
+    initiated_with_url = False
 
     #"HEIN11055_2_2,PUHR11103_1_3"
 
@@ -40,29 +39,30 @@ def server(input, output, session):
     
     @reactive.effect
     def get_url():
+        global initiated_with_url
+        if initiated_with_url == True:
+            return
+        initiated_with_url = True
+        print("url")
         try:
             url_query = session.input[".clientdata_url_search"]()
             #print(url_query)
             ### Seperate data from rest
             equalLoc = url_query.find("=")
-            print("---")
             unparsed_list = url_query[1:equalLoc]
 
             ### seperate into instances list
             instance_List = unparsed_list.split("%2C")
             print(instance_List)
 
-            
             ### seperate loop along list calling select button Id
             for inst in instance_List:
-                #course_selection_obj = courses_data.get().selected_course_from_button_id(inst)
                 data_service = courses_data.get()
                 data_service.respond_to_clicked_button_id("buttonadd_"+inst)
                 courses_data.set(data_service)
-            print("test")
-            print(courses_data.get())
         except:
             print("FAILED")
+
             
 
     
@@ -79,6 +79,7 @@ def server(input, output, session):
     def grid_selected_courses():
         global courses_data
         print("REFRESH create_selected_courses_output_ui", len(courses_data.get().selected_courses.get()))
+
         rows  = []
         for block in range(1,7):
             years_widgets = []
