@@ -17,7 +17,7 @@ class SelectedCourse:
         buttons = []
         button_uid_remove = self.to_selected_button_id( "buttonremove_")
         return ui.card(
-                ui.card_header(button_label + "banana"),
+                ui.card_header(button_label),
                 ui.input_action_button(button_uid_remove, 
                                 f"REMOVE"),
                 ui.card_footer(f"some course description here"),

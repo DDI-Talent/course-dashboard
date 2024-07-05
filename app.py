@@ -22,8 +22,16 @@ def server(input, output, session):
     global courses_data
     global input_states
 
+    @reactive.effect
+    def where_am_i():
+        url_query = session.input[".clientdata_url_search"]()
+        print(url_query)
+
+    "HEIN0000_1_1,HEIN0001_1_2"
+
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
+
 
     @reactive.effect
     def load_data():
@@ -111,4 +119,4 @@ def server(input, output, session):
         data_service.respond_to_clicked_button_id( clicked_button_id  )
         courses_data.set(data_service)
     
-app = App(app_ui, server)
+app = App(app_ui, server)#, debug=True)
