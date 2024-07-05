@@ -21,7 +21,7 @@ class CoursesData:
         return ids
 
     def load_data():
-        loaded_df = pd.read_csv(f'./data/example_course_outline.csv')
+        loaded_df = pd.read_csv(f'./data/all_courses.csv')
         return [ Course(row)
                 for _, row in loaded_df.iterrows()]
 
