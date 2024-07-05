@@ -22,12 +22,10 @@ def server(input, output, session):
     global courses_data
     global input_states
 
-    @reactive.effect
-    def where_am_i():
-        url_query = session.input[".clientdata_url_search"]()
-        print(url_query)
+    
+            
 
-    "HEIN0000_1_1,HEIN0001_1_2"
+    #"HEIN11055_2_2,PUHR11103_1_3"
 
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
@@ -39,6 +37,34 @@ def server(input, output, session):
         data_service = courses_data.get()
         data_service.refresh_data()
         courses_data.set(data_service)
+    
+    @reactive.effect
+    def get_url():
+        try:
+            url_query = session.input[".clientdata_url_search"]()
+            #print(url_query)
+            ### Seperate data from rest
+            equalLoc = url_query.find("=")
+            print("---")
+            unparsed_list = url_query[1:equalLoc]
+
+            ### seperate into instances list
+            instance_List = unparsed_list.split("%2C")
+            print(instance_List)
+
+            
+            ### seperate loop along list calling select button Id
+            for inst in instance_List:
+                #course_selection_obj = courses_data.get().selected_course_from_button_id(inst)
+                data_service = courses_data.get()
+                data_service.respond_to_clicked_button_id("buttonadd_"+inst)
+                courses_data.set(data_service)
+            print("test")
+            print(courses_data.get())
+        except:
+            print("FAILED")
+            
+
     
     @output
     @render.ui
