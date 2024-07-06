@@ -26,19 +26,18 @@ class Course:
        
 
     def as_card(self):
-        button_label = self.name
+        button_label = f"{self.name} ({self.id})"
         buttons = []
         for year in self.years:
             for block in self.blocks:
                 button_uid = self.to_button_id(year, block, "buttonadd_") #TODO: use course year and block in id
                 buttons.append(ui.input_action_button(button_uid, 
-                                f"TAKE in Y{year} B{block}")
+                                f"📌 Y{year} B{block}")
                             )
-
         return ui.card(
                 ui.card_header(button_label),
-                *buttons,
-                ui.card_footer(f"!some course description here"),
+                ui.row(*[ui.column(int(12 / len(buttons)), button) for button in buttons]),
+                ui.card_footer(f"soon: more info about the course"),
                 full_screen=True,
             )
 

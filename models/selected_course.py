@@ -19,11 +19,13 @@ class SelectedCourse:
         buttons = []
         button_uid_remove = self.to_selected_button_id( "buttonremove_")
         return ui.card(
-                ui.card_header(button_label),
-                ui.input_action_button(button_uid_remove, 
-                                f"REMOVE"),
-                ui.card_footer(f"some course description here"),
-                full_screen=True,
+                ui.row(
+                    ui.column(8, ui.p( button_label)),
+                    ui.column(4,ui.input_action_button(button_uid_remove, f"❌"))
+                ),
+                
+                # ui.card_footer(f"some course description here"),
+                # full_screen=True,
                 hidden = (not show)
             )
 

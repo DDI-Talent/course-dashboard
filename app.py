@@ -8,22 +8,27 @@ from models.courses_data import CoursesData
 version = "0.5.1" # major.sprint.release
     
 app_ui = ui.page_sidebar(
-    ui.sidebar("Courses", 
+    ui.sidebar("Pin Course Options", 
                ui.output_ui("list_all_courses"),
                ui.input_action_button("clickme","click me"),
-               width=400,
+               width=250,
                bg = '#579a9f6d',
                ),
-    ui.panel_title(f"Course Dashboard v{version}"),
-    ui.output_table('grid_selected_courses')
+    ui.panel_title(ui.row(
+        ui.column(8,ui.h1(f"Your Pinned courses (v{version})")),
+        ui.column(4,ui.output_ui('share_choices_button')),
+        )),
+    ui.output_ui('grid_selected_courses')
 )
 
 def server(input, output, session):
     global courses_data
     global input_states
+    global initial_url_loaded_already
 
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
+    initial_url_loaded_already = False
 
     @reactive.effect
     def load_data():
@@ -36,9 +41,16 @@ def server(input, output, session):
     @reactive.effect
     def load_initial_url():
         global courses_data
-        # reacts to url in format .../?courses=HEIN11037_1_1+HEIN11055_2_2
-        url_query = session.input[".clientdata_url_search"]()
-        courses_data.get().react_to_loaded_url(url_query)    
+        global initial_url_loaded_already
+
+        if not initial_url_loaded_already:
+            initial_url_loaded_already = True
+            print("load_initial_url")
+            # reacts to url in format .../?courses=HEIN11037_1_1+HEIN11055_2_2
+            url_query = session.input[".clientdata_url_search"]()
+            courses_data_temp = courses_data.get()
+            courses_data_temp.react_to_loaded_url(url_query)  
+            courses_data.set(courses_data_temp)  
             
     @output
     @render.ui
@@ -48,6 +60,21 @@ def server(input, output, session):
           for course_obj in courses_data.get().course_infos
         ]
     
+    @output
+    @render.ui 
+    def share_choices_button():
+        global courses_data
+        return "coming soon"
+        # site_protocol = session.input[".clientdata_url_protocol"]()
+        # site_port = session.input[".clientdata_url_port"]()
+        # site_url = session.input[".clientdata_url_hostname"]()
+        # # print("url bits",site_protocol, site_url, site_port)
+        # selected_courses_as_string = courses_data.get().selected_choices_as_string()
+        # link_to_share = f"{site_protocol}//{site_url}:{site_port}/?courses={selected_courses_as_string}"
+        # number_of_choices =  len(courses_data.get().selected_courses.get())
+        # # print("link_to_share",link_to_share)
+        # return ui.a(f"🛒 Share {number_of_choices} Choices as Link", href=link_to_share)
+
     @output
     @render.ui
     def grid_selected_courses():

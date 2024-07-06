@@ -76,6 +76,12 @@ class CoursesData:
         else:
             self.remove_course(selectedCourse)
 
+    def selected_choices_as_string(self):
+        return "+".join([
+            selected_course.to_selected_button_id(action="")
+            for selected_course in self.selected_courses.get()
+        ])
+
     def course_with_id(self, course_id):
         courses_with_id = [course
                             for course in self.course_infos
@@ -97,14 +103,19 @@ class CoursesData:
                             if selected_course.as_string() != course_to_remove.as_string()]
             self.selected_courses.set(temp_courses)  
 
+
     def react_to_loaded_url(self, url_query):
         selected_courses_from_url = self.url_to_selected_courses_list(url_query)
-        self.selected_courses.get().extend(selected_courses_from_url)
+        selected_courses_temp = self.selected_courses.get()
+        selected_courses_temp.extend(selected_courses_from_url)
+        self.selected_courses.set(selected_courses_temp)
 
 
 
     def url_to_selected_courses_list(self, url_query):
         # url_query is .../?courses=ABCD_1_2,BGHF_2_5,CDER_1_5&fruit=banana
+        if len(url_query) == 0:
+            return []
         url_variables = {}
         for key_value_string in url_query[1:].split("&"):
             key, value = key_value_string.split("=")
