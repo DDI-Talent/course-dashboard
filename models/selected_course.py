@@ -1,6 +1,8 @@
 import pandas as pd
 from shiny import ui
 from models.course import Course
+# from models.courses_data import CoursesData
+
 
 class SelectedCourse:
 
@@ -11,7 +13,7 @@ class SelectedCourse:
 
     def to_selected_button_id(self, action):
         return f"{action}{self.course_info.id}_{self.year}_{self.block}"
-    
+
     def as_card_selected(self, show = False):
         button_label = self.course_info.name
         buttons = []

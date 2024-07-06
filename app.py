@@ -5,7 +5,7 @@ from models.selected_course import SelectedCourse
 from models.courses_data import CoursesData
 
 
-version = "0.4.8" # major.sprint.release
+version = "0.5.1" # major.sprint.release
     
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
@@ -21,14 +21,9 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     global courses_data
     global input_states
-    global initiated_with_url
-    initiated_with_url = False
-
-    #"HEIN11055_2_2,PUHR11103_1_3"
 
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
-
 
     @reactive.effect
     def load_data():
@@ -36,36 +31,15 @@ def server(input, output, session):
         data_service = courses_data.get()
         data_service.refresh_data()
         courses_data.set(data_service)
-    
+
+
     @reactive.effect
-    def get_url():
-        global initiated_with_url
-        if initiated_with_url == True:
-            return
-        initiated_with_url = True
-        print("url")
-        try:
-            url_query = session.input[".clientdata_url_search"]()
-            #print(url_query)
-            ### Seperate data from rest
-            equalLoc = url_query.find("=")
-            unparsed_list = url_query[1:equalLoc]
-
-            ### seperate into instances list
-            instance_List = unparsed_list.split("%2C")
-            print(instance_List)
-
-            ### seperate loop along list calling select button Id
-            for inst in instance_List:
-                data_service = courses_data.get()
-                data_service.respond_to_clicked_button_id("buttonadd_"+inst)
-                courses_data.set(data_service)
-        except:
-            print("FAILED")
-
+    def load_initial_url():
+        global courses_data
+        # reacts to url in format .../?courses=HEIN11037_1_1+HEIN11055_2_2
+        url_query = session.input[".clientdata_url_search"]()
+        courses_data.get().react_to_loaded_url(url_query)    
             
-
-    
     @output
     @render.ui
     def list_all_courses():
@@ -78,9 +52,12 @@ def server(input, output, session):
     @render.ui
     def grid_selected_courses():
         global courses_data
-        print("REFRESH create_selected_courses_output_ui", len(courses_data.get().selected_courses.get()))
-
-        rows  = []
+        rows  = [ui.row(
+                ui.column(1, ""),
+                ui.column(5, ui.p("YEAR 1")),
+                ui.column(1, ""),
+                ui.column(5, ui.p("YEAR 2")),
+            )]
         for block in range(1,7):
             years_widgets = []
             for year in [1,2]:
@@ -89,8 +66,9 @@ def server(input, output, session):
                     for course in courses_data.get().all_options_in(year, block)])
 
             new_row = ui.row(
-                ui.column(2, ui.p(block)),
+                ui.column(1, ui.p(block)),
                 ui.column(5, years_widgets[0]),
+                ui.column(1, ui.p(block)),
                 ui.column(5, years_widgets[1])
             )
             rows.append(new_row)
