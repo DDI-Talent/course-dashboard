@@ -11,6 +11,11 @@ class Course:
         self.name = row['course_name']
         self.proglang = row['Prog Lang']
         self.link = row['DRPS link']
+        self.compulsory = row['Compulsory']
+        self.credits = row['Credits']
+        self.isprereq = row['is pre-req (ID)']
+        self.hasprereq = row['has pre-req']
+
 
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
@@ -37,24 +42,31 @@ class Course:
                 buttons.append(ui.input_action_button(button_uid, 
                                 f"TAKE in Y{year} B{block}")
                             )
+        footer_items = [f"Credits: {self.credits}"]
         if not pd.isna(self.proglang):
-            card = ui.card(
-                    ui.card_header(button_label),
-                    *buttons,
-                    ui.tags.a("DRPS link", href=self.link, target="_blank"),
-                    ui.card_footer(f"Programming language: {self.proglang}\n"),
-                    full_screen=True,
-                )
+            footer_items.append(f", Programming language: {self.proglang}")
+        if self.compulsory == True:
+            compulsory = "COMPULSORY"
         else:
-            card = ui.card(
+            compulsory = ""
+        if not pd.isna(self.isprereq):
+            isprereq = f"Prerequisite for {self.isprereq}"
+        else:
+            isprereq = ""
+        if not pd.isna(self.hasprereq):
+            hasprereq = f"Prerequisites: {self.hasprereq}"
+        else:
+            hasprereq = ""
+
+        return ui.card(
                     ui.card_header(button_label),
                     *buttons,
-                    ui.tags.a("DRPS link", href=self.link),
-                    ui.card_footer(f""),
+                    compulsory,
+                    hasprereq,
+                    ui.tags.a("DRPS link", href=self.link, target="_blank"),
+                    ui.card_footer(footer_items),
                     full_screen=True,
                 )
-
-        return card
 
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"
