@@ -64,16 +64,19 @@ def server(input, output, session):
     @render.ui 
     def share_choices_button():
         global courses_data
-        return "coming soon"
-        # site_protocol = session.input[".clientdata_url_protocol"]()
-        # site_port = session.input[".clientdata_url_port"]()
-        # site_url = session.input[".clientdata_url_hostname"]()
-        # # print("url bits",site_protocol, site_url, site_port)
-        # selected_courses_as_string = courses_data.get().selected_choices_as_string()
-        # link_to_share = f"{site_protocol}//{site_url}:{site_port}/?courses={selected_courses_as_string}"
-        # number_of_choices =  len(courses_data.get().selected_courses.get())
-        # # print("link_to_share",link_to_share)
-        # return ui.a(f"🛒 Share {number_of_choices} Choices as Link", href=link_to_share)
+        site_protocol = session.input[".clientdata_url_protocol"]()
+        site_port = session.input[".clientdata_url_port"]()
+        site_url = session.input[".clientdata_url_hostname"]()
+        print("url bits",site_protocol, site_url, site_port)
+        selected_courses_as_string = courses_data.get().selected_choices_as_string()
+        link_to_share = f"{site_protocol}//{site_url}:{site_port}/?courses={selected_courses_as_string}"
+        number_of_choices =  len(courses_data.get().selected_courses.get())
+        print("link_to_share",link_to_share)
+        if number_of_choices == 0:
+            return ui.a(f"🛒 Pin courses to share your selection")
+        else:
+            return ui.a(f"🛒 Share {number_of_choices} Choices as Link", href=link_to_share)
+        # return "coming soon"
 
     @output
     @render.ui
