@@ -1,6 +1,9 @@
 import pandas as pd
 import math 
 from shiny import ui
+import fontawesome as fa 
+from faicons import icon_svg as icon
+
 
 class Course:
 
@@ -40,11 +43,23 @@ class Course:
             for block in self.blocks:
                 button_uid = self.to_button_id(year, block, "buttonadd_") #TODO: use course year and block in id
                 buttons.append(ui.input_action_button(button_uid, 
-                                f"TAKE in Y{year} B{block}")
+                                f"TAKE in Y{year} B{block}",
+                                style="background-color: #579a9f6d"),
+
                             )
         footer_items = [f"Credits: {self.credits}"]
+
         if not pd.isna(self.proglang):
-            footer_items.append(f", Programming language: {self.proglang}")
+            if self.proglang == "Python":
+                footer_items.append(", Programming language: ")
+                footer_items.append(icon("python"))
+            if self.proglang == "R":
+                footer_items.append(", Programming language: ")
+                footer_items.append(icon("r"))
+            if self.proglang == "R and SQL":
+                footer_items.append(", Programming language: ")
+                footer_items.append(icon("python"))
+                footer_items.append("\t + \t SQL")
         if self.compulsory == True:
             compulsory = "COMPULSORY\n"
         else:
@@ -57,17 +72,25 @@ class Course:
             hasprereq = f"Prerequisites: {self.hasprereq}\n"
         else:
             hasprereq = ""
-
+        more_info_card = ui.card(
+                                compulsory,
+                                hasprereq,
+                                isprereq,
+                                footer_items,
+                                ui.tags.a("DRPS link", href=self.link, target="_blank")
+                            )
         return ui.card(
-                    ui.card_header(button_label),
+                    ui.card_header(
+                                    button_label, 
+                                    ui.popover(
+                                    icon("circle-info"), 
+                                    more_info_card
+                                    )),
                     *buttons,
-                    compulsory,
-                    hasprereq,
-                    isprereq,
-                    ui.tags.a("DRPS link", href=self.link, target="_blank"),
-                    ui.card_footer(footer_items),
-                    full_screen=True,
+                    ui.card_footer(footer_items),   
+                    # full_screen=True,
                 )
+
 
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"
