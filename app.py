@@ -5,7 +5,7 @@ from models.selected_course import SelectedCourse
 from models.courses_data import CoursesData
 
 
-version = "0.5.1" # major.sprint.release
+version = "0.5.3" # major.sprint.release
     
 app_ui = ui.page_sidebar(
     ui.sidebar("Pin Course Options", 
@@ -67,15 +67,22 @@ def server(input, output, session):
         site_protocol = session.input[".clientdata_url_protocol"]()
         site_port = session.input[".clientdata_url_port"]()
         site_url = session.input[".clientdata_url_hostname"]()
-        print("url bits",site_protocol, site_url, site_port)
+        pathname = session.input[".clientdata_url_pathname"]()
+        # print("!",site_protocol,site_port,site_url,pathname,"!")
+        # ! https:  ddi-talent.shinyapps.io /course-dashboard/ !
         selected_courses_as_string = courses_data.get().selected_choices_as_string()
-        link_to_share = f"{site_protocol}//{site_url}:{site_port}/?courses={selected_courses_as_string}"
+        link_to_share = f"{site_protocol}//{site_url}"
+        if len(str(site_port)) > 1: # eg. ignore just "/"
+            link_to_share += f":{site_port}"
+        if len(pathname) > 1: # eg. ignore just "/"
+            link_to_share += f"{pathname}"
+        link_to_share += f"?courses={selected_courses_as_string}"
         number_of_choices =  len(courses_data.get().selected_courses.get())
         print("link_to_share",link_to_share)
         if number_of_choices == 0:
             return ui.a(f"🛒 Pin courses to share your selection")
         else:
-            return ui.a(f"🛒 Share {number_of_choices} Choices as Link", href=link_to_share)
+            return ui.a(f"🛒 Copy and share this link to share your {number_of_choices} Choices", href=link_to_share)
         # return "coming soon"
 
     @output
