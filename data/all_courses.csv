@@ -1,41 +1,41 @@
-Blocks,Compulsory,TODO,Credits,Prog Lang,Issues?,course_id,is pre-req (ID),has pre-req,course_name,Notes,DRPS link,year,block
-1-Y1 and 2-Y1,TRUE,,20,R,,HEIN11037,HEIN11037,,Introduction to data science in health and social care,,#NAME?,1,1 and 2
-3-Y1 or 3-Y2,,,10,,,HEIN11059,,,Data ethics in health and social care,,#NAME?,1 or 2,3
-4-Y1 or 4-Y2,,,10,,,HEIN11041,,,Health and social care delivery and organisation,,#NAME?,1 or 2,4
-1-Y2 and 6-Y2,,,20,,,HEIN11057,,,Research design for data science in health and social care,,#NAME?,2,1 and 6
-2-Y2,,,10,,,HEIN11054,,,Systems thinking,,#NAME?,2,2
-2-Y2,,,10,R,,HEIN11055,,HEIN11037,Big Data Analytics,,#NAME?,2,2
-2-Y2,,,10,,?,TBC01,,,Data-led decision making for service transformation,MSc Leading Digital Transformation for Health and Care in Scotland,#NAME?,2,2
-2-Y2,,,10,,?,TCB02,,,Introduction to qualitative research methods,MSc Epidemiology,#NAME?,2,2
-2-Y2,,TRUE,10,Python,?,TBC03,,HEIN11066,Natural language processing in health and social care,,#NAME?,2,2
-3-Y1 or 3-Y2,,,10,R,,HEIN11039,,,Introduction to statistics in health and social care,,#NAME?,1 or 2,3
-3-Y1 or 3-Y2,,,10,,,HEIN11040,,,Data visualisation: Knowledge transfer,,#NAME?,1 or 2,3
-3-Y1 or 3-Y2,,,10,,,HEIN11044,,,Data standards and core technologies in health and social care,,#NAME?,1 or 2,3
-3-Y1 or 3-Y2,,,10,R,,PUHR11103,PUHR11103,,Data analysis with R,MSc Epidemiology,#NAME?,1 or 2,3
-3-Y1 or 3-Y2,,TRUE,10,R,,HEIN11067,,HEIN11037,Intermediate R programming for data science,,#NAME?,1 or 2,3
-(3-Y1 and 4-Y1) or (3-Y2 and 4-Y2),TRUE,,20,,?,TBC04,,,Introductory applied machine learning 20 credits,School of Informatics,#NAME?,1 or 2,3 and 4
-4-Y1 or 4-Y2,,,10,Python,,HEIN11045,HEIN11066,,Foundations of Software Development in Health and Social Care,,#NAME?,1 or 2,4
-4-Y1 or 4-Y2,,,10,R and SQL,,HEIN11048,,HEIN11037,Introduction to Databases & Information Systems,,#NAME?,1 or 2,4
-4-Y1 or 4-Y2,,,10,,,HEIN11042,,,Managing and leading data-driven innovation,,#NAME?,1 or 2,4
-4-Y1 or 4-Y2,,,10,R,?,TBC05,,PUHR11103,Intermediate epidemiology,,#NAME?,1 or 2,4
-4-Y1 or 4-Y2,,TRUE,10,,?,TBC06,,,AI for care in the digital age,,#NAME?,1 or 2,4
-4-Y1 or 4-Y2,,TRUE,10,,?,TBC07,,,Applied data visualisation,,#NAME?,1 or 2,4
-5-Y1 or 5-Y2,,,10,,,HEIN11043,,,Digital technologies in health and social care,,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,,10,,,HEIN11056,,,Implementation science: putting evidence-based interventions into practice,,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,,10,,,HEIN11046,,,User-driven service design in health and social care,,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,,10,Python,,HEIN11062,,HEIN11066,Applied software development in health and social care (Python 2),,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,,10,,,HEIN11058,,,Managing and leading data-driven innovation (work based),,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,,10,R,,PUHR11063,,,Data analysis for epidemiology,MSc Epidemiology,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,,10,,,PGSP11401,,,Engaging with digital research,School of Social and Political Sciences,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,,10,,,PUHR11069,,,Systematic reviews,MSc Epidemiology,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,,10,,,PGSP11388,,,Use and evolution of digital data analysis and collection tools,School of Social and Political Sciences,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,TRUE,10,,?,TBC08,,,Genomics,,#NAME?,1 or 2,5
-5-Y1 or 5-Y2,,TRUE,10,,?,TBC09,,,AI applied,,#NAME?,1 or 2,5
-6-Y1 or 6-Y2,,,10,R,,HEIN11068,,HEIN11037,Data Types & Structures in R & Python,,#NAME?,1 or 2,6
-6-Y1 or 6-Y2,,,10,,,HEIN11047,,,Data security and protection in health and social care,,#NAME?,1 or 2,6
-6-Y1 or 6-Y2,,,10,,,HEIN11054,,,Systems thinking (repeat),,#NAME?,1 or 2,6
-6-Y1 or 6-Y2,,,10,,,INAH11017,,,Introduction to GIS and spatial data analysis,Deanery of Biomedical Sciences,#NAME?,1 or 2,6
-6-Y1 or 6-Y2,,,10,R,,PUHR11064,,PUHR11103,Statistical modelling for epidemology,MSc Epidemiology,#NAME?,1 or 2,6
-6-Y1 or 6-Y2,,,10,R,,PUHR11116,,,Advanced statistics,MSc Epidemiology,#NAME?,1 or 2,6
-6-Y1 or 6-Y2,,TRUE,10,,,HEIN11049,,,Entrepreneurship and data-driven innovation,,#NAME?,1 or 2,6
-6-Y1 or 6-Y2,,TRUE,10,,?,TBC10,,,Delivering person-centred care in a digital age for remote and rural areas,Deanery of Biomedical Sciences,#NAME?,1 or 2,6
+year,block,Compulsory,Credits,Prog Lang,Issues?,course_id,is pre-req (ID),has pre-req,course_name,,Notes,DRPS link
+1,1 and 2,TRUE,20,R,,HEIN11037,HEIN11037,,Introduction to data science in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11037.htm
+1 or 2,3,,10,,,HEIN11059,,,Data ethics in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11059.htm
+1 or 2,4,,10,,,HEIN11041,,,Health and social care delivery and organisation,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11041.htm
+2,1 and 6,,20,,,HEIN11057,,,Research design for data science in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11057.htm
+2,2,,10,,,HEIN11054,,,Systems thinking,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11054.htm
+2,2,,10,R,,HEIN11055,,HEIN11037,Big Data Analytics,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11055.htm
+2,2,,10,,?,TBC01,,,Data-led decision making for service transformation,,MSc Leading Digital Transformation for Health and Care in Scotland,http://www.drps.ed.ac.uk/current/dpt/cxtbc01.htm
+2,2,,10,,?,TCB02,,,Introduction to qualitative research methods,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxtcb02.htm
+2,2,,10,Python,?,TBC03,,HEIN11066,Natural language processing in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc03.htm
+1 or 2,3,,10,R,,HEIN11039,,,Introduction to statistics in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11039.htm
+1 or 2,3,,10,,,HEIN11040,,,Data visualisation: Knowledge transfer,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11040.htm
+1 or 2,3,,10,,,HEIN11044,,,Data standards and core technologies in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11044.htm
+1 or 2,3,,10,R,,PUHR11103,PUHR11103,,Data analysis with R,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11103.htm
+1 or 2,3,,10,R,,HEIN11067,,HEIN11037,Intermediate R programming for data science,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11067.htm
+1 or 2,3 and 4,TRUE,20,,?,TBC04,,,Introductory applied machine learning 20 credits,,School of Informatics,http://www.drps.ed.ac.uk/current/dpt/cxtbc04.htm
+1 or 2,4,,10,Python,,HEIN11045,HEIN11066,,Foundations of Software Development in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11045.htm
+1 or 2,4,,10,R and SQL,,HEIN11048,,HEIN11037,Introduction to Databases & Information Systems,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11048.htm
+1 or 2,4,,10,,,HEIN11042,,,Managing and leading data-driven innovation,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11042.htm
+1 or 2,4,,10,R,?,TBC05,,PUHR11103,Intermediate epidemiology,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc05.htm
+1 or 2,4,,10,,?,TBC06,,,AI for care in the digital age,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc06.htm
+1 or 2,4,,10,,?,TBC07,,,Applied data visualisation,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc07.htm
+1 or 2,5,,10,,,HEIN11043,,,Digital technologies in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11043.htm
+1 or 2,5,,10,,,HEIN11056,,,Implementation science: putting evidence-based interventions into practice,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11056.htm
+1 or 2,5,,10,,,HEIN11046,,,User-driven service design in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11046.htm
+1 or 2,5,,10,Python,,HEIN11062,,HEIN11066,Applied software development in health and social care (Python 2),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11062.htm
+1 or 2,5,,10,,,HEIN11058,,,Managing and leading data-driven innovation (work based),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11058.htm
+1 or 2,5,,10,R,,PUHR11063,,,Data analysis for epidemiology,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11063.htm
+1 or 2,5,,10,,,PGSP11401,,,Engaging with digital research,,School of Social and Political Sciences,http://www.drps.ed.ac.uk/current/dpt/cxpgsp11401.htm
+1 or 2,5,,10,,,PUHR11069,,,Systematic reviews,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11069.htm
+1 or 2,5,,10,,,PGSP11388,,,Use and evolution of digital data analysis and collection tools,,School of Social and Political Sciences,http://www.drps.ed.ac.uk/current/dpt/cxpgsp11388.htm
+1 or 2,5,,10,,?,TBC08,,,Genomics,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc08.htm
+1 or 2,5,,10,,?,TBC09,,,AI applied,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc09.htm
+1 or 2,6,,10,R,,HEIN11068,,HEIN11037,Data Types & Structures in R & Python,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11068.htm
+1 or 2,6,,10,,,HEIN11047,,,Data security and protection in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11047.htm
+1 or 2,6,,10,,,HEIN11054,,,Systems thinking (repeat),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11054.htm
+1 or 2,6,,10,,,INAH11017,,,Introduction to GIS and spatial data analysis,,Deanery of Biomedical Sciences,http://www.drps.ed.ac.uk/current/dpt/cxinah11017.htm
+1 or 2,6,,10,R,,PUHR11064,,PUHR11103,Statistical modelling for epidemology,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11064.htm
+1 or 2,6,,10,R,,PUHR11116,,,Advanced statistics,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11116.htm
+1 or 2,6,,10,,,HEIN11049,,,Entrepreneurship and data-driven innovation,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11049.htm
+1 or 2,6,,10,,?,TBC10,,,Delivering person-centred care in a digital age for remote and rural areas,,Deanery of Biomedical Sciences,http://www.drps.ed.ac.uk/current/dpt/cxtbc10.htm

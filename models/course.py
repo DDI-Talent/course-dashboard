@@ -1,4 +1,5 @@
 import pandas as pd
+import math 
 from shiny import ui
 
 class Course:
@@ -8,6 +9,8 @@ class Course:
         self.blocks = self.string_to_list(row['block'])
         self.id = row['course_id']
         self.name = row['course_name']
+        self.proglang = row['Prog Lang']
+        self.link = row['DRPS link']
 
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
@@ -34,13 +37,24 @@ class Course:
                 buttons.append(ui.input_action_button(button_uid, 
                                 f"TAKE in Y{year} B{block}")
                             )
+        if not pd.isna(self.proglang):
+            card = ui.card(
+                    ui.card_header(button_label),
+                    *buttons,
+                    ui.tags.a("DRPS link", href=self.link),
+                    ui.card_footer(f"Programming language: {self.proglang}\n"),
+                    full_screen=True,
+                )
+        else:
+            card = ui.card(
+                    ui.card_header(button_label),
+                    *buttons,
+                    ui.tags.a("DRPS link", href=self.link),
+                    ui.card_footer(f""),
+                    full_screen=True,
+                )
 
-        return ui.card(
-                ui.card_header(button_label),
-                *buttons,
-                ui.card_footer(f"!some course description here"),
-                full_screen=True,
-            )
+        return card
 
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"
