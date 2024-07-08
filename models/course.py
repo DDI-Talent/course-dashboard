@@ -41,7 +41,7 @@ class Course:
             card = ui.card(
                     ui.card_header(button_label),
                     *buttons,
-                    ui.tags.a("DRPS link", href=self.link),
+                    ui.tags.a("DRPS link", href=self.link, target="_blank"),
                     ui.card_footer(f"Programming language: {self.proglang}\n"),
                     full_screen=True,
                 )
