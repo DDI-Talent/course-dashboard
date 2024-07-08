@@ -46,15 +46,15 @@ class Course:
         if not pd.isna(self.proglang):
             footer_items.append(f", Programming language: {self.proglang}")
         if self.compulsory == True:
-            compulsory = "COMPULSORY"
+            compulsory = "COMPULSORY\n"
         else:
             compulsory = ""
         if not pd.isna(self.isprereq):
-            isprereq = f"Prerequisite for {self.isprereq}"
+            isprereq = f"Prerequisite for {self.isprereq}\n"
         else:
             isprereq = ""
         if not pd.isna(self.hasprereq):
-            hasprereq = f"Prerequisites: {self.hasprereq}"
+            hasprereq = f"Prerequisites: {self.hasprereq}\n"
         else:
             hasprereq = ""
 
@@ -63,6 +63,7 @@ class Course:
                     *buttons,
                     compulsory,
                     hasprereq,
+                    isprereq,
                     ui.tags.a("DRPS link", href=self.link, target="_blank"),
                     ui.card_footer(footer_items),
                     full_screen=True,
