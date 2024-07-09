@@ -20,6 +20,12 @@ class CoursesData:
         ]
         return ids
 
+    def all_course_ids():
+        ids =  [ course.id
+            for course in CoursesData.load_data()
+        ]
+        return ids
+
     def load_data():
         loaded_df = pd.read_csv(f'./data/all_courses.csv')
         return [ Course(row)
@@ -40,12 +46,27 @@ class CoursesData:
         return False
     
     def selected_course_from_button_id(self, button_id):
+        # when we have more buttons, pre_ stripping goes here, until we DRY this up
         button_id = button_id.replace("buttonadd_","")
         button_id = button_id.replace("buttonremove_","")
-        course_id, year, block = button_id.split("_")
-        course_obj = self.course_with_id(course_id)
-        selectedCourse = SelectedCourse(course_obj, int(year), int(block))
-        return selectedCourse
+        try:
+           return self.selected_course_from_string(button_id)
+        except Exception as e: 
+            # hthis can happen eg. when int() casting goes wrong
+            print(f"selected_course_from_button_id ERRORED with string {button_id} and {e}")
+            return None
+
+    def selected_course_from_string(self, selected_course_string):
+        string_bits = selected_course_string.split("_")
+        # check if course id is valud and year and block are in range 
+        # button_id like "ABCD_1_6" holds courseid, year, block. eg string_bits would be ['ABCD',1,6]
+        if len(string_bits) == 3 and string_bits[0] in CoursesData.all_course_ids() and int(string_bits[1]) in range(1,3) and int(string_bits[2]) in range(1,7):
+            course_obj = self.course_with_id(string_bits[0])
+            selectedCourse = SelectedCourse(course_obj, int(string_bits[1]), int(string_bits[2]))
+            return selectedCourse
+        else:
+            print(f"selected_course_from_button_id FAILED with string {selected_course_string} bits {string_bits}")
+            return None
 
     def respond_to_clicked_button_id(self, button_id):
         is_this_add_button = "buttonadd_" in button_id
@@ -54,6 +75,12 @@ class CoursesData:
             self.add_course(selectedCourse)
         else:
             self.remove_course(selectedCourse)
+
+    def selected_choices_as_string(self):
+        return "+".join([
+            selected_course.to_selected_button_id(action="")
+            for selected_course in self.selected_courses.get()
+        ])
 
     def course_with_id(self, course_id):
         courses_with_id = [course
@@ -76,6 +103,33 @@ class CoursesData:
                             if selected_course.as_string() != course_to_remove.as_string()]
             self.selected_courses.set(temp_courses)  
 
+
+    def react_to_loaded_url(self, url_query):
+        selected_courses_from_url = self.url_to_selected_courses_list(url_query)
+        selected_courses_temp = self.selected_courses.get()
+        selected_courses_temp.extend(selected_courses_from_url)
+        self.selected_courses.set(selected_courses_temp)
+
+
+
+    def url_to_selected_courses_list(self, url_query):
+        # url_query is .../?courses=ABCD_1_2,BGHF_2_5,CDER_1_5&fruit=banana
+        if len(url_query) == 0:
+            return []
+        url_variables = {}
+        for key_value_string in url_query[1:].split("&"):
+            key, value = key_value_string.split("=")
+            url_variables[key] = value
+
+        # url_variables is {'courses':'ABCD_1_2,BGHF_2_5,CDER_1_5','fruit':'banana}
+        selected_courses = []
+        for course_string in url_variables.get('courses', "").split("+"):
+            new_selected_course = self.selected_course_from_button_id(course_string)
+            if new_selected_course != None:
+                selected_courses.append(new_selected_course)
+        
+        # selected_courses is [SelectedCourse object, SelectedCourse object, ... ]
+        return selected_courses
 
     def __str__(self):
         courses_str = ', '.join(str(course) for course in self.course_infos)
