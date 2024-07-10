@@ -1,7 +1,7 @@
 import pandas as pd
 import math 
 from shiny import ui
-import fontawesome as fa 
+# import fontawesome as fa 
 from faicons import icon_svg as icon
 
 
@@ -47,47 +47,69 @@ class Course:
                                 style="background-color: #579a9f6d"),
 
                             )
-        footer_items = [f"Credits: {self.credits}"]
-
+        credits = f"Credits: {self.credits}"
+        proglang_footer=[]
         if not pd.isna(self.proglang):
             if self.proglang == "Python":
-                footer_items.append(", Programming language: ")
-                footer_items.append(icon("python"))
+                # footer_items.append("Programming language: ")
+                proglang_footer.append(icon("python"))
+                proglang = f"Programming language: Python"
             if self.proglang == "R":
-                footer_items.append(", Programming language: ")
-                footer_items.append(icon("r"))
+                # footer_items.append("Programming language: ")
+                proglang_footer.append(icon("r"))
+                proglang = f"Programming language: R"
             if self.proglang == "R and SQL":
-                footer_items.append(", Programming language: ")
-                footer_items.append(icon("python"))
-                footer_items.append("\t + \t SQL")
+                # footer_items.append("Programming language: ")
+                proglang_footer.append(icon("python"))
+                proglang_footer.append("\t + \t SQL")
+                proglang = f"Programming language: Python and SQL"
+        else:
+            proglang = "This is not a programming course"
+
+        
         if self.compulsory == True:
-            compulsory = "COMPULSORY\n"
+            compulsory = "This course is compulsory"
         else:
-            compulsory = ""
+            compulsory = "This course is optional"
         if not pd.isna(self.isprereq):
-            isprereq = f"Prerequisite for {self.isprereq}\n"
+            isprereq = f"This course is a prerequisite for {self.isprereq}"
         else:
-            isprereq = ""
+            isprereq = "This course is not a prerequisite for any courses"
         if not pd.isna(self.hasprereq):
-            hasprereq = f"Prerequisites: {self.hasprereq}\n"
+            hasprereq = f"This course has prerequisites: {self.hasprereq}"
         else:
-            hasprereq = ""
-        more_info_card = ui.card(
-                                compulsory,
-                                hasprereq,
-                                isprereq,
-                                footer_items,
-                                ui.tags.a("DRPS link", href=self.link, target="_blank")
-                            )
+            hasprereq = "This course does not have any prerequsites"
+        
+        more_info_card = (ui.card(
+                                ui.row(ui.div(
+                                    {"style": "font-weight: bold"},
+                                    ui.p("Course Information"),
+                                ),),
+                                ui.row("‣ ",compulsory),
+                                ui.row("‣ ",hasprereq),
+                                ui.row("‣ ",isprereq),
+                                ui.row("‣ ",credits),
+                                ui.row("‣ ",proglang),
+                                ui.row(ui.tags.a("View this course on DRPS", href=self.link, target="_blank"))
+                            ))
+        if len(proglang_footer) > 1:
+            footer_cols = [9,3]
+        else:
+            footer_cols = [11,1]
+
         return ui.card(
-                    ui.card_header(
-                                    button_label, 
-                                    ui.popover(
+                    ui.card_header((ui.row(
+                            ui.column(11, button_label),
+                            ui.column(1, ui.popover(
                                     icon("circle-info"), 
-                                    more_info_card
-                                    )),
+                                    more_info_card,
+                    ))))),
+                                    
                     *buttons,
-                    ui.card_footer(footer_items),   
+                    ui.card_footer(ui.row(
+                            ui.column(footer_cols[0], credits),
+                            ui.column(footer_cols[1], proglang_footer)
+                    )),   
                     # full_screen=True,
                 )
 

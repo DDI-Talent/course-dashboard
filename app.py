@@ -10,7 +10,7 @@ version = "0.4.8" # major.sprint.release
 app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
                ui.output_ui("list_all_courses"),
-               ui.input_action_button("clickme","click me"),
+            #    ui.input_action_button("clickme","click me"),
                width=400,
                bg = '#579a9f6d',
                ),
