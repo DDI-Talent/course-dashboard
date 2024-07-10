@@ -9,7 +9,15 @@ class CoursesData:
     def __init__(self):
         self.selected_courses = reactive.value([])
         self.course_infos = reactive.value([])
-        self.card_color = reactive.value("")
+        self.card_color = reactive.value({})
+    
+    def colors_dict(self):
+        colors_dict = { button_id : "background-color: #ffffff"
+                for button_id in  CoursesData.all_inputs_ids()}
+        return self.card_color.set(colors_dict)
+        # return ["background-color: #ffffff"] * 40
+
+    
 
     def refresh_data(self):
         self.course_infos = CoursesData.load_data()
@@ -51,13 +59,18 @@ class CoursesData:
     def respond_to_clicked_button_id(self, button_id):
         is_this_add_button = "buttonadd_" in button_id
         selectedCourse = self.selected_course_from_button_id(button_id)
+        colors_dict = self.card_color.get()
         if is_this_add_button:
             self.add_course(selectedCourse)
-            self.card_color.set("background-color: #c3c3c3")
+            colors_dict[button_id] = "background-color: #c3c3c3"
+            self.card_color.set(colors_dict)
             # print(self.card_color.get())
         else:
             self.remove_course(selectedCourse)
-            self.card_color.set("background-color: #ffffff")
+            colors_dict[button_id] = "background-color: #c3c3c3"
+            self.card_color.set(colors_dict)
+
+    
 
 
     def course_with_id(self, course_id):

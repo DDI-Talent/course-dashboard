@@ -21,9 +21,11 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     global courses_data
     global input_states
+    global colors
 
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
+    # colors = reactive.value({})
 
     @reactive.effect
     def load_data():
@@ -35,16 +37,23 @@ def server(input, output, session):
     @output
     @render.ui
     def list_all_courses():
-        print(courses_data.get().card_color.get())
+        global colors
+        # return [
+        #     course_obj.as_card("background-color: #ffffff") 
+        #   for (course_obj) in (courses_data.get().course_infos)
+        # ]    
+        color_data = courses_data.get().card_color.get()
+        print(color_data)   
         return [
-            course_obj.as_card(courses_data.get().card_color.get()) 
-          for course_obj in courses_data.get().course_infos
+            course_obj.as_card(color) 
+          for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
         ]
     
     @output
     @render.ui
     def grid_selected_courses():
         global courses_data
+        # print(courses_data.get())
         print("REFRESH create_selected_courses_output_ui", len(courses_data.get().selected_courses.get()))
         rows  = []
         for block in range(1,7):
@@ -61,6 +70,7 @@ def server(input, output, session):
             )
             rows.append(new_row)
         return ui.column(12, rows)
+
 
     def get_all_inputs_ids():
         return CoursesData.all_inputs_ids()
