@@ -11,7 +11,7 @@ app_ui = ui.page_sidebar(
     ui.sidebar("Courses", 
                ui.output_ui("list_all_courses"),
             #    ui.input_action_button("clickme","click me"),
-               width=400,
+               width=250,
                bg = '#579a9f6d',
                ),
     ui.panel_title(f"Course Dashboard v{version}"),

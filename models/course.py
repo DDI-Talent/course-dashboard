@@ -43,7 +43,7 @@ class Course:
             for block in self.blocks:
                 button_uid = self.to_button_id(year, block, "buttonadd_") #TODO: use course year and block in id
                 buttons.append(ui.input_action_button(button_uid, 
-                                f"TAKE in Y{year} B{block}",
+                                f"📌 Y{year} B{block}",
                                 style="background-color: #579a9f6d"),
 
                             )
@@ -61,7 +61,7 @@ class Course:
             if self.proglang == "R and SQL":
                 # footer_items.append("Programming language: ")
                 proglang_footer.append(icon("python"))
-                proglang_footer.append("\t + \t SQL")
+                proglang_footer.append("+SQL")
                 proglang = f"Programming language: Python and SQL"
         else:
             proglang = "This is not a programming course"
@@ -93,19 +93,20 @@ class Course:
                                 ui.row(ui.tags.a("View this course on DRPS", href=self.link, target="_blank"))
                             ))
         if len(proglang_footer) > 1:
-            footer_cols = [9,3]
+            footer_cols = [7,5]
         else:
-            footer_cols = [11,1]
+            footer_cols = [10,2]
+
 
         return ui.card(
                     ui.card_header((ui.row(
-                            ui.column(11, button_label),
-                            ui.column(1, ui.popover(
+                            ui.column(10, button_label),
+                            ui.column(2, ui.popover(
                                     icon("circle-info"), 
                                     more_info_card,
                     ))))),
                                     
-                    *buttons,
+                    ui.row(*[ui.column(int(12 / len(buttons)), button) for button in buttons]),
                     ui.card_footer(ui.row(
                             ui.column(footer_cols[0], credits),
                             ui.column(footer_cols[1], proglang_footer)
