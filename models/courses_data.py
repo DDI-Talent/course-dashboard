@@ -9,6 +9,7 @@ class CoursesData:
     def __init__(self):
         self.selected_courses = reactive.value([])
         self.course_infos = reactive.value([])
+        self.card_color = reactive.value("")
 
     def refresh_data(self):
         self.course_infos = CoursesData.load_data()
@@ -52,8 +53,12 @@ class CoursesData:
         selectedCourse = self.selected_course_from_button_id(button_id)
         if is_this_add_button:
             self.add_course(selectedCourse)
+            self.card_color.set("background-color: #c3c3c3")
+            # print(self.card_color.get())
         else:
             self.remove_course(selectedCourse)
+            self.card_color.set("background-color: #ffffff")
+
 
     def course_with_id(self, course_id):
         courses_with_id = [course

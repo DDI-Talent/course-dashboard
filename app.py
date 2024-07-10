@@ -35,8 +35,9 @@ def server(input, output, session):
     @output
     @render.ui
     def list_all_courses():
+        print(courses_data.get().card_color.get())
         return [
-            course_obj.as_card() 
+            course_obj.as_card(courses_data.get().card_color.get()) 
           for course_obj in courses_data.get().course_infos
         ]
     
@@ -102,6 +103,7 @@ def server(input, output, session):
         global courses_data
         clicked_button_id = which_input_changed( )
         print("CLICKED!", clicked_button_id)
+        card_color = f"background-color: #c3c3c3"
 
         if clicked_button_id == None:
             print("--- any_course_button_clicked Isssue, nothing changes")

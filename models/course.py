@@ -36,7 +36,7 @@ class Course:
         ]
        
 
-    def as_card(self):
+    def as_card(self, card_color):
         button_label = self.name
         buttons = []
         for year in self.years:
@@ -61,7 +61,7 @@ class Course:
             if self.proglang == "R and SQL":
                 # footer_items.append("Programming language: ")
                 proglang_footer.append(icon("python"))
-                proglang_footer.append("+SQL")
+                proglang_footer.append("+ SQL")
                 proglang = f"Programming language: Python and SQL"
         else:
             proglang = "This is not a programming course"
@@ -97,20 +97,23 @@ class Course:
         else:
             footer_cols = [10,2]
 
-
+        # card_color=f"background-color: #ffffff"
+        # grey = #c3c3c3, white = #ffffff
         return ui.card(
                     ui.card_header((ui.row(
                             ui.column(10, button_label),
                             ui.column(2, ui.popover(
                                     icon("circle-info"), 
                                     more_info_card,
-                    ))))),
+                    )))),
+                    style=card_color),
                                     
                     ui.row(*[ui.column(int(12 / len(buttons)), button) for button in buttons]),
                     ui.card_footer(ui.row(
                             ui.column(footer_cols[0], credits),
-                            ui.column(footer_cols[1], proglang_footer)
-                    )),   
+                            ui.column(footer_cols[1], proglang_footer)), 
+                            style=card_color),  
+                    style=card_color
                     # full_screen=True,
                 )
 
