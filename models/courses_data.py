@@ -14,13 +14,16 @@ class CoursesData:
     def colors_dict(self):
         colors_dict = { button_id : "background-color: #ffffff"
                 for button_id in  CoursesData.all_inputs_ids()}
-        return self.card_color.set(colors_dict)
+        self.card_color = colors_dict
         # return ["background-color: #ffffff"] * 40
 
     
 
     def refresh_data(self):
         self.course_infos = CoursesData.load_data()
+        colors_dict = { button_id : "background-color: #ffffff"
+                for button_id in  CoursesData.all_inputs_ids()}
+        self.card_color = colors_dict
 
     def all_inputs_ids():
         ids =  [ button_id
@@ -59,16 +62,18 @@ class CoursesData:
     def respond_to_clicked_button_id(self, button_id):
         is_this_add_button = "buttonadd_" in button_id
         selectedCourse = self.selected_course_from_button_id(button_id)
-        colors_dict = self.card_color.get()
+        colors_dict = self.card_color
         if is_this_add_button:
             self.add_course(selectedCourse)
             colors_dict[button_id] = "background-color: #c3c3c3"
-            self.card_color.set(colors_dict)
-            # print(self.card_color.get())
+            self.card_color = colors_dict
+            # print(self.card_color)
         else:
             self.remove_course(selectedCourse)
-            colors_dict[button_id] = "background-color: #c3c3c3"
-            self.card_color.set(colors_dict)
+            button_id_add = button_id.replace("buttonremove_", "buttonadd_")
+            colors_dict[button_id_add] = "background-color: #ffffff"
+            self.card_color = colors_dict
+            # print(self.card_color)
 
     
 

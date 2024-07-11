@@ -18,8 +18,7 @@ class Course:
         self.credits = row['Credits']
         self.isprereq = row['is pre-req (ID)']
         self.hasprereq = row['has pre-req']
-
-
+    
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
         return takeable
@@ -119,7 +118,7 @@ class Course:
 
 
     def __repr__(self) -> str:
-        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"
+        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}"
     
         # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
     def string_to_list(self, string_to_parse):
