@@ -17,7 +17,7 @@ app_ui = ui.page_sidebar(
         ui.column(8,ui.h1(f"Your Pinned courses (v{version})")),
         ui.column(4,ui.output_ui('share_choices_button')),
         )),
-    ui.output_ui('grid_selected_courses')
+    ui.output_ui('grid_selected_courses'),
     ui.output_text('tot_credits')
 )
 
