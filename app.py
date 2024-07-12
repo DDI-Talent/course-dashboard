@@ -10,7 +10,6 @@ version = "0.5.3" # major.sprint.release
 app_ui = ui.page_sidebar(
     ui.sidebar("Pin Course Options", 
                ui.output_ui("list_all_courses"),
-               ui.input_action_button("clickme","click me"),
                width=250,
                bg = '#579a9f6d',
                ),
