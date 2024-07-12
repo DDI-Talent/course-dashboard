@@ -59,22 +59,12 @@ def server(input, output, session):
     @render.ui
     def list_all_courses():
         global courses_data
-        print("Colour change!")
-        # return [
-        #     course_obj.as_card("background-color: #ffffff") 
-        #   for (course_obj) in (courses_data.get().course_infos)
-        # ]    
-        color_data = courses_data.get().card_color
-        # print(color_data) 
+
         courses_cards = [
-            course_obj.as_card(color) 
-          for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
+            course_obj.as_card() 
+          for (course_obj) in courses_data.get().course_infos
         ]
         return (courses_cards)
-        # return [
-        #     course_obj.as_card(color) 
-        #   for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
-        # ]
     
     @output
     @render.ui 

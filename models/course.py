@@ -1,8 +1,9 @@
 import pandas as pd
 import math 
-from shiny import ui
+from shiny import ui, reactive
 # import fontawesome as fa 
 from faicons import icon_svg as icon
+
 
 
 class Course:
@@ -18,6 +19,7 @@ class Course:
         self.credits = row['Credits']
         self.isprereq = row['is pre-req (ID)']
         self.hasprereq = row['has pre-req']
+        self.card_colour = reactive.value("background-color: #ffffff")
     
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
@@ -35,7 +37,7 @@ class Course:
         ]
        
 
-    def as_card(self, card_color):
+    def as_card(self):
         button_label = self.name
         buttons = []
         for year in self.years:
@@ -105,21 +107,21 @@ class Course:
                                     icon("circle-info"), 
                                     more_info_card,
                     )))),
-                    style=card_color),
+                    style=self.card_colour.get()),
                                     
                     ui.row(*[ui.column(int(12 / len(buttons)), button) for button in buttons]),
                     ui.card_footer(ui.row(
                             ui.column(footer_cols[0], credits),
                             ui.column(footer_cols[1], proglang_footer)), 
-                            style=card_color),  
-                    style=card_color
+                            style=self.card_colour.get()),  
+                    style=self.card_colour.get()
                     # full_screen=True,
                 )
 
 
 
     def __repr__(self) -> str:
-        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}"
+        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}, colour: {self.card_colour.get()}"
     
         # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
     def string_to_list(self, string_to_parse):
