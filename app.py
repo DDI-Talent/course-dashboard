@@ -3,6 +3,7 @@ import pandas as pd
 from models.course import Course
 from models.selected_course import SelectedCourse
 from models.courses_data import CoursesData
+from faicons import icon_svg as icon
 
 
 version = "0.5.3" # major.sprint.release
@@ -14,10 +15,11 @@ app_ui = ui.page_sidebar(
                bg = '#579a9f6d',
                ),
     ui.panel_title(ui.row(
-        ui.column(8,ui.h1(f"Your Pinned courses (v{version})")),
-        ui.column(4,ui.output_ui('share_choices_button')),
+        ui.column(6,ui.h1(f"Your Pinned courses (v{version})")),
+        ui.column(3,ui.output_ui('course_personas')),
+        ui.column(3,ui.output_ui('share_choices_button')),
         )),
-    ui.output_ui('grid_selected_courses')
+    ui.output_ui('grid_selected_courses'),
     ui.output_text('tot_credits')
 )
 
@@ -98,6 +100,14 @@ def server(input, output, session):
         else:
             return ui.a(f"🛒 Copy and share this link to share your {number_of_choices} Choices", href=link_to_share)
         # return "coming soon"
+
+    @output
+    @render.ui
+    def course_personas():
+        course_help = ui.row(ui.a("🤓 code focussed persona", href="http://localhost:64371/?courses=PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
+               ui.a("😎 balanced persona", href="http://localhost:64371/?courses=HEIN11059_1_3+HEIN11043_1_5+HEIN11041_1_4+HEIN11037_1_1+HEIN11037_1_2+HEIN11068_1_6+HEIN11045_2_4+HEIN11056_2_5+HEIN11044_2_3+HEIN11057_2_6+HEIN11054_2_2"))
+
+        return course_help
 
     @output
     @render.ui
