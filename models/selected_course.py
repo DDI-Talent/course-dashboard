@@ -16,9 +16,12 @@ class SelectedCourse:
 
     def get_credits(self):
         return self.course_info.credits
+    
+    def get_colour(self):
+        return self.course_info.card_colour.get()
 
     def as_card_selected(self, show = False):
-        button_label = self.course_info.name
+        button_label = self.course_info.name + " " + self.course_info.id
         buttons = []
         button_uid_remove = self.to_selected_button_id( "buttonremove_")
         return ui.card(

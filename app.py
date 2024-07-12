@@ -59,22 +59,12 @@ def server(input, output, session):
     @render.ui
     def list_all_courses():
         global courses_data
-        print("Colour change!")
-        # return [
-        #     course_obj.as_card("background-color: #ffffff") 
-        #   for (course_obj) in (courses_data.get().course_infos)
-        # ]    
-        color_data = courses_data.get().card_color
-        # print(color_data) 
+
         courses_cards = [
-            course_obj.as_card(color) 
-          for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
+            course_obj.as_card() 
+          for (course_obj) in courses_data.get().course_infos
         ]
         return (courses_cards)
-        # return [
-        #     course_obj.as_card(color) 
-        #   for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
-        # ]
     
     @output
     @render.ui 
@@ -104,8 +94,8 @@ def server(input, output, session):
     @output
     @render.ui
     def course_personas():
-        course_help = ui.row(ui.a("🤓 code focussed persona", href="http://localhost:64371/?courses=PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
-               ui.a("😎 balanced persona", href="http://localhost:64371/?courses=HEIN11059_1_3+HEIN11043_1_5+HEIN11041_1_4+HEIN11037_1_1+HEIN11037_1_2+HEIN11068_1_6+HEIN11045_2_4+HEIN11056_2_5+HEIN11044_2_3+HEIN11057_2_6+HEIN11054_2_2"))
+        course_help = ui.row(ui.a("🤓 code focussed persona", href="https://ddi-talent.shinyapps.io/course-dashboard-development/?courses=PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
+               ui.a("😎 balanced persona", href="https://ddi-talent.shinyapps.io/course-dashboard-development/?courses=HEIN11059_1_3+HEIN11043_1_5+HEIN11041_1_4+HEIN11037_1_1+HEIN11037_1_2+HEIN11068_1_6+HEIN11045_2_4+HEIN11056_2_5+HEIN11044_2_3+HEIN11057_2_6+HEIN11054_2_2"))
 
         return course_help
 
@@ -158,7 +148,7 @@ def server(input, output, session):
         global input_states
         new_states = {}
         all_inputs = get_all_input_info()
-        # print("which_input_changed+",all_inputs,len(all_inputs.items()))
+        #print("which_input_changed+",all_inputs,len(all_inputs.items()))
         for input_id, input_object in all_inputs.items():
             new_states[input_id] = input_object()
 
@@ -166,6 +156,7 @@ def server(input, output, session):
         # {"but_45678": 2}  # those. where number is how many times I was clicked
         # old [0,0,1]
         # new [0,0,2]
+        print("inputstates",input_states.get().keys())
         if (len(input_states.get().keys()) == 0):
             old_states = {new_state_key: 0
                 for new_state_key, new_state_value in new_states.items()}
@@ -176,8 +167,10 @@ def server(input, output, session):
                             for old_state_key, old_state_value in old_states.items()
                             if old_state_value != new_states[old_state_key]]
         
+        print("keys that changed",keys_that_changed)
+        
         input_states.set(new_states)
-        return keys_that_changed[0] if len(keys_that_changed) > 0 else None
+        return keys_that_changed if len(keys_that_changed) > 0 else None
     
     @reactive.Effect
     @reactive.event(*get_all_inputs())
@@ -185,14 +178,16 @@ def server(input, output, session):
         global courses_data
         clicked_button_id = which_input_changed( )
         print("CLICKED!", clicked_button_id)
-        card_color = "background-color: #c3c3c3"
+
 
         if clicked_button_id == None:
             print("--- any_course_button_clicked Isssue, nothing changes")
             return
 
         data_service = courses_data.get()
-        data_service.respond_to_clicked_button_id( clicked_button_id  )
+        for click in clicked_button_id:
+            data_service.respond_to_clicked_button_id(click)
+        #data_service.respond_to_clicked_button_id( clicked_button_id  )
         courses_data.set(data_service)
         # print("test",data_service.card_color)
     
