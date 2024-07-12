@@ -14,6 +14,9 @@ class SelectedCourse:
     def to_selected_button_id(self, action):
         return f"{action}{self.course_info.id}_{self.year}_{self.block}"
 
+    def get_credits(self):
+        return self.course_info.credits
+
     def as_card_selected(self, show = False):
         button_label = self.course_info.name
         buttons = []

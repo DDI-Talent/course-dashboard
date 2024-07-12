@@ -18,8 +18,7 @@ class Course:
         self.credits = row['Credits']
         self.isprereq = row['is pre-req (ID)']
         self.hasprereq = row['has pre-req']
-
-
+    
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
         return takeable
@@ -36,8 +35,8 @@ class Course:
         ]
        
 
-    def as_card(self):
-        button_label = f"{self.name} ({self.id})"
+    def as_card(self, card_color):
+        button_label = self.name
         buttons = []
         for year in self.years:
             for block in self.blocks:
@@ -61,7 +60,7 @@ class Course:
             if self.proglang == "R and SQL":
                 # footer_items.append("Programming language: ")
                 proglang_footer.append(icon("python"))
-                proglang_footer.append("+SQL")
+                proglang_footer.append("+ SQL")
                 proglang = f"Programming language: Python and SQL"
         else:
             proglang = "This is not a programming course"
@@ -97,27 +96,30 @@ class Course:
         else:
             footer_cols = [10,2]
 
-
+        # card_color=f"background-color: #ffffff"
+        # grey = #c3c3c3, white = #ffffff
         return ui.card(
                     ui.card_header((ui.row(
                             ui.column(10, button_label),
                             ui.column(2, ui.popover(
                                     icon("circle-info"), 
                                     more_info_card,
-                    ))))),
+                    )))),
+                    style=card_color),
                                     
                     ui.row(*[ui.column(int(12 / len(buttons)), button) for button in buttons]),
                     ui.card_footer(ui.row(
                             ui.column(footer_cols[0], credits),
-                            ui.column(footer_cols[1], proglang_footer)
-                    )),   
+                            ui.column(footer_cols[1], proglang_footer)), 
+                            style=card_color),  
+                    style=card_color
                     # full_screen=True,
                 )
 
 
 
     def __repr__(self) -> str:
-        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}"
+        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}"
     
         # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
     def string_to_list(self, string_to_parse):

@@ -18,16 +18,19 @@ app_ui = ui.page_sidebar(
         ui.column(4,ui.output_ui('share_choices_button')),
         )),
     ui.output_ui('grid_selected_courses')
+    ui.output_text('tot_credits')
 )
 
 def server(input, output, session):
     global courses_data
     global input_states
     global initial_url_loaded_already
+    global colors
 
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
     initial_url_loaded_already = False
+    colors = reactive.value({})
 
     @reactive.effect
     def load_data():
@@ -35,7 +38,6 @@ def server(input, output, session):
         data_service = courses_data.get()
         data_service.refresh_data()
         courses_data.set(data_service)
-
 
     @reactive.effect
     def load_initial_url():
@@ -54,10 +56,23 @@ def server(input, output, session):
     @output
     @render.ui
     def list_all_courses():
-        return [
-            course_obj.as_card() 
-          for course_obj in courses_data.get().course_infos
+        global courses_data
+        print("Colour change!")
+        # return [
+        #     course_obj.as_card("background-color: #ffffff") 
+        #   for (course_obj) in (courses_data.get().course_infos)
+        # ]    
+        color_data = courses_data.get().card_color
+        # print(color_data) 
+        courses_cards = [
+            course_obj.as_card(color) 
+          for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
         ]
+        return (courses_cards)
+        # return [
+        #     course_obj.as_card(color) 
+        #   for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
+        # ]
     
     @output
     @render.ui 
@@ -110,6 +125,15 @@ def server(input, output, session):
             rows.append(new_row)
         return ui.column(12, rows)
 
+    @output
+    @render.text
+    def tot_credits():
+        global courses_data
+        total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
+        # total_credits = sum([course.credits
+        #     for course in courses_data.get().selected_courses.get()])
+        return f"Total credits: {total_credits}"
+
     def get_all_inputs_ids():
         return CoursesData.all_inputs_ids()
     
@@ -151,6 +175,7 @@ def server(input, output, session):
         global courses_data
         clicked_button_id = which_input_changed( )
         print("CLICKED!", clicked_button_id)
+        card_color = "background-color: #c3c3c3"
 
         if clicked_button_id == None:
             print("--- any_course_button_clicked Isssue, nothing changes")
@@ -159,5 +184,6 @@ def server(input, output, session):
         data_service = courses_data.get()
         data_service.respond_to_clicked_button_id( clicked_button_id  )
         courses_data.set(data_service)
+        # print("test",data_service.card_color)
     
 app = App(app_ui, server)#, debug=True)
