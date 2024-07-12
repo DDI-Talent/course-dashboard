@@ -11,11 +11,11 @@ class CoursesData:
         self.course_infos = reactive.value([])
         self.card_color = reactive.value({})
     
-    def colors_dict(self):
-        colors_dict = { button_id : "background-color: #ffffff"
-                for button_id in  CoursesData.all_inputs_ids()}
-        self.card_color = colors_dict
-        # return ["background-color: #ffffff"] * 40
+    # def colors_dict(self):
+    #     colors_dict = { button_id : "background-color: #c3c3c3"
+    #             for button_id in  CoursesData.all_inputs_ids()}
+    #     self.card_color = colors_dict
+    #     # return ["background-color: #ffffff"] * 40
 
     
 

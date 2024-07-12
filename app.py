@@ -17,7 +17,7 @@ app_ui = ui.page_sidebar(
         ui.column(8,ui.h1(f"Your Pinned courses (v{version})")),
         ui.column(4,ui.output_ui('share_choices_button')),
         )),
-    ui.output_ui('grid_selected_courses')
+    ui.output_ui('grid_selected_courses'),
     ui.output_text('tot_credits')
 )
 
@@ -25,12 +25,12 @@ def server(input, output, session):
     global courses_data
     global input_states
     global initial_url_loaded_already
-    global colors
+    # global colors
 
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
     initial_url_loaded_already = False
-    colors = reactive.value({})
+    # colors = reactive.value({})
 
     @reactive.effect
     def load_data():
@@ -69,10 +69,6 @@ def server(input, output, session):
           for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
         ]
         return (courses_cards)
-        # return [
-        #     course_obj.as_card(color) 
-        #   for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
-        # ]
     
     @output
     @render.ui 
@@ -102,6 +98,7 @@ def server(input, output, session):
     @output
     @render.ui
     def grid_selected_courses():
+        print("REFRESH")
         global courses_data
         rows  = [ui.row(
                 ui.column(1, ""),
