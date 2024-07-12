@@ -57,18 +57,20 @@ def server(input, output, session):
     @render.ui
     def list_all_courses():
         global courses_data
+        courses_data.get().selected_courses.get()
         print("Colour change!")
         # return [
         #     course_obj.as_card("background-color: #ffffff") 
         #   for (course_obj) in (courses_data.get().course_infos)
         # ]    
-        color_data = courses_data.get().card_color
+        color_data = courses_data.get().card_color.get()
         # print(color_data) 
         courses_cards = [
             course_obj.as_card(color) 
           for (course_obj, color) in zip(courses_data.get().course_infos, color_data.values())
         ]
-        return (courses_cards)
+        
+        return courses_cards
     
     @output
     @render.ui 
@@ -98,8 +100,9 @@ def server(input, output, session):
     @output
     @render.ui
     def grid_selected_courses():
-        print("REFRESH")
+        # print("REFRESH")
         global courses_data
+
         rows  = [ui.row(
                 ui.column(1, ""),
                 ui.column(5, ui.p("YEAR 1")),
@@ -126,6 +129,7 @@ def server(input, output, session):
     @render.text
     def tot_credits():
         global courses_data
+        # print("total credits")
         total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
         # total_credits = sum([course.credits
         #     for course in courses_data.get().selected_courses.get()])
