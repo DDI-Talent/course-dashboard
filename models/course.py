@@ -37,7 +37,7 @@ class Course:
        
 
     def as_card(self):
-        button_label = self.name
+        button_label = f"{self.name} ({self.id})"
         buttons = []
         for year in self.years:
             for block in self.blocks:
@@ -113,6 +113,7 @@ class Course:
                     )),   
                     # full_screen=True,
                 )
+
 
 
     def __repr__(self) -> str:
