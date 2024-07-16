@@ -66,37 +66,44 @@ def server(input, output, session):
         ]
         return (courses_cards)
     
-    @output
-    @render.ui 
-    def share_choices_button():
+    def sharable_link(link_text, selected_courses_as_string):
         global courses_data
         site_protocol = session.input[".clientdata_url_protocol"]()
         site_port = session.input[".clientdata_url_port"]()
         site_url = session.input[".clientdata_url_hostname"]()
         pathname = session.input[".clientdata_url_pathname"]()
-        # print("!",site_protocol,site_port,site_url,pathname,"!")
-        # ! https:  ddi-talent.shinyapps.io /course-dashboard/ !
-        selected_courses_as_string = courses_data.get().selected_choices_as_string()
+
         link_to_share = f"{site_protocol}//{site_url}"
         if len(str(site_port)) > 1: # eg. ignore just "/"
             link_to_share += f":{site_port}"
         if len(pathname) > 1: # eg. ignore just "/"
             link_to_share += f"{pathname}"
         link_to_share += f"?courses={selected_courses_as_string}"
-        number_of_choices =  len(courses_data.get().selected_courses.get())
+
         print("link_to_share",link_to_share)
+
+        return ui.a(link_text,  href=link_to_share)
+       
+
+    @output
+    @render.ui 
+    def share_choices_button():
+        global courses_data
+        selected_courses_as_string = courses_data.get().selected_choices_as_string()
+        number_of_choices =  len(courses_data.get().selected_courses.get())
         if number_of_choices == 0:
-            return ui.a(f"🛒 Pin courses to share your selection")
+            return sharable_link(f"🛒 Pin some courses to create sharable link", selected_courses_as_string)
         else:
-            return ui.a(f"🛒 Copy and share this link to share your {number_of_choices} Choices", href=link_to_share)
-        # return "coming soon"
+            return sharable_link(f"🛒 Copy and share this link ({number_of_choices} Choices)",selected_courses_as_string)
 
     @output
     @render.ui
     def course_personas():
-        course_help = ui.row(ui.a("🤓 code focussed persona", href="https://ddi-talent.shinyapps.io/course-dashboard-development/?courses=PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
-               ui.a("😎 balanced persona", href="https://ddi-talent.shinyapps.io/course-dashboard-development/?courses=HEIN11059_1_3+HEIN11043_1_5+HEIN11041_1_4+HEIN11037_1_1+HEIN11037_1_2+HEIN11068_1_6+HEIN11045_2_4+HEIN11056_2_5+HEIN11044_2_3+HEIN11057_2_6+HEIN11054_2_2"))
-
+        course_help = ui.row(
+               ui.span("load persona:"), 
+               sharable_link("🤓 code focused", "PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
+               sharable_link("😎 balanced", "HEIN11059_1_3+HEIN11043_1_5+HEIN11041_1_4+HEIN11037_1_1+HEIN11037_1_2+HEIN11068_1_6+HEIN11045_2_4+HEIN11056_2_5+HEIN11044_2_3+HEIN11057_2_6+HEIN11054_2_2")
+               )
         return course_help
 
     @output

@@ -44,7 +44,7 @@ Note: you might need
 
 
 pip install Jinja2
-
+pop install faicons
 
 
 
