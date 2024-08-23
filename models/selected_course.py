@@ -75,19 +75,23 @@ class SelectedCourse:
         else:
             footer_cols = [11,1]
         
-        return ui.card(
-                    ui.card_header((ui.row(
-                            ui.column(11, button_label),
-                            ui.column(1, ui.popover(
+        return ui.column( 12, 
+                         ui.div(  button_label),
+                          ui.row( 
+                                 ui.column(1,ui.popover(
                                     icon("circle-info"), 
-                                    more_info_card))
-                                    ))),                                    
-                    ui.row(ui.input_action_button(button_uid_remove, f"❌")),
-                    ui.card_footer(ui.row(
-                            ui.column(footer_cols[0], credits),
-                            ui.column(footer_cols[1], proglang_footer))),
-                    hidden = (not show)
-                )
+                                    more_info_card)
+                                 ), 
+                               
+                                 ui.column(8,credits),
+                                  ui.column(1,      ui.input_action_link(button_uid_remove, f"❌")),
+                                                                   style = "margin:0px",
+                                # proglang_footer     
+                                ),
+                                style= "padding: 10px;border: 1px solid black;",
+                                hidden = (not show)
+                    )
+
 
     def as_string(self):
         course_info = f"Course Info: {self.course_info}, Year: {self.year}, Block: {self.block}"

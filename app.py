@@ -24,10 +24,10 @@ app_ui = ui.page_sidebar(
 )
 
 def server(input, output, session):
-    global courses_data
-    global input_states
-    global initial_url_loaded_already
-    global colors
+    # global courses_data
+    # global input_states
+    # global initial_url_loaded_already
+    # global colors
 
     courses_data = reactive.value(CoursesData())
     input_states = reactive.value({})
@@ -36,15 +36,15 @@ def server(input, output, session):
 
     @reactive.effect
     def load_data():
-        global courses_data
+        nonlocal courses_data
         data_service = courses_data.get()
         data_service.refresh_data()
         courses_data.set(data_service)
 
     @reactive.effect
     def load_initial_url():
-        global courses_data
-        global initial_url_loaded_already
+        nonlocal courses_data
+        nonlocal initial_url_loaded_already
 
         if not initial_url_loaded_already:
             initial_url_loaded_already = True
@@ -58,7 +58,7 @@ def server(input, output, session):
     @output
     @render.ui
     def list_all_courses():
-        global courses_data
+        nonlocal courses_data
 
         courses_cards = [
             course_obj.as_card() 
@@ -67,7 +67,7 @@ def server(input, output, session):
         return (courses_cards)
     
     def sharable_link(link_text, selected_courses_as_string):
-        global courses_data
+        nonlocal courses_data
         site_protocol = session.input[".clientdata_url_protocol"]()
         site_port = session.input[".clientdata_url_port"]()
         site_url = session.input[".clientdata_url_hostname"]()
@@ -88,7 +88,7 @@ def server(input, output, session):
     @output
     @render.ui 
     def share_choices_button():
-        global courses_data
+        nonlocal courses_data
         selected_courses_as_string = courses_data.get().selected_choices_as_string()
         number_of_choices =  len(courses_data.get().selected_courses.get())
         if number_of_choices == 0:
@@ -110,7 +110,7 @@ def server(input, output, session):
     @output
     @render.ui
     def grid_selected_courses():
-        global courses_data
+        nonlocal courses_data
         rows  = [ui.row(
                 ui.column(1, ""),
                 ui.column(5, ui.p("YEAR 1")),
@@ -136,7 +136,7 @@ def server(input, output, session):
     @output
     @render.text
     def tot_credits():
-        global courses_data
+        nonlocal courses_data
         total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
         # total_credits = sum([course.credits
         #     for course in courses_data.get().selected_courses.get()])
@@ -153,7 +153,7 @@ def server(input, output, session):
                 for button_id in  CoursesData.all_inputs_ids()}
 
     def which_input_changed( ):
-        global input_states
+        nonlocal input_states
         new_states = {}
         all_inputs = get_all_input_info()
         #print("which_input_changed+",all_inputs,len(all_inputs.items()))
@@ -183,7 +183,7 @@ def server(input, output, session):
     @reactive.Effect
     @reactive.event(*get_all_inputs())
     def any_course_button_clicked():
-        global courses_data
+        nonlocal courses_data
         clicked_button_id = which_input_changed( )
         print("CLICKED!", clicked_button_id)
 
