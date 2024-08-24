@@ -119,6 +119,10 @@ class Course:
                 )
 
 
+    def name_short(self):
+        shorter_name =  self.name.replace("in health and social care", "in H&SC").replace("in Health and Social Care", "in H&SC")
+        shorter_name = shorter_name.replace("Introduction", "Intro")
+        return shorter_name
 
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}, colour: {self.card_colour.get()}"
