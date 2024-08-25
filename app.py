@@ -1,27 +1,29 @@
 from shiny import App, render, ui, reactive, session
 import pandas as pd
-from models.course import Course
-from models.selected_course import SelectedCourse
-from models.courses_data import CoursesData
+from models.course_data import Course
+from models.course_selected import CourseSelected
+from models.data_service import DataService
 from faicons import icon_svg as icon
 
 
 version = "0.5.3" # major.sprint.release
     
-app_ui = ui.page_sidebar(
-    ui.sidebar("Pin Course Options", 
-               ui.output_ui("list_all_courses"),
-               width=250,
-               bg = '#579a9f6d',
-               ),
-    ui.panel_title(ui.row(
+app_ui = ui.page_fixed(
+
+ ui.row(     
+     ui.column(12, ui.panel_title(ui.row(
         ui.column(6,ui.h1(f"Your Pinned courses (v{version})")),
         ui.column(3,ui.output_ui('course_personas')),
         ui.column(3,ui.output_ui('share_choices_button')),
-        )),
-    ui.output_ui('grid_selected_courses'),
-    ui.output_text('tot_credits')
-)
+        ui.column(3, ui.output_text('tot_credits'))
+        )))
+        ),
+ ui.row(
+    ui.column(6, 
+               ui.output_ui("list_all_courses"),
+               ),
+    ui.column(6,ui.output_ui('grid_selected_courses'))
+))
 
 def server(input, output, session):
     # global courses_data
@@ -29,7 +31,7 @@ def server(input, output, session):
     # global initial_url_loaded_already
     # global colors
 
-    courses_data = reactive.value(CoursesData())
+    courses_data = reactive.value(DataService())
     input_states = reactive.value({})
     initial_url_loaded_already = False
     colors = reactive.value({})
@@ -48,7 +50,6 @@ def server(input, output, session):
 
         if not initial_url_loaded_already:
             initial_url_loaded_already = True
-            print("load_initial_url")
             # reacts to url in format .../?courses=HEIN11037_1_1+HEIN11055_2_2
             url_query = session.input[".clientdata_url_search"]()
             courses_data_temp = courses_data.get()
@@ -80,8 +81,6 @@ def server(input, output, session):
             link_to_share += f"{pathname}"
         link_to_share += f"?courses={selected_courses_as_string}"
 
-        print("link_to_share",link_to_share)
-
         return ui.a(link_text,  href=link_to_share)
        
 
@@ -101,7 +100,7 @@ def server(input, output, session):
     def course_personas():
         course_help = ui.row(
                ui.span("load a persona:"), 
-               sharable_link("🤓 code focused", "PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
+               sharable_link("👾 code focused", "PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
                sharable_link("😎 balanced", "HEIN11059_1_3+HEIN11043_1_5+HEIN11041_1_4+HEIN11037_1_1+HEIN11037_1_2+HEIN11068_1_6+HEIN11045_2_4+HEIN11056_2_5+HEIN11044_2_3+HEIN11057_2_6+HEIN11054_2_2"),
                sharable_link("❌ empty", "HEIN11037_1_1+HEIN11037_1_2+HEIN11057_2_1+HEIN11057_2_6")
                )
@@ -111,27 +110,29 @@ def server(input, output, session):
     @render.ui
     def grid_selected_courses():
         nonlocal courses_data
+        right_most_column =  ui.column(1, 
+                                       ui.row(ui.p("YEAR 3")),
+                                       ui.row( "DISSERTATION"  ,  style ="writing-mode: vertical-rl;text-orientation: upright;")
+                                       )
         rows  = [ui.row(
                 ui.column(1, ""),
                 ui.column(5, ui.p("YEAR 1")),
-                ui.column(1, ""),
                 ui.column(5, ui.p("YEAR 2")),
             )]
         for block in range(1,7):
             years_widgets = []
             for year in [1,2]:
                 years_widgets.append([ 
-                    courses_data.get().as_card_selected(SelectedCourse(course, year, block))
+                    courses_data.get().as_card_selected(CourseSelected(course, year, block))
                     for course in courses_data.get().all_options_in(year, block)])
 
             new_row = ui.row(
                 ui.column(1, ui.p(block)),
                 ui.column(5, years_widgets[0]),
-                ui.column(1, ui.p(block)),
-                ui.column(5, years_widgets[1])
+                ui.column(5, years_widgets[1]),
             )
             rows.append(new_row)
-        return ui.column(12, rows)
+        return ui.row(ui.column(11, rows), right_most_column)
 
     @output
     @render.text
@@ -143,14 +144,14 @@ def server(input, output, session):
         return f"Total credits: {total_credits}"
 
     def get_all_inputs_ids():
-        return CoursesData.all_inputs_ids()
+        return DataService.all_inputs_ids()
     
     def get_all_inputs():
         return get_all_input_info().values()
 
     def get_all_input_info():
         return { button_id: getattr(input, button_id) 
-                for button_id in  CoursesData.all_inputs_ids()}
+                for button_id in  DataService.all_inputs_ids()}
 
     def which_input_changed( ):
         nonlocal input_states

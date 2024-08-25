@@ -1,10 +1,10 @@
 import pandas as pd
 from shiny import ui
-from models.course import Course
+from models.course_data import Course
 from faicons import icon_svg as icon
+from views.style_service import StyleService
 
-
-class SelectedCourse:
+class CourseSelected:
 
     def __init__(self, course_info, year, block):
         self.course_info = course_info
@@ -21,7 +21,7 @@ class SelectedCourse:
         return self.course_info.card_colour.get()
 
     def as_card_selected(self, show = False):
-        button_label = self.course_info.name_short() #+ " " + self.course_info.id
+        button_label = StyleService.name_shorter(self.course_info.name) #+ " " + self.course_info.id
         buttons = []
         button_uid_remove = self.to_selected_button_id( "buttonremove_")
         
@@ -75,21 +75,17 @@ class SelectedCourse:
         else:
             footer_cols = [11,1]
         
-        return ui.column( 12, 
-                         ui.div(  button_label),
-                          ui.row( 
-                                 ui.column(1,ui.popover(
-                                    icon("circle-info"), 
-                                    more_info_card)
-                                 ), 
-                               
-                                 ui.column(8,credits),
-                                  ui.column(1,      ui.input_action_link(button_uid_remove, f"❌")),
-                                                                   style = "margin:0px",
+        return ui.div( 
+                            ui.div(  button_label),
+                            ui.row( 
+                                ui.column(1,ui.popover( icon("circle-info"), more_info_card)), 
+                                ui.column(8,credits),
+                                ui.column(1,      ui.input_action_link(button_uid_remove, f"❌")),
+                                style = "margin:0px",
                                 # proglang_footer     
-                                ),
-                                style= "padding: 10px;border: 1px solid black;",
-                                hidden = (not show)
+                            ),
+                        style= StyleService.style_course_box(),
+                        hidden = (not show)
                     )
 
 

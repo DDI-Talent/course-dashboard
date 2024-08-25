@@ -3,6 +3,7 @@ import math
 from shiny import ui, reactive
 # import fontawesome as fa 
 from faicons import icon_svg as icon
+from views.style_service import StyleService
 
 
 
@@ -38,16 +39,17 @@ class Course:
        
 
     def as_card(self):
-        button_label = self.name
+        button_label = StyleService.name_shorter(self.name)
         buttons = []
         for year in self.years:
             for block in self.blocks:
                 button_uid = self.to_button_id(year, block, "buttonadd_") #TODO: use course year and block in id
-                buttons.append(ui.input_action_button(button_uid, 
+                buttons.append(ui.input_action_link(button_uid, 
                                 f"📌 Y{year} B{block}",
-                                style="background-color: #579a9f6d"),
+                                style="background-color: #ffff00; margin: 10px;"),
 
                             )
+        #TODO - clean this up
         credits = f"Credits: {self.credits}"
         proglang_footer=[]
         if not pd.isna(self.proglang):
@@ -67,6 +69,7 @@ class Course:
         else:
             proglang = "This is not a programming course"
 
+        #TODO - clean this up
         
         if self.compulsory == True:
             compulsory = "This course is compulsory"
@@ -81,6 +84,8 @@ class Course:
         else:
             hasprereq = "This course does not have any prerequsites"
         
+        #TODO - clean this up
+
         more_info_card = (ui.card(
                                 ui.row(ui.div(
                                     {"style": "font-weight: bold"},
@@ -93,6 +98,7 @@ class Course:
                                 ui.row("‣ ",proglang),
                                 ui.row(ui.tags.a("View this course on DRPS", href=self.link, target="_blank"))
                             ))
+        #TODO - clean this up
         if len(proglang_footer) > 1:
             footer_cols = [7,5]
         else:
@@ -100,29 +106,37 @@ class Course:
 
         # card_color=f"background-color: #ffffff"
         # grey = #c3c3c3, white = #ffffff
-        return ui.card(
-                    ui.card_header((ui.row(
-                            ui.column(10, button_label),
-                            ui.column(2, ui.popover(
-                                    icon("circle-info"), 
-                                    more_info_card,
-                    )))),
-                    style=self.card_colour.get()),
-                                    
-                    ui.row(*[ui.column(int(12 / len(buttons)), button) for button in buttons]),
-                    ui.card_footer(ui.row(
-                            ui.column(footer_cols[0], credits),
-                            ui.column(footer_cols[1], proglang_footer)), 
-                            style=self.card_colour.get()),  
-                    style=self.card_colour.get()
-                    # full_screen=True,
-                )
 
+        return ui.div( 
+                            ui.div(  button_label),
+                            ui.div( 
+                                ui.popover( icon("circle-info"), more_info_card), 
+                                credits,
+                                *[button for button in buttons],
+                                style = "margin:0px, display:contents",
+                                # proglang_footer     
+                            ),
+                        style= StyleService.style_course_box()
+                    )
+        # below: old version, do we need to salvage something?
+        # return ui.div(
+        #             ui.div((ui.row(
+        #                     ui.column(10, button_label),
+        #                     ui.column(2, ui.popover(
+        #                             icon("circle-info"), 
+        #                             more_info_card,
+        #                 )))),
+        #                 style=self.card_colour.get()
+        #             ),
+        #             ui.row(*[ui.column(int(12 / len(buttons)), button) for button in buttons]),
+        #             ui.div(ui.row(
+        #                     ui.column(footer_cols[0], credits),
+        #                     ui.column(footer_cols[1], proglang_footer)), 
+        #                     style=self.card_colour.get()),  
+        #             style=StyleService.style_course_box()
+                    
+        #         )
 
-    def name_short(self):
-        shorter_name =  self.name.replace("in health and social care", "in H&SC").replace("in Health and Social Care", "in H&SC")
-        shorter_name = shorter_name.replace("Introduction", "Intro")
-        return shorter_name
 
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}, colour: {self.card_colour.get()}"

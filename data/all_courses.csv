@@ -2,7 +2,7 @@ year,block,Compulsory,Credits,Prog Lang,Issues?,course_id,is pre-req (ID),has pr
 1,1 and 2,TRUE,10,R,,HEIN11037,HEIN11037,,Introduction to data science in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11037.htm
 1 or 2,3,,10,,,HEIN11059,,,Data ethics in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11059.htm
 1 or 2,4,,10,,,HEIN11041,,,Health and social care delivery and organisation,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11041.htm
-2,1 and 6,,20,,,HEIN11057,,,Research design for data science in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11057.htm
+2,1 and 6,,10,,,HEIN11057,,,Research design for data science in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11057.htm
 2,2,,10,,,HEIN11054,,,Systems thinking,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11054.htm
 2,2,,10,R,,HEIN11055,,HEIN11037,Big Data Analytics,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11055.htm
 2,2,,10,,?,TBC01,,,Data-led decision making for service transformation,,MSc Leading Digital Transformation for Health and Care in Scotland,http://www.drps.ed.ac.uk/current/dpt/cxtbc01.htm

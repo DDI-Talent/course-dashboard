@@ -1,10 +1,10 @@
 import pandas as pd
 from shiny import ui
-from models.course import Course
-from models.selected_course import SelectedCourse
+from models.course_data import Course
+from models.course_selected import CourseSelected
 from shiny import reactive
 # this class is a data service: it holds all informationm and distributes is
-class CoursesData:
+class DataService:
 
     def __init__(self):
         self.selected_courses = reactive.value([])
@@ -12,18 +12,18 @@ class CoursesData:
     
 
     def refresh_data(self):
-        self.course_infos = CoursesData.load_data()
+        self.course_infos = DataService.load_data()
 
     def all_inputs_ids():
         ids =  [ button_id
-            for course in CoursesData.load_data()
+            for course in DataService.load_data()
             for button_id in course.all_possible_button_ids()
         ]
         return ids
 
     def all_course_ids():
         ids =  [ course.id
-            for course in CoursesData.load_data()
+            for course in DataService.load_data()
         ]
         return ids
 
@@ -61,9 +61,9 @@ class CoursesData:
         string_bits = selected_course_string.split("_")
         # check if course id is valud and year and block are in range 
         # button_id like "ABCD_1_6" holds courseid, year, block. eg string_bits would be ['ABCD',1,6]
-        if len(string_bits) == 3 and string_bits[0] in CoursesData.all_course_ids() and int(string_bits[1]) in range(1,3) and int(string_bits[2]) in range(1,7):
+        if len(string_bits) == 3 and string_bits[0] in DataService.all_course_ids() and int(string_bits[1]) in range(1,3) and int(string_bits[2]) in range(1,7):
             course_obj = self.course_with_id(string_bits[0])
-            selectedCourse = SelectedCourse(course_obj, int(string_bits[1]), int(string_bits[2]))
+            selectedCourse = CourseSelected(course_obj, int(string_bits[1]), int(string_bits[2]))
             return selectedCourse
         else:
             print(f"selected_course_from_button_id FAILED with string {selected_course_string} bits {string_bits}")
