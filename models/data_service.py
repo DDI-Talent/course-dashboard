@@ -1,6 +1,6 @@
 import pandas as pd
 from shiny import ui
-from models.course_data import Course
+from models.course import Course
 from models.course_selected import CourseSelected
 from shiny import reactive
 # this class is a data service: it holds all informationm and distributes is

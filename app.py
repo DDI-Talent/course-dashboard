@@ -1,28 +1,33 @@
 from shiny import App, render, ui, reactive, session
 import pandas as pd
-from models.course_data import Course
+from models.course import Course
 from models.course_selected import CourseSelected
 from models.data_service import DataService
 from faicons import icon_svg as icon
 
 
-version = "0.5.3" # major.sprint.release
+version = "0.6.0" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
  ui.row(     
-     ui.column(12, ui.panel_title(ui.row(
-        ui.column(6,ui.h1(f"Your Pinned courses (v{version})")),
-        ui.column(3,ui.output_ui('course_personas')),
-        ui.column(3,ui.output_ui('share_choices_button')),
-        ui.column(3, ui.output_text('tot_credits'))
+     ui.column(12, ui.panel_title(
+         ui.row(
+            ui.column(6,ui.h1(f"Your Pinned courses (v{version})")),
+            ui.column(3,ui.output_ui('course_personas')),
+            ui.column(3, 
+                        ui.row(ui.output_ui('share_choices_button')),
+                        ui.row( ui.output_text('tot_credits'))
+                        )
         )))
         ),
  ui.row(
-    ui.column(6, 
+    ui.column(4, 
+              ui.h2("Show course options"),
+              ui.output_ui("filter_panel"),
                ui.output_ui("list_all_courses"),
                ),
-    ui.column(6,ui.output_ui('grid_selected_courses'))
+    ui.column(8,ui.output_ui('grid_selected_courses'))
 ))
 
 def server(input, output, session):
@@ -58,14 +63,34 @@ def server(input, output, session):
             
     @output
     @render.ui
+    def filter_panel():
+        return ui.row( 
+            ui.input_select("filter_year", 
+                            "Filter by year", 
+                           choices = {"all": "All","1":"Year 1", "2": "Year 2"},
+                
+            ),
+            ui.input_select("filter_block", 
+                            "Filter by block", 
+                           choices = {"all": "All","1":"Block 1", "2": "Block 2", "3": "Block 3", "4": "Block 4" , "5": "Block 5" , "6": "Block 6"  },
+                
+            )
+        )
+
+
+    @output
+    @render.ui
     def list_all_courses():
         nonlocal courses_data
+        blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
+        years_to_keep = [1,2] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
 
         courses_cards = [
             course_obj.as_card() 
-          for (course_obj) in courses_data.get().course_infos
+            for course_obj in courses_data.get().course_infos
+            if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
         ]
-        return (courses_cards)
+        return courses_cards
     
     def sharable_link(link_text, selected_courses_as_string):
         nonlocal courses_data

@@ -25,6 +25,13 @@ class Course:
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
         return takeable
+    
+    def takeable_in_any(self, years, blocks):
+        for year in years:
+            for block in blocks:
+                if self.takeable_in(year, block):
+                    return True
+        return False
 
     def to_button_id(self, year, block, action):
         return f"{action}{self.id}_{year}_{block}"

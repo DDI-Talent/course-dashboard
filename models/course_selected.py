@@ -1,6 +1,6 @@
 import pandas as pd
 from shiny import ui
-from models.course_data import Course
+from models.course import Course
 from faicons import icon_svg as icon
 from views.style_service import StyleService
 
