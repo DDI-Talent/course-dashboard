@@ -7,7 +7,7 @@ from faicons import icon_svg as icon
 from views.style_service import StyleService
 
 
-version = "0.6.0" # major.sprint.release
+version = "0.6.1" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -18,7 +18,7 @@ app_ui = ui.page_fixed(
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
-                        ui.row( ui.output_text('tot_credits'))
+                        ui.row( ui.output_ui('total_credits'),  ui.output_ui('total_credits_warning'))
                         )
         ))),style= StyleService.style_section_box()
         ),
@@ -66,16 +66,20 @@ def server(input, output, session):
     @render.ui
     def filter_panel():
         return ui.row( 
+            
+            ui.input_text("filter_name", 
+                            "Filter by name", 
+                           
+            ),
             ui.input_select("filter_year", 
                             "Filter by year", 
                            choices = {"all": "All","1":"Year 1", "2": "Year 2"},
-                
             ),
             ui.input_select("filter_block", 
                             "Filter by block", 
                            choices = {"all": "All","1":"Block 1", "2": "Block 2", "3": "Block 3", "4": "Block 4" , "5": "Block 5" , "6": "Block 6"  },
-                
-            )
+            ),
+            ui.input_action_link("button_filter_reset","Reset filters 🔄"),
         )
 
 
@@ -85,11 +89,15 @@ def server(input, output, session):
         nonlocal courses_data
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
         years_to_keep = [1,2] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
+        text_to_keep = input.filter_name.get().strip().lower()
+
+
 
         courses_cards = [
             course_obj.as_card() 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
+            and (len(text_to_keep) < 0 or  course_obj.name.lower().find(text_to_keep) != -1)
         ]
         return courses_cards
     
@@ -165,12 +173,30 @@ def server(input, output, session):
 
     @output
     @render.text
-    def tot_credits():
+    def total_credits():
         nonlocal courses_data
         total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
-        # total_credits = sum([course.credits
-        #     for course in courses_data.get().selected_courses.get()])
-        return f"Total credits: {total_credits}"
+
+        return ui.div(f"Credits: {total_credits} of 120")
+    
+
+    @output
+    @render.ui
+    def total_credits_warning():
+        nonlocal courses_data
+        total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
+        max_credits = 120
+
+        if total_credits == max_credits:
+            warning = ""
+            style = ""
+        elif total_credits > max_credits:
+            warning = f"(remove {total_credits - max_credits})"
+            style="background-color: #ff0000; color: #ffffff; margin-left: 10px;"
+        else: 
+            warning = f" (add {max_credits - total_credits} more)"
+            style="background-color: #0000ff; color: #ffffff; margin-left: 10px;"
+        return ui.div(warning, style=style)
 
     def get_all_inputs_ids():
         return DataService.all_inputs_ids()
@@ -210,6 +236,22 @@ def server(input, output, session):
         input_states.set(new_states)
         return keys_that_changed if len(keys_that_changed) > 0 else None
     
+    @reactive.Effect
+    @reactive.event(input.button_filter_reset)
+    def reset_filters():
+        ui.update_select(
+            "filter_name",
+            selected="",
+        )
+        ui.update_select(
+            "filter_year",
+            selected="all",
+        )
+        ui.update_select(
+            "filter_block",
+            selected="all",
+        )
+
     @reactive.Effect
     @reactive.event(*get_all_inputs())
     def any_course_button_clicked():

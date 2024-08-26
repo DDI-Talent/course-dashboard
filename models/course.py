@@ -56,64 +56,8 @@ class Course:
                                 style="background-color: #ffff00; margin: 10px;"),
 
                             )
-        #TODO - clean this up
         credits = f"Credits: {self.credits}"
-        proglang_footer=[]
-        if not pd.isna(self.proglang):
-            if self.proglang == "Python":
-                # footer_items.append("Programming language: ")
-                proglang_footer.append(icon("python"))
-                proglang = f"Programming language: Python"
-            if self.proglang == "R":
-                # footer_items.append("Programming language: ")
-                proglang_footer.append(icon("r"))
-                proglang = f"Programming language: R"
-            if self.proglang == "R and SQL":
-                # footer_items.append("Programming language: ")
-                proglang_footer.append(icon("python"))
-                proglang_footer.append("+ SQL")
-                proglang = f"Programming language: Python and SQL"
-        else:
-            proglang = "This is not a programming course"
-
-        #TODO - clean this up
-        
-        if self.compulsory == True:
-            compulsory = "This course is compulsory"
-        else:
-            compulsory = "This course is optional"
-        if not pd.isna(self.isprereq):
-            isprereq = f"This course is a prerequisite for {self.isprereq}"
-        else:
-            isprereq = "This course is not a prerequisite for any courses"
-        if not pd.isna(self.hasprereq):
-            hasprereq = f"This course has prerequisites: {self.hasprereq}"
-        else:
-            hasprereq = "This course does not have any prerequsites"
-        
-        #TODO - clean this up
-
-        more_info_card = (ui.card(
-                                ui.row(ui.div(
-                                    {"style": "font-weight: bold"},
-                                    ui.p("Course Information"),
-                                ),),
-                                ui.row("‣ ",compulsory),
-                                ui.row("‣ ",hasprereq),
-                                ui.row("‣ ",isprereq),
-                                ui.row("‣ ",credits),
-                                ui.row("‣ ",proglang),
-                                ui.row(ui.tags.a("View this course on DRPS", href=self.link, target="_blank"))
-                            ))
-        #TODO - clean this up
-        if len(proglang_footer) > 1:
-            footer_cols = [7,5]
-        else:
-            footer_cols = [10,2]
-
-        # card_color=f"background-color: #ffffff"
-        # grey = #c3c3c3, white = #ffffff
-
+        more_info_card = StyleService.info_card_for_course(self)
         return ui.div( 
                             ui.div(  button_label),
                             ui.div( 
@@ -125,24 +69,6 @@ class Course:
                             ),
                         style= StyleService.style_course_box()
                     )
-        # below: old version, do we need to salvage something?
-        # return ui.div(
-        #             ui.div((ui.row(
-        #                     ui.column(10, button_label),
-        #                     ui.column(2, ui.popover(
-        #                             icon("circle-info"), 
-        #                             more_info_card,
-        #                 )))),
-        #                 style=self.card_colour.get()
-        #             ),
-        #             ui.row(*[ui.column(int(12 / len(buttons)), button) for button in buttons]),
-        #             ui.div(ui.row(
-        #                     ui.column(footer_cols[0], credits),
-        #                     ui.column(footer_cols[1], proglang_footer)), 
-        #                     style=self.card_colour.get()),  
-        #             style=StyleService.style_course_box()
-                    
-        #         )
 
 
     def __repr__(self) -> str:
