@@ -26,7 +26,7 @@ class CourseSelected:
             return ui.div( 
                                 ui.div(  button_label),
                                 ui.row( 
-                                          ui.input_action_link(f"button_filter_{year}_{block}", f"🔎 filter courses for this block (TODO)"),
+                                          ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter courses for this block (TODO)"),
                                     style = "margin:0px"
                                 ),
                             style= StyleService.style_course_box_not_selected(),
@@ -44,7 +44,7 @@ class CourseSelected:
         
         credits = f"Credits: {self.course_info.credits}"
         more_info_card = StyleService.info_card_for_course(self.course_info)
-        
+
         return ui.div( 
                             ui.div(  button_label),
                             ui.row( 

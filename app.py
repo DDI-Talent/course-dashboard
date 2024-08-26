@@ -7,14 +7,14 @@ from faicons import icon_svg as icon
 from views.style_service import StyleService
 
 
-version = "0.6.1" # major.sprint.release
+version = "1.1.0" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
  ui.row(     
      ui.column(12, ui.panel_title(
          ui.row(
-            ui.column(6,ui.h1(f"Your Pinned courses (v{version})")),
+            ui.column(6,ui.h1(f"Courses Dashboard (v{version})")),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
@@ -67,19 +67,22 @@ def server(input, output, session):
     def filter_panel():
         return ui.row( 
             
-            ui.input_text("filter_name", 
-                            "Filter by name", 
-                           
-            ),
-            ui.input_select("filter_year", 
-                            "Filter by year", 
-                           choices = {"all": "All","1":"Year 1", "2": "Year 2"},
-            ),
-            ui.input_select("filter_block", 
-                            "Filter by block", 
-                           choices = {"all": "All","1":"Block 1", "2": "Block 2", "3": "Block 3", "4": "Block 4" , "5": "Block 5" , "6": "Block 6"  },
-            ),
-            ui.input_action_link("button_filter_reset","Reset filters 🔄"),
+            ui.row(
+                ui.column(7,
+                          ui.input_text("filter_name",  "Filter by name",           
+                )),
+                ui.column(5,
+                          ui.input_action_link("button_filter_reset","Reset filters 🔄"))),
+            ui.row(
+                ui.column(6,
+                          ui.input_select("filter_year",  "Filter by year", 
+                            choices = {"all": "All","1":"Year 1", "2": "Year 2"},
+                )),
+                ui.column(6,
+                          ui.input_select("filter_block", "Filter by block", 
+                            choices = {"all": "All","1":"Block 1", "2": "Block 2", "3": "Block 3", "4": "Block 4" , "5": "Block 5" , "6": "Block 6"  },
+                ))
+            )
         )
 
 
@@ -201,17 +204,31 @@ def server(input, output, session):
     def get_all_inputs_ids():
         return DataService.all_inputs_ids()
     
-    def get_all_inputs():
-        return get_all_input_info().values()
+    def get_all_inputs_add_remove():
+        return get_all_inputs_add_remove_info().values()
 
-    def get_all_input_info():
+    def get_all_inputs_add_remove_info():
         return { button_id: getattr(input, button_id) 
                 for button_id in  DataService.all_inputs_ids()}
+
+    # def get_all_input_info():
+    #     return { button_id: getattr(input, button_id) 
+    #             for button_id in  DataService.all_inputs_ids()}
+    
+    def get_all_filter_buttons_info():
+        return {
+            f"buttonfilter_{year}_{block}" : getattr(input, f"buttonfilter_{year}_{block}") 
+            for year in ["1", "2"]
+            for block in ["1", "2", "3", "4", "5", "6"]
+        }
+    
+    def get_all_filter_buttons():
+        return get_all_filter_buttons_info().values()
 
     def which_input_changed( ):
         nonlocal input_states
         new_states = {}
-        all_inputs = get_all_input_info()
+        all_inputs ={**get_all_inputs_add_remove_info(), **get_all_filter_buttons_info()}
         #print("which_input_changed+",all_inputs,len(all_inputs.items()))
         for input_id, input_object in all_inputs.items():
             new_states[input_id] = input_object()
@@ -220,7 +237,7 @@ def server(input, output, session):
         # {"but_45678": 2}  # those. where number is how many times I was clicked
         # old [0,0,1]
         # new [0,0,2]
-        print("inputstates",input_states.get().keys())
+        # print("inputstates",input_states.get().keys())
         if (len(input_states.get().keys()) == 0):
             old_states = {new_state_key: 0
                 for new_state_key, new_state_value in new_states.items()}
@@ -231,7 +248,7 @@ def server(input, output, session):
                             for old_state_key, old_state_value in old_states.items()
                             if old_state_value != new_states[old_state_key]]
         
-        print("keys that changed",keys_that_changed)
+        # print("keys that changed",keys_that_changed)
         
         input_states.set(new_states)
         return keys_that_changed if len(keys_that_changed) > 0 else None
@@ -239,21 +256,30 @@ def server(input, output, session):
     @reactive.Effect
     @reactive.event(input.button_filter_reset)
     def reset_filters():
-        ui.update_select(
-            "filter_name",
-            selected="",
-        )
-        ui.update_select(
-            "filter_year",
-            selected="all",
-        )
-        ui.update_select(
-            "filter_block",
-            selected="all",
-        )
+        ui.update_select( "filter_name",selected=""),
+        ui.update_select( "filter_year",selected="all"),
+        ui.update_select( "filter_block",selected="all")
+
+
 
     @reactive.Effect
-    @reactive.event(*get_all_inputs())
+    @reactive.event(*get_all_filter_buttons())
+    def any_course_button_clicked():
+        nonlocal courses_data
+        clicked_button_id = which_input_changed( )
+        print("CLICKED!", clicked_button_id)
+
+        if clicked_button_id == None:
+            print("--- any_course_button_clicked Isssue, nothing changes")
+            return
+
+        for click in clicked_button_id:
+            year, block = courses_data.get().get_year_and_block_from_filter_button_id(click)
+            ui.update_select( "filter_year",selected=f"{year}"),
+            ui.update_select( "filter_block",selected=f"{block}")
+
+    @reactive.Effect
+    @reactive.event(*get_all_inputs_add_remove())
     def any_course_button_clicked():
         nonlocal courses_data
         clicked_button_id = which_input_changed( )
@@ -267,8 +293,6 @@ def server(input, output, session):
         data_service = courses_data.get()
         for click in clicked_button_id:
             data_service.respond_to_clicked_button_id(click)
-        #data_service.respond_to_clicked_button_id( clicked_button_id  )
         courses_data.set(data_service)
-        # print("test",data_service.card_color)
     
 app = App(app_ui, server)#, debug=True)

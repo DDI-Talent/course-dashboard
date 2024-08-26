@@ -76,8 +76,14 @@ class DataService:
             print(f"selected_course_from_button_id FAILED with string {selected_course_string} bits {string_bits}")
             return None
 
+    def get_year_and_block_from_filter_button_id(self, button_id):
+        button_id = button_id.replace("buttonfilter_","")
+        string_bits = button_id.split("_")
+        return (int(string_bits[0]), int(string_bits[1])) if len(string_bits) == 2 else ("all", "all")
+
     def respond_to_clicked_button_id(self, button_id):
         is_this_add_button = "buttonadd_" in button_id
+        is_this_remove_button = "buttonremove_" in button_id
         selectedCourse = self.selected_course_from_button_id(button_id)
 
         
@@ -85,8 +91,7 @@ class DataService:
         if is_this_add_button:
             self.add_course(selectedCourse)
             selectedCourse.course_info.card_colour.set("background-color: #c3c3c3")
-
-        else:
+        elif is_this_remove_button:
             self.remove_course(selectedCourse)
             selectedCourse.course_info.card_colour.set("background-color: #ffffff")
         
