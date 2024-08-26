@@ -4,6 +4,7 @@ from models.course import Course
 from models.course_selected import CourseSelected
 from models.data_service import DataService
 from faicons import icon_svg as icon
+from views.style_service import StyleService
 
 
 version = "0.6.0" # major.sprint.release
@@ -19,15 +20,15 @@ app_ui = ui.page_fixed(
                         ui.row(ui.output_ui('share_choices_button')),
                         ui.row( ui.output_text('tot_credits'))
                         )
-        )))
+        ))),style= StyleService.style_section_box()
         ),
  ui.row(
     ui.column(4, 
-              ui.h2("Show course options"),
+              ui.h2("Choose your courses"),
               ui.output_ui("filter_panel"),
-               ui.output_ui("list_all_courses"),
-               ),
-    ui.column(8,ui.output_ui('grid_selected_courses'))
+               ui.output_ui("list_all_courses")
+               ,style= StyleService.style_section_box()),
+    ui.column(8,ui.h2("Your Selected Courses"),ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
 ))
 
 def server(input, output, session):
@@ -137,7 +138,7 @@ def server(input, output, session):
         nonlocal courses_data
         right_most_column =  ui.column(1, 
                                        ui.row(ui.p("YEAR 3")),
-                                       ui.row( "DISSERTATION"  ,  style ="writing-mode: vertical-rl;text-orientation: upright;")
+                                       ui.row( "DISSERTATION"  ,  style ="writing-mode: vertical-rl;text-orientation: upright;"+StyleService.style_course_box())
                                        )
         rows  = [ui.row(
                 ui.column(1, ""),
@@ -147,9 +148,12 @@ def server(input, output, session):
         for block in range(1,7):
             years_widgets = []
             for year in [1,2]:
-                years_widgets.append([ 
+                courses_in_this_block = [ 
                     courses_data.get().as_card_selected(CourseSelected(course, year, block))
-                    for course in courses_data.get().all_options_in(year, block)])
+                    for course in courses_data.get().all_options_in(year, block)]
+                courses_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block))
+
+                years_widgets.append(courses_in_this_block)
 
             new_row = ui.row(
                 ui.column(1, ui.p(block)),

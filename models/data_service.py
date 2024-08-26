@@ -38,6 +38,13 @@ class DataService:
             if course.takeable_in(year, block):
                 all_options.append(course)
         return all_options
+    
+    def number_of_taken_courses_in(self, year, block):
+        taken_courses_in = [course
+                            for course in self.selected_courses.get() 
+                            if year == course.year and block == course.block]
+        return len(taken_courses_in)
+
 
 
     def is_taken_in_selected_course(self, selected_course):
@@ -83,10 +90,6 @@ class DataService:
             self.remove_course(selectedCourse)
             selectedCourse.course_info.card_colour.set("background-color: #ffffff")
         
-        
-
-    
-
 
     def selected_choices_as_string(self):
         return "+".join([
@@ -102,6 +105,11 @@ class DataService:
 
     def as_card_selected(self, courseSelected):
         return courseSelected.as_card_selected( self.is_taken_in_selected_course(courseSelected))
+
+    def as_card_nothing_selected(self, year, block):
+        number_of_taken_courses = self.number_of_taken_courses_in(year, block)
+        show = number_of_taken_courses == 0
+        return CourseSelected.as_card_nothing_selected( year, block, show )
 
     def add_course(self, new_selected_course):
         if not self.is_taken_in_selected_course(new_selected_course):

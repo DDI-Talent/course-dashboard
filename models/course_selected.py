@@ -20,6 +20,23 @@ class CourseSelected:
     def get_colour(self):
         return self.course_info.card_colour.get()
 
+    def as_card_nothing_selected( year, block, show = False):
+            button_label = "Nothing selected yet"
+            
+            return ui.div( 
+                                ui.div(  button_label),
+                                ui.row( 
+                                          ui.input_action_link(f"button_filter_{year}_{block}", f"🔎 filter courses for this block (TODO)"),
+                                    style = "margin:0px"
+                                ),
+                            style= StyleService.style_course_box_not_selected(),
+                                                    hidden = (not show)
+
+                        )
+
+
+
+
     def as_card_selected(self, show = False):
         button_label = StyleService.name_shorter(self.course_info.name) #+ " " + self.course_info.id
         buttons = []
