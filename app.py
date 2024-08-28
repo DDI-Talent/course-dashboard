@@ -101,19 +101,16 @@ def server(input, output, session):
     @render.ui
     def select_degree():
         nonlocal courses_data
-        return ui.input_select("select_degree_dropdown", "Choose the degree", choices = {degree.id: degree.name for degree in courses_data.get().degrees }, selected=courses_data.get().degree_selected.get().id )
+        degree_options = {degree.id: degree.name for degree in courses_data.get().degrees }
+        return ui.input_select("select_degree_dropdown", "Choose the degree", choices = degree_options, selected=current_degree_id()) 
 
 
 
     @reactive.Effect
     @reactive.event(input.select_degree_dropdown, ignore_init=True)
     async def degree_selected():
-        pass
-        # TODO bring this back once we solve the issue with preloading courses, before url (and hence degree) is loaded 
-        # degree_id =  input.select_degree_dropdown.get()
-        # await session.send_custom_message("navigate", DataService.url_to_doashboard_with_degree(session, degree_id))
-
-
+        degree_id =  input.select_degree_dropdown.get()
+        await session.send_custom_message("navigate", DataService.url_to_doashboard_with_degree(session, degree_id))
 
     @output
     @render.ui
@@ -126,10 +123,11 @@ def server(input, output, session):
 
 
         courses_cards = [
-            course_obj.as_card() 
+            course_obj.as_card(course_obj.degree_id == current_degree_id()) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
             and (len(text_to_keep) < 0 or  course_obj.name.lower().find(text_to_keep) != -1)
+            
         ]
         return courses_cards
     
@@ -168,8 +166,9 @@ def server(input, output, session):
     @render.ui
     def course_personas():
         personas_links = [
-            persona.sharable_link(session, courses_data.get().degree_selected.get().id)
-            for persona in courses_data.get().personas]
+            persona.sharable_link(session)
+            for persona in courses_data.get().personas
+            if persona.degree_id == current_degree_id()]
 
         course_help = ui.row(
                ui.span("load a persona:"),

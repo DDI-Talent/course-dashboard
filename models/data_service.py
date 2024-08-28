@@ -27,17 +27,18 @@ class DataService:
         print("refresh_data",degree_id)
         self.degrees = DataService.load_degrees()
         degree = DataService.degree_with_id_or_default(degree_id)
-        
-        self.course_infos = DataService.load_data(degree.courses_file)
-        self.personas = DataService.load_personas(degree.personas_file)
-        # used for input dropdown
         self.degree_selected.set(  degree)
+        
+        self.course_infos = DataService.load_data()
+        self.personas = DataService.load_personas()
+        # used for input dropdown
+  
 
     def all_inputs_ids(degree_id = None):
-        degree = DataService.degree_with_id_or_default(degree_id)
-        print("all_inputs_ids",degree)
+        # degree = DataService.degree_with_id_or_default(degree_id)
+        # print("all_inputs_ids",degree)
         ids =  [ button_id
-            for course in DataService.load_data(degree.courses_file)
+            for course in DataService.load_data()
             for button_id in course.all_possible_button_ids()
         ]
         return ids
@@ -45,18 +46,18 @@ class DataService:
     def all_course_ids(degree_id = None):
         degree = DataService.degree_with_id_or_default(degree_id)
         ids =  [ course.id
-            for course in DataService.load_data(degree.courses_file)
+            for course in DataService.load_data()
         ]
         return ids
 
 
 
-    def load_data(filename = "courses_msc_datascience_hsc.csv"):
+    def load_data(filename = "courses.csv"):
         loaded_df = pd.read_csv(f'./data/{filename}')
         return [ Course(row)
                 for _, row in loaded_df.iterrows()]
     
-    def load_personas(filename = "personas_msc_datascience_hsc.csv"):
+    def load_personas(filename = "personas.csv"):
         loaded_df = pd.read_csv(f'./data/{filename}')
         return [ Persona(row)
                 for _, row in loaded_df.iterrows()]
@@ -202,7 +203,6 @@ class DataService:
                 selected_courses.append(new_selected_course)
         
         # selected_courses is [SelectedCourse object, SelectedCourse object, ... ]
-        print("url_to_selected_courses_list",selected_courses )
         return selected_courses
 
 

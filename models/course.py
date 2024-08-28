@@ -13,6 +13,7 @@ class Course:
         self.years = self.string_to_list(f"{row['year']}")
         self.blocks = self.string_to_list(f"{row['block']}")
         self.id = row['course_id']
+        self.degree_id = row['degree_id']
         self.name = row['course_name']
         self.proglang = row['Prog Lang']
         self.link = row['DRPS link']
@@ -45,7 +46,7 @@ class Course:
         ]
        
 
-    def as_card(self):
+    def as_card(self, show):
         button_label = StyleService.name_shorter(self.name)
         buttons = []
         for year in self.years:
@@ -67,7 +68,8 @@ class Course:
                                 style = "margin:0px, display:contents",
                                 # proglang_footer     
                             ),
-                        style= StyleService.style_course_box()
+                        style= StyleService.style_course_box(),
+                        hidden = (not show)
                     )
 
 

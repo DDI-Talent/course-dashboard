@@ -1,0 +1,44 @@
+degree_id,year,block,Compulsory,Credits,Prog Lang,Issues?,course_id,is pre-req (ID),has pre-req,course_name,,Notes,DRPS link
+DS_HSC,1,1,TRUE,10,R,,HEIN11037a,HEIN11037,,Introduction to Data Science in Health and Social Care (1 of 2),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11037.htm
+DS_HSC,1,2,TRUE,10,R,,HEIN11037b,HEIN11037,,Introduction to Data Science in Health and Social Care (2 of 2),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11037.htm
+DS_HSC,1 or 2,3,,10,,,HEIN11059,,,Data ethics in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11059.htm
+DS_HSC,1 or 2,4,,10,,,HEIN11041,,,Health and social care delivery and organisation,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11041.htm
+DS_HSC,2,1 and 6,,10,,,HEIN11057,,,Research design for data science in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11057.htm
+DS_HSC,2,2,,10,,,HEIN11054,,,Systems thinking,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11054.htm
+DS_HSC,2,2,,10,R,,HEIN11055,,HEIN11037,Big Data Analytics,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11055.htm
+DS_HSC,2,2,,10,,?,TBC01,,,Data-led decision making for service transformation,,MSc Leading Digital Transformation for Health and Care in Scotland,http://www.drps.ed.ac.uk/current/dpt/cxtbc01.htm
+DS_HSC,2,2,,10,,?,TCB02,,,Introduction to qualitative research methods,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxtcb02.htm
+DS_HSC,2,2,,10,Python,?,TBC03,,HEIN11066,Natural language processing in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc03.htm
+DS_HSC,1 or 2,3,,10,R,,HEIN11039,,,Introduction to statistics in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11039.htm
+DS_HSC,1 or 2,3,,10,,,HEIN11040,,,Data visualisation: Knowledge transfer,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11040.htm
+DS_HSC,1 or 2,3,,10,,,HEIN11044,,,Data standards and core technologies in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11044.htm
+DS_HSC,1 or 2,3,,10,R,,PUHR11103,PUHR11103,,Data analysis with R,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11103.htm
+DS_HSC,1 or 2,3,,10,R,,HEIN11067,,HEIN11037,Intermediate R programming for data science,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11067.htm
+DS_HSC,1 or 2,3 and 4,TRUE,20,,?,TBC04,,,Introductory applied machine learning 20 credits,,School of Informatics,http://www.drps.ed.ac.uk/current/dpt/cxtbc04.htm
+DS_HSC,1 or 2,4,,10,Python,,HEIN11045,HEIN11066,,Foundations of Software Development in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11045.htm
+DS_HSC,1 or 2,4,,10,R and SQL,,HEIN11048,,HEIN11037,Introduction to Databases & Information Systems,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11048.htm
+DS_HSC,1 or 2,4,,10,,,HEIN11042,,,Managing and leading data-driven innovation,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11042.htm
+DS_HSC,1 or 2,4,,10,R,?,TBC05,,PUHR11103,Intermediate epidemiology,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc05.htm
+DS_HSC,1 or 2,4,,10,,?,TBC06,,,AI for care in the digital age,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc06.htm
+DS_HSC,1 or 2,4,,10,,?,TBC07,,,Applied data visualisation,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc07.htm
+DS_HSC,1 or 2,5,,10,,,HEIN11043,,,Digital technologies in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11043.htm
+DS_HSC,1 or 2,5,,10,,,HEIN11056,,,Implementation science: putting evidence-based interventions into practice,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11056.htm
+DS_HSC,1 or 2,5,,10,,,HEIN11046,,,User-driven service design in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11046.htm
+DS_HSC,1 or 2,5,,10,Python,,HEIN11062,,HEIN11066,Applied software development in health and social care (Python 2),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11062.htm
+DS_HSC,1 or 2,5,,10,,,HEIN11058,,,Managing and leading data-driven innovation (work based),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11058.htm
+DS_HSC,1 or 2,5,,10,R,,PUHR11063,,,Data analysis for epidemiology,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11063.htm
+DS_HSC,1 or 2,5,,10,,,PGSP11401,,,Engaging with digital research,,School of Social and Political Sciences,http://www.drps.ed.ac.uk/current/dpt/cxpgsp11401.htm
+DS_HSC,1 or 2,5,,10,,,PUHR11069,,,Systematic reviews,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11069.htm
+DS_HSC,1 or 2,5,,10,,,PGSP11388,,,Use and evolution of digital data analysis and collection tools,,School of Social and Political Sciences,http://www.drps.ed.ac.uk/current/dpt/cxpgsp11388.htm
+DS_HSC,1 or 2,5,,10,,?,TBC08,,,Genomics,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc08.htm
+DS_HSC,1 or 2,5,,10,,?,TBC09,,,AI applied,,,http://www.drps.ed.ac.uk/current/dpt/cxtbc09.htm
+DS_HSC,1 or 2,6,,10,R,,HEIN11068,,HEIN11037,Data Types & Structures in R & Python,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11068.htm
+DS_HSC,1 or 2,6,,10,,,HEIN11047,,,Data security and protection in health and social care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11047.htm
+DS_HSC,1 or 2,6,,10,,,HEIN11054,,,Systems thinking (repeat),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11054.htm
+DS_HSC,1 or 2,6,,10,,,INAH11017,,,Introduction to GIS and spatial data analysis,,Deanery of Biomedical Sciences,http://www.drps.ed.ac.uk/current/dpt/cxinah11017.htm
+DS_HSC,1 or 2,6,,10,R,,PUHR11064,,PUHR11103,Statistical modelling for epidemology,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11064.htm
+DS_HSC,1 or 2,6,,10,R,,PUHR11116,,,Advanced statistics,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11116.htm
+DS_HSC,1 or 2,6,,10,,,HEIN11049,,,Entrepreneurship and data-driven innovation,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11049.htm
+DS_HSC,1 or 2,6,,10,,?,TBC10,,,Delivering person-centred care in a digital age for remote and rural areas,,Deanery of Biomedical Sciences,http://www.drps.ed.ac.uk/current/dpt/cxtbc10.htm
+LDT_HSC,1,1,TRUE,10,R,,HEIN11037x,HEIN11037,,TODO: course (1 of 2),http://www.drps.ed.ac.uk/current/dpt/cxhein11037.htm
+LDT_HSC,1,2,TRUE,10,R,,HEIN11037y,HEIN11037,,TODO: courses (2 of 2),,http://www.drps.ed.ac.uk/current/dpt/cxhein11037.htm
