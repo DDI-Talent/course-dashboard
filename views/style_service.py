@@ -22,23 +22,23 @@ class StyleService:
         return shorter_name
     
     def info_card_for_course(course_info):
-        proglang_footer=[]
-        if not pd.isna(course_info.proglang):
-            if course_info.proglang == "Python":
-                # footer_items.append("Programming language: ")
-                proglang_footer.append(icon("python"))
-                proglang = f"Programming language: Python"
-            if course_info.proglang == "R":
-                # footer_items.append("Programming language: ")
-                proglang_footer.append(icon("r"))
-                proglang = f"Programming language: R"
-            if course_info.proglang == "R and SQL":
-                # footer_items.append("Programming language: ")
-                proglang_footer.append(icon("python"))
-                proglang_footer.append("+ SQL")
-                proglang = f"Programming language: Python and SQL"
-        else:
-            proglang = "This is not a programming course"
+        # proglang_footer=[]
+        # if not pd.isna(course_info.prog_lang):
+        #     if course_info.prog_lang == "Python":
+        #         # footer_items.append("Programming language: ")
+        #         proglang_footer.append(icon("python"))
+        #         proglang = f"Programming language: Python"
+        #     if course_info.prog_lang == "R":
+        #         # footer_items.append("Programming language: ")
+        #         proglang_footer.append(icon("r"))
+        #         proglang = f"Programming language: R"
+        #     if course_info.prog_lang == "R and SQL":
+        #         # footer_items.append("Programming language: ")
+        #         proglang_footer.append(icon("python"))
+        #         proglang_footer.append("+ SQL")
+        #         proglang = f"Programming language: Python and SQL"
+        # else:
+        #     proglang = "This is not a programming course"
 
         
         # if self.course_info.compulsory == True:
@@ -63,7 +63,7 @@ class StyleService:
                                 # ui.row("‣ ",hasprereq),
                                 # ui.row("‣ ",isprereq),
                                 # ui.row("‣ ",credits),
-                                ui.row("‣ ",proglang),
+                                # ui.row("‣ ",proglang),
                                 ui.row(ui.tags.a("View this course on DRPS", href=course_info.link, target="_blank"))
                             ))
         return more_info_card

@@ -28,7 +28,8 @@ app_ui = ui.page_fixed(
               ui.output_ui("filter_panel"),
                ui.output_ui("list_all_courses")
                ,style= StyleService.style_section_box()),
-    ui.column(8,ui.h2("Your Selected Courses"),ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
+    ui.column(8,ui.h2("Your Selected Courses"),
+              ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
 ), 
 ui.tags.script("""
         Shiny.addCustomMessageHandler('navigate', function(url) {
@@ -101,7 +102,8 @@ def server(input, output, session):
     @render.ui
     def select_degree():
         nonlocal courses_data
-        degree_options = {degree.id: degree.name for degree in courses_data.get().degrees }
+        degree_options = {degree.id: degree.name 
+                          for degree in courses_data.get().degrees }
         return ui.input_select("select_degree_dropdown", "Choose the degree", choices = degree_options, selected=current_degree_id(), width="90%;") 
 
 
@@ -120,10 +122,8 @@ def server(input, output, session):
         years_to_keep = [1,2] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
         text_to_keep = input.filter_name.get().strip().lower()
 
-        print("list_all_courses", current_degree_id())
-
         courses_cards = [
-            course_obj.as_card(course_obj.degree_id == current_degree_id()) 
+            course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
             and (len(text_to_keep) < 0 or  course_obj.name.lower().find(text_to_keep) != -1)
@@ -180,16 +180,22 @@ def server(input, output, session):
     @render.ui
     def grid_selected_courses():
         nonlocal courses_data
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+
         right_most_column =  ui.column(1, 
-                                       ui.row(ui.p("YEAR 3")),
-                                       ui.row( "DISSERTATION"  ,  style ="writing-mode: vertical-rl;text-orientation: upright;"+StyleService.style_course_box())
-                                       )
+                                    ui.row(ui.p("YEAR 3")),
+                                    ui.row( "DISSERTATION"  ,  style ="writing-mode: vertical-rl;text-orientation: upright;"+StyleService.style_course_box()),
+                                    hidden = current_degree.years < 3
+                                    )
+
+
+
+
         rows  = [ui.row(
                 ui.column(1, ""),
                 ui.column(5, ui.row( ui.column(6,"YEAR 1"), ui.column(6,get_credits_information(1)))),
-                ui.column(5, ui.row( ui.column(6,"YEAR 2"), ui.column(6,get_credits_information(2)))),
-
-            )]
+                ui.column(5, ui.row( ui.column(6,"YEAR 2"), ui.column(6,get_credits_information(2))), hidden = current_degree.years < 2))
+            ]
         for block in range(1,7):
             years_widgets = []
             for year in [1,2]:
@@ -203,7 +209,8 @@ def server(input, output, session):
             new_row = ui.row(
                 ui.column(1, ui.p(block)),
                 ui.column(5, years_widgets[0]),
-                ui.column(5, years_widgets[1]),
+                ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
+                style = "padding: 16px 0px;"
             )
             rows.append(new_row)
         return ui.row(ui.column(11, rows), right_most_column)

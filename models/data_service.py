@@ -26,31 +26,24 @@ class DataService:
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
         self.degrees = DataService.load_degrees()
-        # degree = DataService.degree_with_id_or_default(degree_id)
-        # self.degree_selected.set(  degree)
         
         self.course_infos = DataService.load_data()
         self.personas = DataService.load_personas()
         # used for input dropdown
   
 
-    def all_inputs_ids(degree_id = None):
-        # degree = DataService.degree_with_id_or_default(degree_id)
-        # print("all_inputs_ids",degree)
+    def all_inputs_ids():
         ids =  [ button_id
             for course in DataService.load_data()
             for button_id in course.all_possible_button_ids()
         ]
         return ids
 
-    def all_course_ids(degree_id = None):
-        degree = DataService.degree_with_id_or_default(degree_id)
+    def all_course_ids():
         ids =  [ course.id
             for course in DataService.load_data()
         ]
         return ids
-
-
 
     def load_data(filename = "courses.csv"):
         loaded_df = pd.read_csv(f'./data/{filename}')
@@ -128,10 +121,8 @@ class DataService:
 
         if is_this_add_button:
             self.add_course(selectedCourse)
-            selectedCourse.course_info.card_colour.set("background-color: #c3c3c3")
         elif is_this_remove_button:
             self.remove_course(selectedCourse)
-            selectedCourse.course_info.card_colour.set("background-color: #ffffff")
         
 
     def selected_choices_as_string(self):
@@ -175,7 +166,7 @@ class DataService:
 
     def url_to_degree( url_query):
         # url_query is .../?degree_id=DS_HSC&courses=ABCD_1_2,BGHF_2_5,CDER_1_5&fruit=banana
-        default_degree =  "DS_HSC"
+        default_degree =  "DS_HSC3"
         if len(url_query) == 0:
             return default_degree
         url_variables = {}

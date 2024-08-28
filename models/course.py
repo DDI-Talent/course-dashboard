@@ -10,18 +10,18 @@ from views.style_service import StyleService
 class Course:
 
     def __init__(self, row):
+        self.degree_ids = self.string_to_list(f"{row['degree_ids']}", as_ints=False)
         self.years = self.string_to_list(f"{row['year']}")
         self.blocks = self.string_to_list(f"{row['block']}")
         self.id = row['course_id']
-        self.degree_id = row['degree_id']
         self.name = row['course_name']
-        self.proglang = row['Prog Lang']
-        self.link = row['DRPS link']
-        self.compulsory = row['Compulsory']
-        self.credits = row['Credits']
-        self.isprereq = row['is pre-req (ID)']
-        self.hasprereq = row['has pre-req']
-        self.card_colour = reactive.value("background-color: #ffffff")
+        self.prog_lang = row['prog_lang']
+        self.notes = row['notes']
+        self.link = row['drps_link']
+        self.credits = row['credits']
+        self.themes = self.string_to_list(f"{row['themes']}", as_ints=False)
+
+
     
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
@@ -74,9 +74,9 @@ class Course:
 
 
     def __repr__(self) -> str:
-        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}, colour: {self.card_colour.get()}"
+        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}"
     
-    def string_to_list(self, string_to_parse):
-        string_to_parse = string_to_parse.replace(" and ", " ").replace(" or ", " ")
-        return [int(item) 
+    def string_to_list(self, string_to_parse, as_ints = True):
+        string_to_parse = string_to_parse.replace(" and ", " ").replace(" or ", " ").replace("+", " ")
+        return [int(item) if as_ints else item
                 for item in string_to_parse.split(' ')]

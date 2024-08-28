@@ -12,5 +12,6 @@ class Degree:
     def __init__(self, row):
         self.id = row['id']
         self.name = row['name']   
+        self.years = int(row['years'])   
         self.description = row['description']            
         self.link = row['link']            
