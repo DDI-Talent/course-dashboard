@@ -14,7 +14,7 @@ app_ui = ui.page_fixed(
  ui.row(     
      ui.column(12, ui.panel_title(
          ui.row(
-            ui.column(6,ui.h1(f"Courses Dashboard (v{version})")),
+            ui.column(6,ui.h1(f"Courses Dashboard (v{version})"), ui.output_ui("select_degree"),),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
@@ -29,24 +29,33 @@ app_ui = ui.page_fixed(
                ui.output_ui("list_all_courses")
                ,style= StyleService.style_section_box()),
     ui.column(8,ui.h2("Your Selected Courses"),ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
-))
+), 
+ui.tags.script("""
+        Shiny.addCustomMessageHandler('navigate', function(url) {
+            window.location.href = url;
+        });
+    """),
+style = "max-width: 1240px; padding: 20px"
+)
 
 def server(input, output, session):
-    # global courses_data
-    # global input_states
-    # global initial_url_loaded_already
-    # global colors
 
     courses_data = reactive.value(DataService())
     input_states = reactive.value({})
     initial_url_loaded_already = False
     colors = reactive.value({})
 
+    def current_degree_id():
+        url_query = session.input[".clientdata_url_search"]()
+        selected_degree_id = DataService.url_to_degree(url_query)
+        return selected_degree_id
+    
     @reactive.effect
     def load_data():
         nonlocal courses_data
         data_service = courses_data.get()
-        data_service.refresh_data()
+        
+        data_service.refresh_data(current_degree_id())
         courses_data.set(data_service)
 
     @reactive.effect
@@ -71,8 +80,8 @@ def server(input, output, session):
                 ui.column(7,
                           ui.input_text("filter_name",  "Filter by name",           
                 )),
-                ui.column(5,
-                          ui.input_action_link("button_filter_reset","Reset filters 🔄"))),
+                ui.column(5,ui.p(" "),
+                          ui.input_action_link("button_filter_reset","Reset Filters 🔄"))),
             ui.row(
                 ui.column(6,
                           ui.input_select("filter_year",  "Filter by year", 
@@ -84,6 +93,26 @@ def server(input, output, session):
                 ))
             )
         )
+
+
+
+
+    @output
+    @render.ui
+    def select_degree():
+        nonlocal courses_data
+        return ui.input_select("select_degree_dropdown", "Choose the degree", choices = {degree.id: degree.name for degree in courses_data.get().degrees }, selected=courses_data.get().degree_selected.get().id )
+
+
+
+    @reactive.Effect
+    @reactive.event(input.select_degree_dropdown, ignore_init=True)
+    async def degree_selected():
+        pass
+        # TODO bring this back once we solve the issue with preloading courses, before url (and hence degree) is loaded 
+        # degree_id =  input.select_degree_dropdown.get()
+        # await session.send_custom_message("navigate", DataService.url_to_doashboard_with_degree(session, degree_id))
+
 
 
     @output
@@ -135,11 +164,13 @@ def server(input, output, session):
     @output
     @render.ui
     def course_personas():
+        personas_links = [
+            persona.sharable_link(session, courses_data.get().degree_selected.get().id)
+            for persona in courses_data.get().personas]
+
         course_help = ui.row(
-               ui.span("load a persona:"), 
-               sharable_link("👾 code focused", "PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
-               sharable_link("😎 balanced", "HEIN11059_1_3+HEIN11043_1_5+HEIN11041_1_4+HEIN11037_1_1+HEIN11037_1_2+HEIN11068_1_6+HEIN11045_2_4+HEIN11056_2_5+HEIN11044_2_3+HEIN11057_2_6+HEIN11054_2_2"),
-               sharable_link("❌ empty", "HEIN11037_1_1+HEIN11037_1_2+HEIN11057_2_1+HEIN11057_2_6")
+               ui.span("load a persona:"),
+               *personas_links
                )
         return course_help
 
@@ -202,12 +233,13 @@ def server(input, output, session):
         return ui.div(warning, style=style)
 
     def get_all_inputs_ids():
-        return DataService.all_inputs_ids()
+        return DataService.all_inputs_ids(current_degree_id())
     
     def get_all_inputs_add_remove():
-        return get_all_inputs_add_remove_info().values()
+        return  get_all_inputs_add_remove_info().values()
 
     def get_all_inputs_add_remove_info():
+        # print("session",session.input[".clientdata_url_search"]())
         return { button_id: getattr(input, button_id) 
                 for button_id in  DataService.all_inputs_ids()}
 
@@ -264,7 +296,7 @@ def server(input, output, session):
 
     @reactive.Effect
     @reactive.event(*get_all_filter_buttons())
-    def any_course_button_clicked():
+    def any_filter_button_clicked():
         nonlocal courses_data
         clicked_button_id = which_input_changed( )
         print("CLICKED!", clicked_button_id)
@@ -277,6 +309,7 @@ def server(input, output, session):
             year, block = courses_data.get().get_year_and_block_from_filter_button_id(click)
             ui.update_select( "filter_year",selected=f"{year}"),
             ui.update_select( "filter_block",selected=f"{block}")
+            ui.update_select( "filter_name",selected=f"")
 
     @reactive.Effect
     @reactive.event(*get_all_inputs_add_remove())

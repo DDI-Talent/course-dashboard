@@ -26,7 +26,7 @@ class CourseSelected:
             return ui.div( 
                                 ui.div(  button_label),
                                 ui.row( 
-                                          ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter courses for this block (TODO)"),
+                                          ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter courses for this block"),
                                     style = "margin:0px"
                                 ),
                             style= StyleService.style_course_box_not_selected(),

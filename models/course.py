@@ -10,8 +10,8 @@ from views.style_service import StyleService
 class Course:
 
     def __init__(self, row):
-        self.years = self.string_to_list(row['year'])
-        self.blocks = self.string_to_list(row['block'])
+        self.years = self.string_to_list(f"{row['year']}")
+        self.blocks = self.string_to_list(f"{row['block']}")
         self.id = row['course_id']
         self.name = row['course_name']
         self.proglang = row['Prog Lang']
@@ -74,10 +74,7 @@ class Course:
     def __repr__(self) -> str:
         return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}, colour: {self.card_colour.get()}"
     
-        # turns string like "1 or 2" into ([(1, 'or') (2, 'or')]). turns "1" into [1[], and "banana" into []
     def string_to_list(self, string_to_parse):
-        # "1 or 2"    "1 and 6"    "1"
         string_to_parse = string_to_parse.replace(" and ", " ").replace(" or ", " ")
-        # "1 2"     "1 6"     "1"
         return [int(item) 
                 for item in string_to_parse.split(' ')]

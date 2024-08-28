@@ -67,3 +67,4 @@ class StyleService:
                                 ui.row(ui.tags.a("View this course on DRPS", href=course_info.link, target="_blank"))
                             ))
         return more_info_card
+    

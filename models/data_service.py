@@ -1,35 +1,70 @@
 import pandas as pd
 from shiny import ui
 from models.course import Course
+from models.persona import Persona
+from models.degree import Degree
 from models.course_selected import CourseSelected
 from shiny import reactive
-# this class is a data service: it holds all informationm and distributes is
+# this class is a data service: it holds all informationm and distributes it
 class DataService:
 
     def __init__(self):
         self.selected_courses = reactive.value([])
         self.course_infos = reactive.value([])
-    
+        self.personas = reactive.value([])
+        self.degrees = reactive.value([])
+        self.degree_selected =  reactive.value([])
 
-    def refresh_data(self):
-        self.course_infos = DataService.load_data()
+    def degree_with_id_or_default(degree_id):
+        degrees = DataService.load_degrees()
+        if degree_id == None:
+            degree = degrees[0]
+        else:
+            degree = [degree for degree in degrees if degree.id == degree_id][0]
+        return degree
 
-    def all_inputs_ids():
+    def refresh_data(self, degree_id = None):
+        print("refresh_data",degree_id)
+        self.degrees = DataService.load_degrees()
+        degree = DataService.degree_with_id_or_default(degree_id)
+        
+        self.course_infos = DataService.load_data(degree.courses_file)
+        self.personas = DataService.load_personas(degree.personas_file)
+        # used for input dropdown
+        self.degree_selected.set(  degree)
+
+    def all_inputs_ids(degree_id = None):
+        degree = DataService.degree_with_id_or_default(degree_id)
+        print("all_inputs_ids",degree)
         ids =  [ button_id
-            for course in DataService.load_data()
+            for course in DataService.load_data(degree.courses_file)
             for button_id in course.all_possible_button_ids()
         ]
         return ids
 
-    def all_course_ids():
+    def all_course_ids(degree_id = None):
+        degree = DataService.degree_with_id_or_default(degree_id)
         ids =  [ course.id
-            for course in DataService.load_data()
+            for course in DataService.load_data(degree.courses_file)
         ]
         return ids
 
-    def load_data():
-        loaded_df = pd.read_csv(f'./data/all_courses.csv')
+
+
+    def load_data(filename = "courses_msc_datascience_hsc.csv"):
+        loaded_df = pd.read_csv(f'./data/{filename}')
         return [ Course(row)
+                for _, row in loaded_df.iterrows()]
+    
+    def load_personas(filename = "personas_msc_datascience_hsc.csv"):
+        loaded_df = pd.read_csv(f'./data/{filename}')
+        return [ Persona(row)
+                for _, row in loaded_df.iterrows()]
+    
+        
+    def load_degrees():
+        loaded_df = pd.read_csv(f'./data/degrees.csv')
+        return [ Degree(row)
                 for _, row in loaded_df.iterrows()]
 
     def all_options_in(self, year, block):
@@ -86,7 +121,9 @@ class DataService:
         is_this_remove_button = "buttonremove_" in button_id
         selectedCourse = self.selected_course_from_button_id(button_id)
 
-        
+        if selectedCourse == None:
+            print("no course for",button_id)
+            return
 
         if is_this_add_button:
             self.add_course(selectedCourse)
@@ -135,6 +172,17 @@ class DataService:
         selected_courses_temp.extend(selected_courses_from_url)
         self.selected_courses.set(selected_courses_temp)
 
+    def url_to_degree( url_query):
+        # url_query is .../?degree_id=DS_HSC&courses=ABCD_1_2,BGHF_2_5,CDER_1_5&fruit=banana
+        if len(url_query) == 0:
+            return None
+        url_variables = {}
+        for key_value_string in url_query[1:].split("&"):
+            key, value = key_value_string.split("=")
+            url_variables[key] = value
+
+        # degree_id is like "DS_HSC"
+        return url_variables.get('degree_id', "DS_HSC")
 
 
     def url_to_selected_courses_list(self, url_query):
@@ -154,7 +202,25 @@ class DataService:
                 selected_courses.append(new_selected_course)
         
         # selected_courses is [SelectedCourse object, SelectedCourse object, ... ]
+        print("url_to_selected_courses_list",selected_courses )
         return selected_courses
+
+
+    def url_to_doashboard_with_degree(session, degree_id):
+        # TODO, this is repeated in a few places
+        site_protocol = session.input[".clientdata_url_protocol"]()
+        site_port = session.input[".clientdata_url_port"]()
+        site_url = session.input[".clientdata_url_hostname"]()
+        pathname = session.input[".clientdata_url_pathname"]()
+
+        link_to_share = f"{site_protocol}//{site_url}"
+        if len(str(site_port)) > 1: # eg. ignore just "/"
+            link_to_share += f":{site_port}"
+        if len(pathname) > 1: # eg. ignore just "/"
+            link_to_share += f"{pathname}"
+        link_to_share += f"?degree_id={degree_id}"
+
+        return link_to_share
 
     def __str__(self):
         courses_str = ', '.join(str(course) for course in self.course_infos)

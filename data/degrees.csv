@@ -1,0 +1,3 @@
+id,name,courses_file,personas_file,description,link
+DS_HSC,MSc in Data Science for Health and Social Care,courses_msc_datascience_hsc.csv,personas_msc_datascience_hsc.csv,Degree description TODO,https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&id=1041
+LDT_HSC,(TODO - now working yet) MSc in Leading Digital Transformation in Health and Care for Scotland,courses_msc_leading_gigital_transformation_hsc.csv,personas_msc_leading_gigital_transformation_hsc.csv,Degree description TODO,https://learn.nes.nhs.scot/65021/postgraduate-programme-leading-digital-transformation-in-health-and-care-for-scotland-pgcert-pgdip-msc
