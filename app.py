@@ -7,7 +7,7 @@ from faicons import icon_svg as icon
 from views.style_service import StyleService
 
 
-version = "1.1.0" # major.sprint.release
+version = "1.1.5" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -134,7 +134,10 @@ def server(input, output, session):
         return courses_cards
     
     def sharable_link(link_text, selected_courses_as_string):
+        # TODO: clean this up. currently in many places
         nonlocal courses_data
+        degree_id = courses_data.get().degree_selected.get().id
+
         site_protocol = session.input[".clientdata_url_protocol"]()
         site_port = session.input[".clientdata_url_port"]()
         site_url = session.input[".clientdata_url_hostname"]()
@@ -145,7 +148,7 @@ def server(input, output, session):
             link_to_share += f":{site_port}"
         if len(pathname) > 1: # eg. ignore just "/"
             link_to_share += f"{pathname}"
-        link_to_share += f"?courses={selected_courses_as_string}"
+        link_to_share += f"?degree_id={degree_id}&courses={selected_courses_as_string}"
 
         return ui.a(link_text,  href=link_to_share)
        
