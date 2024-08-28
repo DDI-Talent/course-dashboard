@@ -7,7 +7,7 @@ from faicons import icon_svg as icon
 from views.style_service import StyleService
 
 
-version = "1.1.5" # major.sprint.release
+version = "1.2.1" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -102,7 +102,7 @@ def server(input, output, session):
     def select_degree():
         nonlocal courses_data
         degree_options = {degree.id: degree.name for degree in courses_data.get().degrees }
-        return ui.input_select("select_degree_dropdown", "Choose the degree", choices = degree_options, selected=current_degree_id()) 
+        return ui.input_select("select_degree_dropdown", "Choose the degree", choices = degree_options, selected=current_degree_id(), width="90%;") 
 
 
 
@@ -120,7 +120,7 @@ def server(input, output, session):
         years_to_keep = [1,2] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
         text_to_keep = input.filter_name.get().strip().lower()
 
-
+        print("list_all_courses", current_degree_id())
 
         courses_cards = [
             course_obj.as_card(course_obj.degree_id == current_degree_id()) 
@@ -134,7 +134,7 @@ def server(input, output, session):
     def sharable_link(link_text, selected_courses_as_string):
         # TODO: clean this up. currently in many places
         nonlocal courses_data
-        degree_id = courses_data.get().degree_selected.get().id
+        # degree_id = courses_data.get().degree_selected.get().id
 
         site_protocol = session.input[".clientdata_url_protocol"]()
         site_port = session.input[".clientdata_url_port"]()
@@ -146,7 +146,7 @@ def server(input, output, session):
             link_to_share += f":{site_port}"
         if len(pathname) > 1: # eg. ignore just "/"
             link_to_share += f"{pathname}"
-        link_to_share += f"?degree_id={degree_id}&courses={selected_courses_as_string}"
+        link_to_share += f"?degree_id={current_degree_id()}&courses={selected_courses_as_string}"
 
         return ui.a(link_text,  href=link_to_share)
        
@@ -158,9 +158,9 @@ def server(input, output, session):
         selected_courses_as_string = courses_data.get().selected_choices_as_string()
         number_of_choices =  len(courses_data.get().selected_courses.get())
         if number_of_choices == 0:
-            return sharable_link(f"🛒 Pin some courses to create sharable link", selected_courses_as_string)
+            return sharable_link(f"🛒 Choose courses to create sharable link", selected_courses_as_string)
         else:
-            return sharable_link(f"🛒 Copy and share this link ({number_of_choices} Choices)",selected_courses_as_string)
+            return sharable_link(f"🛒 Share via link ({number_of_choices} Choices)",selected_courses_as_string)
 
     @output
     @render.ui
@@ -186,8 +186,9 @@ def server(input, output, session):
                                        )
         rows  = [ui.row(
                 ui.column(1, ""),
-                ui.column(5, ui.p("YEAR 1")),
-                ui.column(5, ui.p("YEAR 2")),
+                ui.column(5, ui.row( ui.column(6,"YEAR 1"), ui.column(6,get_credits_information(1)))),
+                ui.column(5, ui.row( ui.column(6,"YEAR 2"), ui.column(6,get_credits_information(2)))),
+
             )]
         for block in range(1,7):
             years_widgets = []
@@ -207,13 +208,23 @@ def server(input, output, session):
             rows.append(new_row)
         return ui.row(ui.column(11, rows), right_most_column)
 
+    def get_credits_information(year = None):
+        nonlocal courses_data
+        if year == None:
+            total_credits = sum([(course.get_credits()) 
+                                 for course in courses_data.get().selected_courses.get()])
+            max_credits = 120
+        else:  
+            total_credits = sum([(course.get_credits()) 
+                                 for course in courses_data.get().selected_courses.get()
+                                 if course.year == year])
+            max_credits = 60
+        return ui.div(f"Credits: {total_credits} of {max_credits}")
+    
     @output
     @render.text
     def total_credits():
-        nonlocal courses_data
-        total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
-
-        return ui.div(f"Credits: {total_credits} of 120")
+        return   get_credits_information()
     
 
     @output

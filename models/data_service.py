@@ -13,7 +13,7 @@ class DataService:
         self.course_infos = reactive.value([])
         self.personas = reactive.value([])
         self.degrees = reactive.value([])
-        self.degree_selected =  reactive.value([])
+        # self.degree_selected =  reactive.value([])
 
     def degree_with_id_or_default(degree_id):
         degrees = DataService.load_degrees()
@@ -26,8 +26,8 @@ class DataService:
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
         self.degrees = DataService.load_degrees()
-        degree = DataService.degree_with_id_or_default(degree_id)
-        self.degree_selected.set(  degree)
+        # degree = DataService.degree_with_id_or_default(degree_id)
+        # self.degree_selected.set(  degree)
         
         self.course_infos = DataService.load_data()
         self.personas = DataService.load_personas()
@@ -175,15 +175,16 @@ class DataService:
 
     def url_to_degree( url_query):
         # url_query is .../?degree_id=DS_HSC&courses=ABCD_1_2,BGHF_2_5,CDER_1_5&fruit=banana
+        default_degree =  "DS_HSC"
         if len(url_query) == 0:
-            return None
+            return default_degree
         url_variables = {}
         for key_value_string in url_query[1:].split("&"):
             key, value = key_value_string.split("=")
             url_variables[key] = value
 
         # degree_id is like "DS_HSC"
-        return url_variables.get('degree_id', "DS_HSC")
+        return url_variables.get('degree_id',default_degree)
 
 
     def url_to_selected_courses_list(self, url_query):
