@@ -7,7 +7,7 @@ from faicons import icon_svg as icon
 from views.style_service import StyleService
 
 
-version = "1.2.1" # major.sprint.release
+version = "1.2.5" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -182,9 +182,11 @@ def server(input, output, session):
         nonlocal courses_data
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
 
+        dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
         right_most_column =  ui.column(1, 
                                     ui.row(ui.p("YEAR 3")),
-                                    ui.row( "DISSERTATION"  ,  style ="writing-mode: vertical-rl;text-orientation: upright;"+StyleService.style_course_box()),
+                                    ui.row( dissertation_selected.as_card_selected(dissertation=True),
+                                           style ="writing-mode: vertical-rl;text-orientation: upright;"+StyleService.style_course_box()),
                                     hidden = current_degree.years < 3
                                     )
 
@@ -217,21 +219,25 @@ def server(input, output, session):
 
     def get_credits_information(year = None):
         nonlocal courses_data
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
         if year == None:
             total_credits = sum([(course.get_credits()) 
                                  for course in courses_data.get().selected_courses.get()])
-            max_credits = 120
         else:  
             total_credits = sum([(course.get_credits()) 
                                  for course in courses_data.get().selected_courses.get()
                                  if course.year == year])
+            
+        if year == None: # total for whole degree
+            max_credits = current_degree.years * 60
+        else: # just showing one year
             max_credits = 60
         return ui.div(f"Credits: {total_credits} of {max_credits}")
     
     @output
     @render.text
     def total_credits():
-        return   get_credits_information()
+        return  get_credits_information()
     
 
     @output
@@ -239,7 +245,9 @@ def server(input, output, session):
     def total_credits_warning():
         nonlocal courses_data
         total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
-        max_credits = 120
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+
+        max_credits = current_degree.years * 60
 
         if total_credits == max_credits:
             warning = ""

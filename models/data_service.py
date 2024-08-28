@@ -68,6 +68,11 @@ class DataService:
                 all_options.append(course)
         return all_options
     
+    def get_dissertation(self):
+        return [course 
+                for course in self.course_infos
+                if course.id == "DISSERTATION"][0]
+
     def number_of_taken_courses_in(self, year, block):
         taken_courses_in = [course
                             for course in self.selected_courses.get() 

@@ -37,15 +37,20 @@ class CourseSelected:
 
 
 
-    def as_card_selected(self, show = False):
+    def as_card_selected(self, show = False, dissertation = False):
         button_label = StyleService.name_shorter(self.course_info.name) #+ " " + self.course_info.id
         buttons = []
         button_uid_remove = self.to_selected_button_id( "buttonremove_")
         
         credits = f"Credits: {self.course_info.credits}"
         more_info_card = StyleService.info_card_for_course(self.course_info)
-
-        return ui.div( 
+        if dissertation:
+            return ui.div( 
+                            ui.div(  button_label, ui.popover( icon("circle-info"), more_info_card)),
+                        style= StyleService.style_course_box(),
+                    )
+        else:
+            return ui.div( 
                             ui.div(  button_label),
                             ui.row( 
                                 ui.column(1,ui.popover( icon("circle-info"), more_info_card)), 
