@@ -13,24 +13,35 @@ class DataService:
         self.course_infos = reactive.value([])
         self.personas = reactive.value([])
         self.degrees = reactive.value([])
-        # self.degree_selected =  reactive.value([])
+        self.degree_selected_id =  None
 
-    def degree_with_id_or_default(degree_id):
+    def degree_with_id_or_default(degree_id = None):
         degrees = DataService.load_degrees()
         if degree_id == None:
             degree = degrees[0]
         else:
             degree = [degree for degree in degrees if degree.id == degree_id][0]
+
         return degree
 
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
         self.degrees = DataService.load_degrees()
-        
         self.course_infos = DataService.load_data()
         self.personas = DataService.load_personas()
-        # used for input dropdown
+        # TODO: ugh, this should not be hardcoded :(
+        # if DataService.degree_with_id_or_default().years == 3:
+        #     self.select_dissertation()
   
+    def select_dissertation(self):
+        dissertation_selected = CourseSelected(self.get_dissertation(),3,1)
+        self.add_course(dissertation_selected)
+
+    def get_dissertation(self):
+        return [course 
+                for course in self.course_infos
+                if course.id == "DISSERTATION"][0]
+
 
     def all_inputs_ids():
         ids =  [ button_id
@@ -68,10 +79,7 @@ class DataService:
                 all_options.append(course)
         return all_options
     
-    def get_dissertation(self):
-        return [course 
-                for course in self.course_infos
-                if course.id == "DISSERTATION"][0]
+
 
     def number_of_taken_courses_in(self, year, block):
         taken_courses_in = [course
@@ -102,7 +110,7 @@ class DataService:
         string_bits = selected_course_string.split("_")
         # check if course id is valud and year and block are in range 
         # button_id like "ABCD_1_6" holds courseid, year, block. eg string_bits would be ['ABCD',1,6]
-        if len(string_bits) == 3 and string_bits[0] in DataService.all_course_ids() and int(string_bits[1]) in range(1,3) and int(string_bits[2]) in range(1,7):
+        if len(string_bits) == 3 and string_bits[0] in DataService.all_course_ids() and int(string_bits[1]) in range(1,4) and int(string_bits[2]) in range(1,7):
             course_obj = self.course_with_id(string_bits[0])
             selectedCourse = CourseSelected(course_obj, int(string_bits[1]), int(string_bits[2]))
             return selectedCourse
@@ -113,6 +121,7 @@ class DataService:
     def get_year_and_block_from_filter_button_id(self, button_id):
         button_id = button_id.replace("buttonfilter_","")
         string_bits = button_id.split("_")
+        print("get_year_and_block_from_filter_button_id",button_id,string_bits)
         return (int(string_bits[0]), int(string_bits[1])) if len(string_bits) == 2 else ("all", "all")
 
     def respond_to_clicked_button_id(self, button_id):
@@ -142,8 +151,8 @@ class DataService:
                             if course.id == course_id]
         return courses_with_id[0] if len(courses_with_id) > 0 else None
 
-    def as_card_selected(self, courseSelected):
-        return courseSelected.as_card_selected( self.is_taken_in_selected_course(courseSelected))
+    def as_card_selected(self, courseSelected, dissertation = False):
+        return courseSelected.as_card_selected( self.is_taken_in_selected_course(courseSelected),dissertation)
 
     def as_card_nothing_selected(self, year, block):
         number_of_taken_courses = self.number_of_taken_courses_in(year, block)

@@ -24,9 +24,9 @@ class CourseSelected:
             button_label = "Nothing selected yet"
             
             return ui.div( 
-                                ui.div(  button_label),
+                                # ui.div(  button_label),
                                 ui.row( 
-                                          ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter courses for this block"),
+                                          ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter options"),
                                     style = "margin:0px"
                                 ),
                             style= StyleService.style_course_box_not_selected(),
@@ -37,31 +37,26 @@ class CourseSelected:
 
 
 
-    def as_card_selected(self, show = False, dissertation = False):
+    def as_card_selected(self, show = True, dissertation = False):
         button_label = StyleService.name_shorter(self.course_info.name) #+ " " + self.course_info.id
         buttons = []
         button_uid_remove = self.to_selected_button_id( "buttonremove_")
         
         credits = f"Credits: {self.course_info.credits}"
         more_info_card = StyleService.info_card_for_course(self.course_info)
-        if dissertation:
-            return ui.div( 
-                            ui.div(  button_label, ui.popover( icon("circle-info"), more_info_card)),
-                        style= StyleService.style_course_box(),
-                    )
-        else:
-            return ui.div( 
-                            ui.div(  button_label),
-                            ui.row( 
-                                ui.column(1,ui.popover( icon("circle-info"), more_info_card)), 
-                                ui.column(8,credits),
-                                ui.column(1,      ui.input_action_link(button_uid_remove, f"❌")),
-                                style = "margin:0px",
-                                # proglang_footer     
-                            ),
-                        style= StyleService.style_course_box(),
-                        hidden = (not show)
-                    )
+        return ui.div( 
+                        ui.div(  button_label, ui.popover( icon("circle-info"), more_info_card, hidden = (not dissertation))),
+                        ui.row( 
+                            ui.column(1,ui.popover( icon("circle-info"), more_info_card)), 
+                            ui.column(8,credits),
+                            ui.column(1,      ui.input_action_link(button_uid_remove, f"❌")),
+                            style = "margin:0px",
+                            hidden = (dissertation)
+                            # proglang_footer     
+                        ),
+                    style= StyleService.style_course_box(),
+                    hidden = (not show)
+                )
 
 
     def as_string(self):

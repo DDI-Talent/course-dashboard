@@ -57,6 +57,7 @@ def server(input, output, session):
         data_service = courses_data.get()
         
         data_service.refresh_data(current_degree_id())
+        data_service.degree_selected_id = current_degree_id()
         courses_data.set(data_service)
 
     @reactive.effect
@@ -86,7 +87,7 @@ def server(input, output, session):
             ui.row(
                 ui.column(6,
                           ui.input_select("filter_year",  "Filter by year", 
-                            choices = {"all": "All","1":"Year 1", "2": "Year 2"},
+                            choices = {"all": "All","1":"Year 1", "2": "Year 2",  "3": "Year 3"},
                 )),
                 ui.column(6,
                           ui.input_select("filter_block", "Filter by block", 
@@ -119,7 +120,7 @@ def server(input, output, session):
     def list_all_courses():
         nonlocal courses_data
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
-        years_to_keep = [1,2] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
+        years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
         text_to_keep = input.filter_name.get().strip().lower()
 
         courses_cards = [
@@ -182,11 +183,15 @@ def server(input, output, session):
         nonlocal courses_data
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
 
-        dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
+        # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
+
+        
         right_most_column =  ui.column(1, 
-                                    ui.row(ui.p("YEAR 3")),
-                                    ui.row( dissertation_selected.as_card_selected(dissertation=True),
-                                           style ="writing-mode: vertical-rl;text-orientation: upright;"+StyleService.style_course_box()),
+                                    ui.row(ui.p("YEAR 3",get_credits_information(3), style = "padding: 0px")),
+                                    ui.row( 
+                                         courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
+                                         courses_data.get().as_card_nothing_selected(3, 1),
+                                           style ="writing-mode: vertical-rl;text-orientation: upright;"),
                                     hidden = current_degree.years < 3
                                     )
 
@@ -195,8 +200,8 @@ def server(input, output, session):
 
         rows  = [ui.row(
                 ui.column(1, ""),
-                ui.column(5, ui.row( ui.column(6,"YEAR 1"), ui.column(6,get_credits_information(1)))),
-                ui.column(5, ui.row( ui.column(6,"YEAR 2"), ui.column(6,get_credits_information(2))), hidden = current_degree.years < 2))
+                ui.column(5, ui.row( ui.column(4,"YEAR 1"), ui.column(8,get_credits_information(1)))),
+                ui.column(5, ui.row( ui.column(4,"YEAR 2"), ui.column(8,get_credits_information(2))), hidden = current_degree.years < 2))
             ]
         for block in range(1,7):
             years_widgets = []
@@ -232,7 +237,7 @@ def server(input, output, session):
             max_credits = current_degree.years * 60
         else: # just showing one year
             max_credits = 60
-        return ui.div(f"Credits: {total_credits} of {max_credits}")
+        return ui.div(f"Credits: {total_credits} of {max_credits}", style = "padding: 0px")
     
     @output
     @render.text
@@ -277,10 +282,14 @@ def server(input, output, session):
     
     def get_all_filter_buttons_info():
         return {
+            **{
             f"buttonfilter_{year}_{block}" : getattr(input, f"buttonfilter_{year}_{block}") 
             for year in ["1", "2"]
             for block in ["1", "2", "3", "4", "5", "6"]
+            },
+            **{f"buttonfilter_3_1" : getattr(input, f"buttonfilter_3_1")}
         }
+    # TODO: is there a way to not hardcode it?
     
     def get_all_filter_buttons():
         return get_all_filter_buttons_info().values()

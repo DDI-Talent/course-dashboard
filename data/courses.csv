@@ -32,6 +32,6 @@ DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,PUHR11064,,stats+code,R,PUHR11103,Statistical m
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,PUHR11116,,stats+code,R,,Advanced statistics,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11064.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,HEIN11084,,context+quant+?,,,Delivering person-centred care in a digital age for remote and rural areas,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11116.htm
 DS_HSC2+DS_HSC3,2,6,10,HEIN11090,,quant+qual+scholar,,,Applied research design for data science in Health and Social Care,,Deanery of Biomedical Sciences,Applied of research design for data science in Health and Social Care
-DS_HSC1+DS_HSC2+DS_HSC3+LDT_HSC,3,1,60,DISSERTATION,,context+data+?,,,DISSERTATION,,,http://www.drps.ed.ac.uk/current/dpt/TODO
+DS_HSC3+LDT_HSC,3,1,60,DISSERTATION,,context+data+?,,,DISSERTATION,,,http://www.drps.ed.ac.uk/current/dpt/TODO
 LDT_HSC,2,1+3,5,HEIN11088a,,context+code+data,R,,Health Data Science Foundations (1 of 2),,,https://www.drps.ed.ac.uk/current/dpt/cxhein11088.htm
 LDT_HSC,2,2+4,5,HEIN11088b,,context+code+data,R,,Health Data Science Foundations (2 of 2),,,https://www.drps.ed.ac.uk/current/dpt/cxhein11088.htm
