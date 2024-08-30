@@ -15,7 +15,7 @@ class Course:
         self.blocks = self.string_to_list(f"{row['block']}")
         self.id = row['course_id']
         self.name = row['course_name']
-        self.prog_lang = row['prog_lang']
+        self.prog_lang = self.string_to_list(f"{row['prog_lang']}", as_ints=False)
         self.notes = row['notes']
         self.link = row['drps_link']
         self.credits = row['credits']
@@ -79,4 +79,5 @@ class Course:
     def string_to_list(self, string_to_parse, as_ints = True):
         string_to_parse = string_to_parse.replace(" and ", " ").replace(" or ", " ").replace("+", " ")
         return [int(item) if as_ints else item
-                for item in string_to_parse.split(' ')]
+                for item in string_to_parse.split(' ')
+                if item != '' and item != 'nan']

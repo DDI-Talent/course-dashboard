@@ -53,14 +53,14 @@ class StyleService:
         #     hasprereq = f"This course has prerequisites: {self.course_info.hasprereq}"
         # else:
         #     hasprereq = "This course does not have any prerequsites"
-        
         more_info_card = (ui.card(
                                 ui.row(ui.div(
                                     {"style": "font-weight: bold"},
                                     ui.p("Course Information"),
                                 ),),
                                 ui.row("‣ ","TODO: what other info about the course would we like to have here?"),
-                                # ui.row("‣ ",hasprereq),
+                                ui.row("‣ Themes: ",", ".join(course_info.themes) if len(course_info.themes)>0 else "none"),
+                                ui.row("‣ Programming languages: ", ", ".join(course_info.prog_lang) if len(course_info.prog_lang)>0 else "none"),
                                 # ui.row("‣ ",isprereq),
                                 # ui.row("‣ ",credits),
                                 # ui.row("‣ ",proglang),

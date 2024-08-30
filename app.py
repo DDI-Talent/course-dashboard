@@ -7,7 +7,7 @@ from faicons import icon_svg as icon
 from views.style_service import StyleService
 
 
-version = "1.2.5" # major.sprint.release
+version = "1.2.20" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -24,11 +24,11 @@ app_ui = ui.page_fixed(
         ),
  ui.row(
     ui.column(4, 
-              ui.h2("Choose your courses"),
+              ui.h2("Your Course Options:"),
               ui.output_ui("filter_panel"),
                ui.output_ui("list_all_courses")
                ,style= StyleService.style_section_box()),
-    ui.column(8,ui.h2("Your Selected Courses"),
+              ui.column(8,ui.h2("Your Degree:"),
               ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
 ), 
 ui.tags.script("""
@@ -36,6 +36,18 @@ ui.tags.script("""
             window.location.href = url;
         });
     """),
+ui.tags.script("""
+        function copyToClipboard() {
+            let copyText = document.getElementById("course_choices");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+            navigator.clipboard.writeText(copyText.value);
+            alert("Link to your choices has been coppied, so you can paste it anywhere now (link is " + copyText.value+")");
+            return false;
+        }
+    """),
+
+   
 style = "max-width: 1240px; padding: 20px"
 )
 
@@ -105,7 +117,7 @@ def server(input, output, session):
         nonlocal courses_data
         degree_options = {degree.id: degree.name 
                           for degree in courses_data.get().degrees }
-        return ui.input_select("select_degree_dropdown", "Choose the degree", choices = degree_options, selected=current_degree_id(), width="90%;") 
+        return ui.input_select("select_degree_dropdown", "Choose the degree to see options", choices = degree_options, selected=current_degree_id(), width="90%;") 
 
 
 
@@ -133,6 +145,10 @@ def server(input, output, session):
         return courses_cards
     
     def sharable_link(link_text, selected_courses_as_string):
+        sharable_url = sharable_url( selected_courses_as_string)
+        return ui.a(link_text,  href=sharable_url)
+    
+    def sharable_url( selected_courses_as_string):
         # TODO: clean this up. currently in many places
         nonlocal courses_data
         # degree_id = courses_data.get().degree_selected.get().id
@@ -149,7 +165,7 @@ def server(input, output, session):
             link_to_share += f"{pathname}"
         link_to_share += f"?degree_id={current_degree_id()}&courses={selected_courses_as_string}"
 
-        return ui.a(link_text,  href=link_to_share)
+        return link_to_share
        
 
     @output
@@ -159,9 +175,18 @@ def server(input, output, session):
         selected_courses_as_string = courses_data.get().selected_choices_as_string()
         number_of_choices =  len(courses_data.get().selected_courses.get())
         if number_of_choices == 0:
-            return sharable_link(f"🛒 Choose courses to create sharable link", selected_courses_as_string)
+            return ui.div(f"🛒 Choose courses to create sharable link")
         else:
-            return sharable_link(f"🛒 Share via link ({number_of_choices} Choices)",selected_courses_as_string)
+            return ui.div(ui.div(f"Unique link to your {number_of_choices} choices:"),
+                          ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
+                          ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;"),
+                          ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
+
+                            {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
+                          )
+
+
+
 
     @output
     @render.ui
