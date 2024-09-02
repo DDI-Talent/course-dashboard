@@ -1,54 +1,84 @@
 from shiny import App, render, ui, reactive, session
 import pandas as pd
 from models.course import Course
-from models.selected_course import SelectedCourse
-from models.courses_data import CoursesData
+from models.course_selected import CourseSelected
+from models.data_service import DataService
 from faicons import icon_svg as icon
+from views.style_service import StyleService
 
 
-version = "0.5.3" # major.sprint.release
+version = "1.2.20" # major.sprint.release
     
-app_ui = ui.page_sidebar(
-    ui.sidebar("Pin Course Options", 
-               ui.output_ui("list_all_courses"),
-               width=250,
-               bg = '#579a9f6d',
-               ),
-    ui.panel_title(ui.row(
-        ui.column(6,ui.h1(f"Your Pinned courses (v{version})")),
-        ui.column(3,ui.output_ui('course_personas')),
-        ui.column(3,ui.output_ui('share_choices_button')),
-        )),
-    ui.output_ui('grid_selected_courses'),
-    ui.output_text('tot_credits')
+app_ui = ui.page_fixed(
+
+ ui.row(     
+     ui.column(12, ui.panel_title(
+         ui.row(
+            ui.column(6,ui.h1(f"Courses Dashboard (v{version})"), ui.output_ui("select_degree"),),
+            ui.column(3,ui.output_ui('course_personas')),
+            ui.column(3, 
+                        ui.row(ui.output_ui('share_choices_button')),
+                        ui.row( ui.output_ui('total_credits'),  ui.output_ui('total_credits_warning'))
+                        )
+        ))),style= StyleService.style_section_box()
+        ),
+ ui.row(
+    ui.column(4, 
+              ui.h2("Your Course Options:"),
+              ui.output_ui("filter_panel"),
+               ui.output_ui("list_all_courses")
+               ,style= StyleService.style_section_box()),
+              ui.column(8,ui.h2("Your Degree:"),
+              ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
+), 
+ui.tags.script("""
+        Shiny.addCustomMessageHandler('navigate', function(url) {
+            window.location.href = url;
+        });
+    """),
+ui.tags.script("""
+        function copyToClipboard() {
+            let copyText = document.getElementById("course_choices");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+            navigator.clipboard.writeText(copyText.value);
+            alert("Link to your choices has been coppied, so you can paste it anywhere now (link is " + copyText.value+")");
+            return false;
+        }
+    """),
+
+   
+style = "max-width: 1240px; padding: 20px"
 )
 
 def server(input, output, session):
-    global courses_data
-    global input_states
-    global initial_url_loaded_already
-    global colors
 
-    courses_data = reactive.value(CoursesData())
+    courses_data = reactive.value(DataService())
     input_states = reactive.value({})
     initial_url_loaded_already = False
     colors = reactive.value({})
 
+    def current_degree_id():
+        url_query = session.input[".clientdata_url_search"]()
+        selected_degree_id = DataService.url_to_degree(url_query)
+        return selected_degree_id
+    
     @reactive.effect
     def load_data():
-        global courses_data
+        nonlocal courses_data
         data_service = courses_data.get()
-        data_service.refresh_data()
+        
+        data_service.refresh_data(current_degree_id())
+        data_service.degree_selected_id = current_degree_id()
         courses_data.set(data_service)
 
     @reactive.effect
     def load_initial_url():
-        global courses_data
-        global initial_url_loaded_already
+        nonlocal courses_data
+        nonlocal initial_url_loaded_already
 
         if not initial_url_loaded_already:
             initial_url_loaded_already = True
-            print("load_initial_url")
             # reacts to url in format .../?courses=HEIN11037_1_1+HEIN11055_2_2
             url_query = session.input[".clientdata_url_search"]()
             courses_data_temp = courses_data.get()
@@ -57,17 +87,72 @@ def server(input, output, session):
             
     @output
     @render.ui
+    def filter_panel():
+        return ui.row( 
+            
+            ui.row(
+                ui.column(7,
+                          ui.input_text("filter_name",  "Filter by name",           
+                )),
+                ui.column(5,ui.p(" "),
+                          ui.input_action_link("button_filter_reset","Reset Filters 🔄"))),
+            ui.row(
+                ui.column(6,
+                          ui.input_select("filter_year",  "Filter by year", 
+                            choices = {"all": "All","1":"Year 1", "2": "Year 2",  "3": "Year 3"},
+                )),
+                ui.column(6,
+                          ui.input_select("filter_block", "Filter by block", 
+                            choices = {"all": "All","1":"Block 1", "2": "Block 2", "3": "Block 3", "4": "Block 4" , "5": "Block 5" , "6": "Block 6"  },
+                ))
+            )
+        )
+
+
+
+
+    @output
+    @render.ui
+    def select_degree():
+        nonlocal courses_data
+        degree_options = {degree.id: degree.name 
+                          for degree in courses_data.get().degrees }
+        return ui.input_select("select_degree_dropdown", "Choose the degree to see options", choices = degree_options, selected=current_degree_id(), width="90%;") 
+
+
+
+    @reactive.Effect
+    @reactive.event(input.select_degree_dropdown, ignore_init=True)
+    async def degree_selected():
+        degree_id =  input.select_degree_dropdown.get()
+        await session.send_custom_message("navigate", DataService.url_to_doashboard_with_degree(session, degree_id))
+
+    @output
+    @render.ui
     def list_all_courses():
-        global courses_data
+        nonlocal courses_data
+        blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
+        years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
+        text_to_keep = input.filter_name.get().strip().lower()
 
         courses_cards = [
-            course_obj.as_card() 
-          for (course_obj) in courses_data.get().course_infos
+            course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
+            for course_obj in courses_data.get().course_infos
+            if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
+            and (len(text_to_keep) < 0 or  course_obj.name.lower().find(text_to_keep) != -1)
+            
         ]
-        return (courses_cards)
+        return courses_cards
     
     def sharable_link(link_text, selected_courses_as_string):
-        global courses_data
+        sharable_url = sharable_url( selected_courses_as_string)
+        return ui.a(link_text,  href=sharable_url)
+    
+    def sharable_url( selected_courses_as_string):
+        # TODO: clean this up. currently in many places
+        nonlocal courses_data
+        # degree_id = courses_data.get().degree_selected.get().id
+
         site_protocol = session.input[".clientdata_url_protocol"]()
         site_port = session.input[".clientdata_url_port"]()
         site_url = session.input[".clientdata_url_hostname"]()
@@ -78,84 +163,166 @@ def server(input, output, session):
             link_to_share += f":{site_port}"
         if len(pathname) > 1: # eg. ignore just "/"
             link_to_share += f"{pathname}"
-        link_to_share += f"?courses={selected_courses_as_string}"
+        link_to_share += f"?degree_id={current_degree_id()}&courses={selected_courses_as_string}"
 
-        print("link_to_share",link_to_share)
-
-        return ui.a(link_text,  href=link_to_share)
+        return link_to_share
        
 
     @output
     @render.ui 
     def share_choices_button():
-        global courses_data
+        nonlocal courses_data
         selected_courses_as_string = courses_data.get().selected_choices_as_string()
         number_of_choices =  len(courses_data.get().selected_courses.get())
         if number_of_choices == 0:
-            return sharable_link(f"🛒 Pin some courses to create sharable link", selected_courses_as_string)
+            return ui.div(f"🛒 Choose courses to create sharable link")
         else:
-            return sharable_link(f"🛒 Copy and share this link ({number_of_choices} Choices)",selected_courses_as_string)
+            return ui.div(ui.div(f"Unique link to your {number_of_choices} choices:"),
+                          ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
+                          ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;"),
+                          ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
+
+                            {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
+                          )
+
+
+
 
     @output
     @render.ui
     def course_personas():
+        personas_links = [
+            persona.sharable_link(session)
+            for persona in courses_data.get().personas
+            if persona.degree_id == current_degree_id()]
+
         course_help = ui.row(
-               ui.span("load a persona:"), 
-               sharable_link("🤓 code focused", "PUHR11063_1_5+HEIN11037_1_1+HEIN11037_1_2+HEIN11045_1_4+HEIN11039_1_3+HEIN11068_1_6+HEIN11055_2_2+HEIN11040_2_3+HEIN11048_2_4+HEIN11057_2_6+HEIN11046_2_5"), 
-               sharable_link("😎 balanced", "HEIN11059_1_3+HEIN11043_1_5+HEIN11041_1_4+HEIN11037_1_1+HEIN11037_1_2+HEIN11068_1_6+HEIN11045_2_4+HEIN11056_2_5+HEIN11044_2_3+HEIN11057_2_6+HEIN11054_2_2"),
-               sharable_link("❌ empty", "HEIN11037_1_1+HEIN11037_1_2+HEIN11057_2_1+HEIN11057_2_6")
+               ui.span("load a persona:"),
+               *personas_links
                )
         return course_help
 
     @output
     @render.ui
     def grid_selected_courses():
-        global courses_data
+        nonlocal courses_data
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+
+        # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
+
+        
+        right_most_column =  ui.column(1, 
+                                    ui.row(ui.p("YEAR 3",get_credits_information(3), style = "padding: 0px")),
+                                    ui.row( 
+                                         courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
+                                         courses_data.get().as_card_nothing_selected(3, 1),
+                                           style ="writing-mode: vertical-rl;text-orientation: upright;"),
+                                    hidden = current_degree.years < 3
+                                    )
+
+
+
+
         rows  = [ui.row(
                 ui.column(1, ""),
-                ui.column(5, ui.p("YEAR 1")),
-                ui.column(1, ""),
-                ui.column(5, ui.p("YEAR 2")),
-            )]
+                ui.column(5, ui.row( ui.column(4,"YEAR 1"), ui.column(8,get_credits_information(1)))),
+                ui.column(5, ui.row( ui.column(4,"YEAR 2"), ui.column(8,get_credits_information(2))), hidden = current_degree.years < 2))
+            ]
         for block in range(1,7):
             years_widgets = []
             for year in [1,2]:
-                years_widgets.append([ 
-                    courses_data.get().as_card_selected(SelectedCourse(course, year, block))
-                    for course in courses_data.get().all_options_in(year, block)])
+                courses_in_this_block = [ 
+                    courses_data.get().as_card_selected(CourseSelected(course, year, block))
+                    for course in courses_data.get().all_options_in(year, block)]
+                courses_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block))
+
+                years_widgets.append(courses_in_this_block)
 
             new_row = ui.row(
                 ui.column(1, ui.p(block)),
                 ui.column(5, years_widgets[0]),
-                ui.column(1, ui.p(block)),
-                ui.column(5, years_widgets[1])
+                ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
+                style = "padding: 16px 0px;"
             )
             rows.append(new_row)
-        return ui.column(12, rows)
+        return ui.row(ui.column(11, rows), right_most_column)
 
+    def get_credits_information(year = None):
+        nonlocal courses_data
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+        if year == None:
+            total_credits = sum([(course.get_credits()) 
+                                 for course in courses_data.get().selected_courses.get()])
+        else:  
+            total_credits = sum([(course.get_credits()) 
+                                 for course in courses_data.get().selected_courses.get()
+                                 if course.year == year])
+            
+        if year == None: # total for whole degree
+            max_credits = current_degree.years * 60
+        else: # just showing one year
+            max_credits = 60
+        return ui.div(f"Credits: {total_credits} of {max_credits}", style = "padding: 0px")
+    
     @output
     @render.text
-    def tot_credits():
-        global courses_data
+    def total_credits():
+        return  get_credits_information()
+    
+
+    @output
+    @render.ui
+    def total_credits_warning():
+        nonlocal courses_data
         total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
-        # total_credits = sum([course.credits
-        #     for course in courses_data.get().selected_courses.get()])
-        return f"Total credits: {total_credits}"
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+
+        max_credits = current_degree.years * 60
+
+        if total_credits == max_credits:
+            warning = ""
+            style = ""
+        elif total_credits > max_credits:
+            warning = f"(remove {total_credits - max_credits})"
+            style="background-color: #ff0000; color: #ffffff; margin-left: 10px;"
+        else: 
+            warning = f" (add {max_credits - total_credits} more)"
+            style="background-color: #0000ff; color: #ffffff; margin-left: 10px;"
+        return ui.div(warning, style=style)
 
     def get_all_inputs_ids():
-        return CoursesData.all_inputs_ids()
+        return DataService.all_inputs_ids(current_degree_id())
     
-    def get_all_inputs():
-        return get_all_input_info().values()
+    def get_all_inputs_add_remove():
+        return  get_all_inputs_add_remove_info().values()
 
-    def get_all_input_info():
+    def get_all_inputs_add_remove_info():
+        # print("session",session.input[".clientdata_url_search"]())
         return { button_id: getattr(input, button_id) 
-                for button_id in  CoursesData.all_inputs_ids()}
+                for button_id in  DataService.all_inputs_ids()}
+
+    # def get_all_input_info():
+    #     return { button_id: getattr(input, button_id) 
+    #             for button_id in  DataService.all_inputs_ids()}
+    
+    def get_all_filter_buttons_info():
+        return {
+            **{
+            f"buttonfilter_{year}_{block}" : getattr(input, f"buttonfilter_{year}_{block}") 
+            for year in ["1", "2"]
+            for block in ["1", "2", "3", "4", "5", "6"]
+            },
+            **{f"buttonfilter_3_1" : getattr(input, f"buttonfilter_3_1")}
+        }
+    # TODO: is there a way to not hardcode it?
+    
+    def get_all_filter_buttons():
+        return get_all_filter_buttons_info().values()
 
     def which_input_changed( ):
-        global input_states
+        nonlocal input_states
         new_states = {}
-        all_inputs = get_all_input_info()
+        all_inputs ={**get_all_inputs_add_remove_info(), **get_all_filter_buttons_info()}
         #print("which_input_changed+",all_inputs,len(all_inputs.items()))
         for input_id, input_object in all_inputs.items():
             new_states[input_id] = input_object()
@@ -164,7 +331,7 @@ def server(input, output, session):
         # {"but_45678": 2}  # those. where number is how many times I was clicked
         # old [0,0,1]
         # new [0,0,2]
-        print("inputstates",input_states.get().keys())
+        # print("inputstates",input_states.get().keys())
         if (len(input_states.get().keys()) == 0):
             old_states = {new_state_key: 0
                 for new_state_key, new_state_value in new_states.items()}
@@ -175,15 +342,41 @@ def server(input, output, session):
                             for old_state_key, old_state_value in old_states.items()
                             if old_state_value != new_states[old_state_key]]
         
-        print("keys that changed",keys_that_changed)
+        # print("keys that changed",keys_that_changed)
         
         input_states.set(new_states)
         return keys_that_changed if len(keys_that_changed) > 0 else None
     
     @reactive.Effect
-    @reactive.event(*get_all_inputs())
+    @reactive.event(input.button_filter_reset)
+    def reset_filters():
+        ui.update_select( "filter_name",selected=""),
+        ui.update_select( "filter_year",selected="all"),
+        ui.update_select( "filter_block",selected="all")
+
+
+
+    @reactive.Effect
+    @reactive.event(*get_all_filter_buttons())
+    def any_filter_button_clicked():
+        nonlocal courses_data
+        clicked_button_id = which_input_changed( )
+        print("CLICKED!", clicked_button_id)
+
+        if clicked_button_id == None:
+            print("--- any_course_button_clicked Isssue, nothing changes")
+            return
+
+        for click in clicked_button_id:
+            year, block = courses_data.get().get_year_and_block_from_filter_button_id(click)
+            ui.update_select( "filter_year",selected=f"{year}"),
+            ui.update_select( "filter_block",selected=f"{block}")
+            ui.update_select( "filter_name",selected=f"")
+
+    @reactive.Effect
+    @reactive.event(*get_all_inputs_add_remove())
     def any_course_button_clicked():
-        global courses_data
+        nonlocal courses_data
         clicked_button_id = which_input_changed( )
         print("CLICKED!", clicked_button_id)
 
@@ -195,8 +388,6 @@ def server(input, output, session):
         data_service = courses_data.get()
         for click in clicked_button_id:
             data_service.respond_to_clicked_button_id(click)
-        #data_service.respond_to_clicked_button_id( clicked_button_id  )
         courses_data.set(data_service)
-        # print("test",data_service.card_color)
     
 app = App(app_ui, server)#, debug=True)
