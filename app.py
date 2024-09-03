@@ -9,14 +9,14 @@ from views.style_service import StyleService
 
 
 
-version = "1.2.20" # major.sprint.release
+version = "1.3.0" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
  ui.row(     
      ui.column(12, ui.panel_title(
          ui.row(
-            ui.column(6,ui.h1(f"Course Selection Tool (v{version})"), ui.output_ui("select_degree"),),
+            ui.column(6,ui.h1(f"Course Selection Tool"), ui.div(f"(v{version})"), ui.output_ui("select_degree"),),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
