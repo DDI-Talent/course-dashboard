@@ -274,8 +274,10 @@ def server(input, output, session):
     
 
 
-    def one_theme_count(emoji,value, color):
-        return ui.div(emoji,value, style= f"background-color: {color};") 
+    def one_theme_count(themename,value):
+        theme = StyleService.theme_infos()[themename]
+        return StyleService.single_theme(themename, 1, text = f"{theme['name']} {value}")
+    # ui.div(theme['name'],value, style=StyleService.style_theme_single(themename)) 
 
     @output
     @render.ui
@@ -286,13 +288,13 @@ def server(input, output, session):
             for theme in selected_course.course_info.themes
             ]
         theme_counts = Counter(all_themes)
-    
+        theme_names = list(theme_counts.keys())
+        theme_names.sort()
         return ui.div( [
-            one_theme_count(StyleService.theme_infos()[theme]['name'], 
-                            theme_counts[theme], 
-                            StyleService.theme_infos()[theme]['color'])
-            for theme in theme_counts.keys()],
-            style="display:contents;"
+            one_theme_count(theme_name, 
+                            theme_counts[theme_name])
+            for theme_name in theme_names],
+            style="display:flex;"
         )  
     
     

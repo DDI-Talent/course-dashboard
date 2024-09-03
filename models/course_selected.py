@@ -49,7 +49,7 @@ class CourseSelected:
                         ui.row( 
                             ui.column(1,ui.popover( icon("circle-info"), more_info_card)), 
                             ui.column(8,credits),
-                            ui.column(1,      ui.input_action_link(button_uid_remove, f"❌")),
+                            ui.column(1,      ui.input_action_link(button_uid_remove, f"❌", style=StyleService.style_highlighted_link())),
                             style = "margin:0px",
                             hidden = (dissertation)
                         ),
