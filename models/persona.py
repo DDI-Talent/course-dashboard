@@ -31,7 +31,8 @@ class Persona:
             link_to_share += f"{pathname}"
         link_to_share += f"?degree_id={self.degree_id}&courses={self.course_ids_plus_separated}"
 
-        more_info_card = ui.card(
+        more_info_card = ui.div(
+                                ui.h3(f"{self.name}"),
                                 ui.p(f"{self.description}")
                             )
 

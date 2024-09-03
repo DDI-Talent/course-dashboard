@@ -27,20 +27,20 @@ class StyleService:
 
 
     def theme_infos():
-        return {    "code":{"color":"aqua","textcolor":"black", "name":"👾"},
-                    "code-r":{"color":"aqua","textcolor":"black", "name":"🧩"},
-                    "code-python":{"color":"aqua","textcolor":"black", "name":"🐍"},
-                    "code-sql":{"color":"aqua","textcolor":"black", "name":"🗄"},
-                    "context":{"color":"chartreuse","textcolor":"black", "name":"🩺"},
-                    "data":{"color":"darkviolet","textcolor":"white", "name":"🔎"},
-                    "quant":{"color":"fuchsia","textcolor":"black", "name":"🔢"},
-                    "qual":{"color":"black","textcolor":"white", "name":"💬"},
-                    "scholar":{"color":"#e6308a","textcolor":"black", "name":"📚"},
-                    "stats":{"color":"yellow","textcolor":"black", "name":"📊"},
-                    "ethics":{"color":"#5ba300","textcolor":"black", "name":"😇"},
-                    "leader":{"color":"crimson","textcolor":"black", "name":"🌟"},
+        return {    "code":{"color":"#f032e6","textcolor":"white", "name":"👾"},
+                    "code-r":{"color":"#f032e6","textcolor":"white", "name":"🧩"},
+                    "code-python":{"color":"#f032e6","textcolor":"white", "name":"🐍"},
+                    "code-sql":{"color":"#f032e6","textcolor":"white", "name":"🗄"},
+                    "context":{"color":"#bfef45","textcolor":"black", "name":"🩺"},
+                    "data":{"color":"#911eb4","textcolor":"white", "name":"🔎"},
+                    "quant":{"color":"#000000","textcolor":"white", "name":"🔢"},
+                    "qual":{"color":"#800000","textcolor":"white", "name":"💬"},
+                    "scholar":{"color":"#ffe119","textcolor":"black", "name":"📚"},
+                    "stats":{"color":"#aaffc3","textcolor":"black", "name":"📊"},
+                    "ethics":{"color":"#9A6324","textcolor":"white", "name":"😇"},
+                    "leader":{"color":"crimson","textcolor":"white", "name":"🌟"},
                     "?":{"color":"#aa8f00","textcolor":"black", "name":"❓"},
-                    "design":{"color":"limegreen","textcolor":"white", "name":"🎨"},}
+                    "design":{"color":"#3cb44b","textcolor":"black", "name":"🎨"},}
 
 
     def style_highlighted_link():
