@@ -68,6 +68,8 @@ class Course:
                                 style = "margin:0px, display:contents",
                                 # proglang_footer     
                             ),
+                            StyleService.box_of_themes(self.themes),
+
                         style= StyleService.style_course_box(),
                         hidden = (not show)
                     )

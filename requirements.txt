@@ -5,3 +5,4 @@ plotly
 pandas
 ridgeplot
 jinja2
+matplotlib

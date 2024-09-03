@@ -5,33 +5,33 @@ DS_HSC1+DS_HSC2+DS_HSC3,1,2,10,HEIN11037b,HEIN11037,HEIN11037,code+context+data,
 DS_HSC2+DS_HSC3,2,2,10,HEIN11055,HEIN11055,,stats+code+data,R,HEIN11037,Big Data Analytics,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11055.htm
 DS_HSC2+DS_HSC3,2,2,10,GLHE11017,GLHE11017,,qual+scholar,,,Introduction to qualitative research methods,,,http://www.drps.ed.ac.uk/current/dpt/GLHE11017.htm
 DS_HSC2+DS_HSC3,2,2,10,HEIN11085,HEIN11085,,code+context+data,R,HEIN11066,Natural language processing in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11085.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,2,10,HEIN11056,HEIN11056,,context+data+?,,,Implementation science: putting evidence-based interventions into practice,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11056.htm
-DS_HSC1+DS_HSC2+DS_HSC3+LDT_HSC,1+2,3,10,HEIN11059,HEIN11059,,context+ethics?,,,Data ethics in Health and Social Care,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/HEIN11059.htm
+DS_HSC1+DS_HSC2+DS_HSC3,2,2,10,HEIN11056,HEIN11056,,context+data,,,Implementation science: putting evidence-based interventions into practice,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11056.htm
+DS_HSC1+DS_HSC2+DS_HSC3+LDT_HSC,1+2,3,10,HEIN11059,HEIN11059,,context+ethics,,,Data ethics in Health and Social Care,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/HEIN11059.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,3,10,HEIN11039,HEIN11039,,stats+code,R,,Introduction to statistics in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11039.htm
 DS_HSC1+DS_HSC2+DS_HSC3+LDT_HSC,1+2,3,10,HEIN11040,HEIN11040,,qual+data+scholar+design,,,Data visualisation: Knowledge transfer,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11040.htm
 DS_HSC1+DS_HSC2+DS_HSC3+LDT_HSC,1+2,3,10,HEIN11044,HEIN11044,,context+data,,,Data standards and core technologies in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11044.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,3,10,PUHR11103,PUHR11103,PUHR11103,stats+code,R,,Data analysis with R,,,http://www.drps.ed.ac.uk/current/dpt/PUHR11103.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,3,10,HEIN11067,HEIN11067,,code+data,R,HEIN11037,Intermediate R programming for data science,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/HEIN11067.htm
+DS_HSC1+DS_HSC2+DS_HSC3,2,3,10,HEIN11067,HEIN11067,,code+data,R,HEIN11037,Intermediate R programming for data science,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/HEIN11067.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,4,10,HEIN11045,HEIN11045,HEIN11066,code,Python,,Foundations of Software Development in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11045.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,4,10,HEIN11048,HEIN11048,,code+data+context,SQL+R,HEIN11037,Introduction to Databases & Information Systems,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11048.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,4,10,HEIN11042,HEIN11042,,context+?,,,Managing and leading data-driven innovation,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11042.htm
+DS_HSC1+DS_HSC2+DS_HSC3,2,4,10,HEIN11048,HEIN11048,,code+data+context,SQL+R,HEIN11037,Introduction to Databases & Information Systems,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11048.htm
+DS_HSC1+DS_HSC2+DS_HSC3,1+2,4,10,HEIN11042,HEIN11042,,context+leader,,,Managing and leading data-driven innovation,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11042.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,4,10,EUHR11067,EUHR11067,,stats+code+context,R,PUHR11103,Intermediate epidemiology,,,http://www.drps.ed.ac.uk/current/dpt/EUHR11067.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,4,10,HEIN11083,HEIN11083,,context+leader+ethics+data,,,AI for care in the digital age,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11083.htm
+DS_HSC1+DS_HSC2+DS_HSC3,2,4,10,HEIN11083,HEIN11083,,context+leader+ethics+data,,,AI for care in the digital age,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11083.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,HEIN11043,HEIN11043,,context+leader,,,Digital technologies in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11043.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,HEIN11046,HEIN11046,,context+qual+?,,,User-driven service design in Health and Social Care,,IS IT RUNNING???,http://www.drps.ed.ac.uk/current/dpt/HEIN11046.htm
+DS_HSC1+DS_HSC2+DS_HSC3,2,5,10,HEIN11046,HEIN11046,,context+qual,,,User-driven service design in Health and Social Care,,IS IT RUNNING???,http://www.drps.ed.ac.uk/current/dpt/HEIN11046.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,HEIN11062,HEIN11062,,code+data,Python,HEIN11066,Applied software development in Health and Social Care (Python 2),,,http://www.drps.ed.ac.uk/current/dpt/HEIN11062.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PUHR11063,PUHR11063,,stats+code,R,,Data analysis for epidemiology,,,http://www.drps.ed.ac.uk/current/dpt/PUHR11063.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PGSP11401,PGSP11401,,scholar+context+data+?,,,Engaging with digital research,,,http://www.drps.ed.ac.uk/current/dpt/PGSP11401.htm
+DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PGSP11401,PGSP11401,,scholar+context+data,,,Engaging with digital research,,,http://www.drps.ed.ac.uk/current/dpt/PGSP11401.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PUHR11069,PUHR11069,,scholar+qual+quant,,,Systematic reviews,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/PUHR11069.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PGSP11388,PGSP11388,,qual+quant+scholar,,,Use and evolution of digital data analysis and collection tools,,School of Social and Political Sciences,http://www.drps.ed.ac.uk/current/dpt/PGSP11388.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,HEIN11068,HEIN11068,,data+code,R+Python,HEIN11037,Data Types & Structures in R & Python,,School of Social and Political Sciences,http://www.drps.ed.ac.uk/current/dpt/HEIN11068.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,HEIN11047,HEIN11047,,context+data+ethics,,,Data security and protection in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11047.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,INAH11017,INAH11017,,data+code+context+?,,,Introduction to GIS and spatial data analysis,,,http://www.drps.ed.ac.uk/current/dpt/INAH11017.htm
+DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,INAH11017,INAH11017,,data+code+context,,,Introduction to GIS and spatial data analysis,,,http://www.drps.ed.ac.uk/current/dpt/INAH11017.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,PUHR11064,PUHR11064,,stats+code,R,PUHR11103,Statistical modelling for epidemology,,,http://www.drps.ed.ac.uk/current/dpt/PUHR11064.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,PUHR11116,PUHR11116,,stats+code,R,,Advanced statistics,,,http://www.drps.ed.ac.uk/current/dpt/PUHR11116.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,HEIN11084,HEIN11084,,context+design+qual,,,Delivering person-centred care in a digital age for remote and rural areas,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11084.htm
 DS_HSC2+DS_HSC3,2,6,10,HEIN11090,HEIN11090,,quant+qual+scholar,,,Applied research design for data science in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11090.htm
-DS_HSC3+LDT_HSC,3,1,60,DISSERTATION,DISSERTATION,,scholar+qual+quant+leader+context+code+data+stats+ethics,,,DISSERTATION,,,
+DS_HSC3+LDT_HSC,3,1,60,DISSERTATION,DISSERTATION,,,,,DISSERTATION,,,
 LDT_HSC,2,1+3,5,HEIN11088a,HEIN11088,,context+data+code,R,,Health Data Science Foundations (1 of 2),,,http://www.drps.ed.ac.uk/current/dpt/HEIN11088.htm
 LDT_HSC,2,2+4,5,HEIN11088b,HEIN11088,,context+data+code,R,,Health Data Science Foundations (2 of 2),,,http://www.drps.ed.ac.uk/current/dpt/HEIN11088.htm
 LDT_HSC,1,1,10,HEIN11064a,HEIN11064,,leader+context,,,Fundamentals of Leading Digital Transformation (1 of 2),,,http://www.drps.ed.ac.uk/current/dpt/HEIN11064.htm
@@ -42,5 +42,5 @@ LDT_HSC,1,5,10,HEIN11063a,HEIN11063,,qual+quant+leader+context,,,Evaluating Digi
 LDT_HSC,1,6,10,HEIN11063b,HEIN11063,,qual+quant+leader+context,,,Evaluating Digital Transformation (2 of 2),,,http://www.drps.ed.ac.uk/current/dpt/HEIN11063.htm
 LDT_HSC,2,1,10,HEIN11086,HEIN11086,,design+leader+context,,,Foundations of Design for Care in the Digital Age,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11086.htm
 LDT_HSC,2,2,10,HEIN11082,HEIN11082,,data+leader+qual+quant,,,Data-led Decision Making for Service Transformation,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11082.htm
-DS_HSC1+DS_HSC2+DS_HSC3,2,6,10,HEIN11080,HEIN11080,,context+qual,,,Systems Thinking in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11080.htm
-,2,3,10,HEIN11087,HEIN11087,,leader,,,"Digital leader: leading self, others and the organisation",,,http://www.drps.ed.ac.uk/current/dpt/HEIN11087.htm
+DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,HEIN11080,HEIN11080,,context+qual,,,Systems Thinking in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11080.htm
+LDT_HSC,2,3,10,HEIN11087,HEIN11087,,leader,,,"Digital leader: leading self, others and the organisation",,,http://www.drps.ed.ac.uk/current/dpt/HEIN11087.htm

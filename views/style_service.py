@@ -8,13 +8,43 @@ class StyleService:
         pass
 
     def style_course_box():
-        return "padding: 10px; border: 1px solid black; margin: 2px;"
+        return "padding: 10px 22px 10px 10px;;  border: 1px solid black; margin: 2px; position:relative;"
     
     def style_course_box_not_selected():
         return "padding: 10px; border: 1px dashed grey; margin: 2px;"
     
     def style_section_box():
         return "padding: 10px; border: 1px solid grey;"
+    
+    def style_theme_box():
+        return "position: absolute; right: 0px;height: 100%; top: 0px;width: 16px;"
+    
+    def style_theme_single(how_many_themes):
+        return f"height: {100/how_many_themes}%;width: 100%;"
+
+    def theme_infos():
+        return {"code":{"color":"red", "name":"👾"},
+                    "context":{"color":"yellow", "name":"🩺"},
+                    "data":{"color":"blue", "name":"🔎"},
+                    "quant":{"color":"grey", "name":"🔢"},
+                    "qual":{"color":"pink", "name":"💬"},
+                    "scholar":{"color":"black", "name":"📚"},
+                    "stats":{"color":"orange", "name":"📊"},
+                    "ethics":{"color":"green", "name":"😇"},
+                    "leader":{"color":"brown", "name":"🌟"},
+                    "?":{"color":"grey", "name":"❓"},
+                    "design":{"color":"goldenrod", "name":"🎨"},}
+    
+    def single_theme(theme, how_many_themes):
+        
+
+        return ui.div(f"{StyleService.theme_infos()[theme]['name']}", 
+                      style=f"background-color:{StyleService.theme_infos()[theme]['color']};"+StyleService.style_theme_single(how_many_themes))
+    
+    def box_of_themes(themes):
+        return ui.div([StyleService.single_theme(theme, len(themes)) 
+                       for theme in themes], 
+                      style= StyleService.style_theme_box()),
 
     def name_shorter(long_name):
         shorter_name =  long_name.replace("health and social care", "H&SC").replace("Health and Social Care", "H&SC")
