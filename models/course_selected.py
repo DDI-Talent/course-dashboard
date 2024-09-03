@@ -26,7 +26,7 @@ class CourseSelected:
             return ui.div( 
                                 # ui.div(  button_label),
                                 ui.row( 
-                                          ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter options"),
+                                          ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter course options"),
                                     style = "margin:0px"
                                 ),
                             style= StyleService.style_course_box_not_selected(),
@@ -49,14 +49,17 @@ class CourseSelected:
                         ui.row( 
                             ui.column(1,ui.popover( icon("circle-info"), more_info_card)), 
                             ui.column(8,credits),
-                            ui.column(1,      ui.input_action_link(button_uid_remove, f"❌")),
+                            ui.column(1,      ui.input_action_link(button_uid_remove, f"❌", style=StyleService.style_highlighted_link())),
                             style = "margin:0px",
                             hidden = (dissertation)
-                            # proglang_footer     
                         ),
-                    style= StyleService.style_course_box(),
-                    hidden = (not show)
-                )
+                        StyleService.box_of_themes(self.course_info.themes),
+                  
+                         style= StyleService.style_course_box(),
+                         hidden = (not show)
+        )
+        
+                
 
 
     def as_string(self):

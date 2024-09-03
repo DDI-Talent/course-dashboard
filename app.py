@@ -1,5 +1,6 @@
 from shiny import App, render, ui, reactive, session
 import pandas as pd
+from collections import Counter
 from models.course import Course
 from models.course_selected import CourseSelected
 from models.data_service import DataService
@@ -7,28 +8,30 @@ from faicons import icon_svg as icon
 from views.style_service import StyleService
 
 
-version = "1.2.20" # major.sprint.release
+
+version = "1.3.0" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
  ui.row(     
      ui.column(12, ui.panel_title(
          ui.row(
-            ui.column(6,ui.h1(f"Courses Dashboard (v{version})"), ui.output_ui("select_degree"),),
+            ui.column(6,ui.h1(f"Course Selection Tool"), ui.div(f"(v{version})"), ui.output_ui("select_degree"),),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
-                        ui.row( ui.output_ui('total_credits'),  ui.output_ui('total_credits_warning'))
+                        ui.row( ui.output_ui('total_credits'),  ui.output_ui('total_credits_warning')),
+                        ui.row( ui.output_ui('overall_themes'))
                         )
         ))),style= StyleService.style_section_box()
         ),
  ui.row(
     ui.column(4, 
-              ui.h2("Your Course Options:"),
+              ui.h2("Available Courses:"),
               ui.output_ui("filter_panel"),
                ui.output_ui("list_all_courses")
                ,style= StyleService.style_section_box()),
-              ui.column(8,ui.h2("Your Degree:"),
+              ui.column(8,ui.h2("Your Courses:"),
               ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
 ), 
 ui.tags.script("""
@@ -117,7 +120,7 @@ def server(input, output, session):
         nonlocal courses_data
         degree_options = {degree.id: degree.name 
                           for degree in courses_data.get().degrees }
-        return ui.input_select("select_degree_dropdown", "Choose the degree to see options", choices = degree_options, selected=current_degree_id(), width="90%;") 
+        return ui.input_select("select_degree_dropdown", "Your program of study:", choices = degree_options, selected=current_degree_id(), width="90%;") 
 
 
 
@@ -177,7 +180,7 @@ def server(input, output, session):
         if number_of_choices == 0:
             return ui.div(f"🛒 Choose courses to create sharable link")
         else:
-            return ui.div(ui.div(f"Unique link to your {number_of_choices} choices:"),
+            return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
                           ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
                           ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;"),
                           ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
@@ -197,7 +200,7 @@ def server(input, output, session):
             if persona.degree_id == current_degree_id()]
 
         course_help = ui.row(
-               ui.span("load a persona:"),
+               ui.span("Example pathways:"),
                *personas_links
                )
         return course_help
@@ -224,7 +227,7 @@ def server(input, output, session):
 
 
         rows  = [ui.row(
-                ui.column(1, ""),
+                ui.column(1, "B"),
                 ui.column(5, ui.row( ui.column(4,"YEAR 1"), ui.column(8,get_credits_information(1)))),
                 ui.column(5, ui.row( ui.column(4,"YEAR 2"), ui.column(8,get_credits_information(2))), hidden = current_degree.years < 2))
             ]
@@ -268,6 +271,32 @@ def server(input, output, session):
     @render.text
     def total_credits():
         return  get_credits_information()
+    
+
+
+    def one_theme_count(themename,value):
+        theme = StyleService.theme_infos()[themename]
+        return StyleService.single_theme(themename, 1, text = f"{theme['name']} {value}")
+    # ui.div(theme['name'],value, style=StyleService.style_theme_single(themename)) 
+
+    @output
+    @render.ui
+    def overall_themes():
+        nonlocal courses_data
+        all_themes = [ theme
+            for selected_course in courses_data.get().selected_courses.get()
+            for theme in selected_course.course_info.themes
+            ]
+        theme_counts = Counter(all_themes)
+        theme_names = list(theme_counts.keys())
+        theme_names.sort()
+        return ui.div( [
+            one_theme_count(theme_name, 
+                            theme_counts[theme_name])
+            for theme_name in theme_names],
+            style="display:flex;"
+        )  
+    
     
 
     @output

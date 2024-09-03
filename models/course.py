@@ -20,7 +20,9 @@ class Course:
         self.link = row['drps_link']
         self.credits = row['credits']
         self.themes = self.string_to_list(f"{row['themes']}", as_ints=False)
-
+        if "code" in self.themes:
+            self.themes.remove("code")
+            self.themes.extend([f"code-{language.lower()}" for language in self.prog_lang])
 
     
     def takeable_in(self, year, block):
@@ -54,7 +56,7 @@ class Course:
                 button_uid = self.to_button_id(year, block, "buttonadd_") #TODO: use course year and block in id
                 buttons.append(ui.input_action_link(button_uid, 
                                 f"📌 Y{year} B{block}",
-                                style="background-color: #ffff00; margin: 10px;"),
+                                style=StyleService.style_highlighted_link()),
 
                             )
         credits = f"Credits: {self.credits}"
@@ -68,6 +70,8 @@ class Course:
                                 style = "margin:0px, display:contents",
                                 # proglang_footer     
                             ),
+                            StyleService.box_of_themes(self.themes),
+
                         style= StyleService.style_course_box(),
                         hidden = (not show)
                     )
