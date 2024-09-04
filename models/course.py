@@ -49,32 +49,16 @@ class Course:
        
 
     def as_card(self, show):
-        button_label = StyleService.name_shorter(self.name)
         buttons = []
         for year in self.years:
             for block in self.blocks:
-                button_uid = self.to_button_id(year, block, "buttonadd_") #TODO: use course year and block in id
+                button_uid = self.to_button_id(year, block, "buttonadd_")
                 buttons.append(ui.input_action_link(button_uid, 
                                 f"📌 Y{year} B{block}",
                                 style=StyleService.style_highlighted_link()),
-
                             )
-        credits = f"Credits: {self.credits}"
-        more_info_card = StyleService.info_card_for_course(self)
-        return ui.div( 
-                            ui.div(  button_label),
-                            ui.div( 
-                                ui.popover( icon("circle-info"), more_info_card), 
-                                credits,
-                                *[button for button in buttons],
-                                style = "margin:0px, display:contents",
-                                # proglang_footer     
-                            ),
-                            StyleService.box_of_themes(self.themes),
-
-                        style= StyleService.style_course_box(),
-                        hidden = (not show)
-                    )
+        return StyleService.course_as_card(self, show, buttons = buttons)
+        
 
 
     def __repr__(self) -> str:
