@@ -114,9 +114,7 @@ class StyleService:
         
         # credits = f"{self.course_info.credits} cred."
         return ui.div( 
-                        ui.div(  name_label, ui.popover( icon("circle-info"), 
-                                                        StyleService.info_card_for_course(course_info), 
-                                                        hidden = (not dissertation))),
+                        ui.div(  name_label,  ),
                         ui.div( 
                             ui.div(  *[button for button in buttons]   ),
                             style = "margin:0px; padding:0px",

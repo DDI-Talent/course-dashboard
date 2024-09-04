@@ -9,7 +9,7 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.0" # major.sprint.release
+version = "1.3.3" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -142,7 +142,7 @@ def server(input, output, session):
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
         years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
         text_to_keep = input.filter_name.get().strip().lower()
-        themes_to_keep = StyleService.theme_infos().keys() if input.filter_theme.get() == "all" else [input.filter_theme.get()]
+        themes_to_keep = list(StyleService.theme_infos().keys()) if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
         courses_cards = [
             course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
@@ -333,7 +333,9 @@ def server(input, output, session):
         return DataService.all_inputs_ids(current_degree_id())
     
     def get_all_inputs_add_remove():
-        return  get_all_inputs_add_remove_info().values()
+        all_inputs = get_all_inputs_add_remove_info().values()
+        print(get_all_inputs_add_remove_info().keys())
+        return  all_inputs
 
     def get_all_inputs_add_remove_info():
         # print("session",session.input[".clientdata_url_search"]())
