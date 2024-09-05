@@ -17,6 +17,7 @@ class Course:
         self.name = row['course_name']
         self.prog_lang = self.string_to_list(f"{row['prog_lang']}", as_ints=False)
         self.notes = row['notes']
+        self.has_pre_req_id = row['has_pre_req_id']
         self.link = row['drps_link']
         self.credits = row['credits']
         self.themes = self.string_to_list(f"{row['themes']}", as_ints=False)
