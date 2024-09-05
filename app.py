@@ -9,7 +9,7 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.3" # major.sprint.release
+version = "1.3.4" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -95,7 +95,7 @@ def server(input, output, session):
             
             ui.row(
                 ui.column(7,
-                          ui.input_text("filter_name",  "Filter by: Name",           
+                          ui.input_text("filter_name",  "Filter by: Name or ID",           
                 )),
                 ui.column(5,ui.p(" "),
                           ui.input_action_link("button_filter_reset","Reset Filters 🔄"))),
@@ -135,6 +135,17 @@ def server(input, output, session):
         degree_id =  input.select_degree_dropdown.get()
         await session.send_custom_message("navigate", DataService.url_to_doashboard_with_degree(session, degree_id))
 
+
+    def course_has_word(course_info, word):
+        word = word.lower()
+        if len(word) == 0:
+            return True
+        elif (course_info.name.lower().find(word) != -1 
+                     or course_info.id.lower().find(word) != -1):
+            return True
+        else:
+            return False
+
     @output
     @render.ui
     def list_all_courses():
@@ -148,7 +159,7 @@ def server(input, output, session):
             course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
-            and (len(text_to_keep) < 0 or  course_obj.name.lower().find(text_to_keep) != -1)
+            and course_has_word(course_obj, text_to_keep)
             and len(list(set(course_obj.themes) & set(themes_to_keep))) > 0
         ]
         return courses_cards if len(courses_cards) > 0 else ui.div("No courses match these criteria")
@@ -237,9 +248,11 @@ def server(input, output, session):
                 ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 1")), ui.column(7,get_credits_information(1)))),
                 ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 2")), ui.column(7,get_credits_information(2))), hidden = current_degree.years < 2))
             ]
-        block_dates = {1: "16 Sep 2024", 2: "28 Oct 2024", 
-                       3: "13 Jan 2025", 4: "24 Feb 2025", 
-                       5: "7 Apr 2025", 6: "19 May 2025"}
+        block_dates = {1: "16 Sep - 18 Oct", 2: "28 Oct - 29 Nov", 
+                       3: "6 Jan - 7 Feb", 4: "17 Feb - 21 Mar", 
+                       5: "7 Apr - 9 May", 6: "19 May - 20 Jun"}
+        
+
         for block in range(1,7):
             years_widgets = []
             for year in [1,2]:
@@ -251,7 +264,7 @@ def server(input, output, session):
                 years_widgets.append(courses_in_this_block)
 
             new_row = ui.row(
-                ui.column(1, ui.h5(block), ui.p(block_dates[block])),
+                ui.column(1, ui.h5(block), ui.p(block_dates[block],style="font-size: small;"), style="padding-right: -20;"),
                 ui.column(5, years_widgets[0]),
                 ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
                 style = "padding: 16px 0px;"
