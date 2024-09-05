@@ -9,7 +9,7 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.0" # major.sprint.release
+version = "1.3.3" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -95,18 +95,23 @@ def server(input, output, session):
             
             ui.row(
                 ui.column(7,
-                          ui.input_text("filter_name",  "Filter by name",           
+                          ui.input_text("filter_name",  "Filter by: Name",           
                 )),
                 ui.column(5,ui.p(" "),
                           ui.input_action_link("button_filter_reset","Reset Filters 🔄"))),
             ui.row(
-                ui.column(6,
-                          ui.input_select("filter_year",  "Filter by year", 
+                ui.column(4,
+                          ui.input_select("filter_year",  "Year", 
                             choices = {"all": "All","1":"Year 1", "2": "Year 2",  "3": "Year 3"},
                 )),
-                ui.column(6,
-                          ui.input_select("filter_block", "Filter by block", 
+                ui.column(4,
+                          ui.input_select("filter_block", "Block", 
                             choices = {"all": "All","1":"Block 1", "2": "Block 2", "3": "Block 3", "4": "Block 4" , "5": "Block 5" , "6": "Block 6"  },
+                )),
+                ui.column(4,
+                          ui.input_select("filter_theme", "Theme", 
+                            choices = {  key: f"{value['emoji']} {value['name']}"
+                                for (key, value) in StyleService.theme_infos().items()},
                 ))
             )
         )
@@ -137,15 +142,16 @@ def server(input, output, session):
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
         years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
         text_to_keep = input.filter_name.get().strip().lower()
+        themes_to_keep = list(StyleService.theme_infos().keys()) if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
         courses_cards = [
             course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
             and (len(text_to_keep) < 0 or  course_obj.name.lower().find(text_to_keep) != -1)
-            
+            and len(list(set(course_obj.themes) & set(themes_to_keep))) > 0
         ]
-        return courses_cards
+        return courses_cards if len(courses_cards) > 0 else ui.div("No courses match these criteria")
     
     def sharable_link(link_text, selected_courses_as_string):
         sharable_url = sharable_url( selected_courses_as_string)
@@ -227,10 +233,13 @@ def server(input, output, session):
 
 
         rows  = [ui.row(
-                ui.column(1, "B"),
-                ui.column(5, ui.row( ui.column(4,"YEAR 1"), ui.column(8,get_credits_information(1)))),
-                ui.column(5, ui.row( ui.column(4,"YEAR 2"), ui.column(8,get_credits_information(2))), hidden = current_degree.years < 2))
+                ui.column(1,ui.div("Block", style="padding-top: 32px")),
+                ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 1")), ui.column(7,get_credits_information(1)))),
+                ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 2")), ui.column(7,get_credits_information(2))), hidden = current_degree.years < 2))
             ]
+        block_dates = {1: "16 Sep 2024", 2: "28 Oct 2024", 
+                       3: "13 Jan 2025", 4: "24 Feb 2025", 
+                       5: "7 Apr 2025", 6: "19 May 2025"}
         for block in range(1,7):
             years_widgets = []
             for year in [1,2]:
@@ -242,7 +251,7 @@ def server(input, output, session):
                 years_widgets.append(courses_in_this_block)
 
             new_row = ui.row(
-                ui.column(1, ui.p(block)),
+                ui.column(1, ui.h5(block), ui.p(block_dates[block])),
                 ui.column(5, years_widgets[0]),
                 ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
                 style = "padding: 16px 0px;"
@@ -276,7 +285,7 @@ def server(input, output, session):
 
     def one_theme_count(themename,value):
         theme = StyleService.theme_infos()[themename]
-        return StyleService.single_theme(themename, 1, text = f"{theme['name']} {value}")
+        return StyleService.single_theme(themename, 1, text = f"{theme['emoji']} {value}")
     # ui.div(theme['name'],value, style=StyleService.style_theme_single(themename)) 
 
     @output
@@ -287,16 +296,17 @@ def server(input, output, session):
             for selected_course in courses_data.get().selected_courses.get()
             for theme in selected_course.course_info.themes
             ]
-        theme_counts = Counter(all_themes)
-        theme_names = list(theme_counts.keys())
-        theme_names.sort()
-        return ui.div( [
+        theme_counts = dict(Counter(all_themes))
+        theme_counts = dict(sorted(theme_counts.items(), key=lambda key_value: key_value[0]))
+  
+        return ui.popover( ui.div( [
             one_theme_count(theme_name, 
                             theme_counts[theme_name])
-            for theme_name in theme_names],
+            for theme_name in list(theme_counts.keys())],
             style="display:flex;"
-        )  
+        ) , StyleService.theme_balance(theme_counts))
     
+
     
 
     @output
@@ -323,7 +333,9 @@ def server(input, output, session):
         return DataService.all_inputs_ids(current_degree_id())
     
     def get_all_inputs_add_remove():
-        return  get_all_inputs_add_remove_info().values()
+        all_inputs = get_all_inputs_add_remove_info().values()
+        print(get_all_inputs_add_remove_info().keys())
+        return  all_inputs
 
     def get_all_inputs_add_remove_info():
         # print("session",session.input[".clientdata_url_search"]())
@@ -382,6 +394,7 @@ def server(input, output, session):
         ui.update_select( "filter_name",selected=""),
         ui.update_select( "filter_year",selected="all"),
         ui.update_select( "filter_block",selected="all")
+        ui.update_select( "filter_theme",selected="all")
 
 
 
@@ -401,6 +414,7 @@ def server(input, output, session):
             ui.update_select( "filter_year",selected=f"{year}"),
             ui.update_select( "filter_block",selected=f"{block}")
             ui.update_select( "filter_name",selected=f"")
+            ui.update_select( "filter_theme",selected=f"all")
 
     @reactive.Effect
     @reactive.event(*get_all_inputs_add_remove())

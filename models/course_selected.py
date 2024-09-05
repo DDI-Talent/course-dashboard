@@ -24,7 +24,6 @@ class CourseSelected:
             button_label = "Nothing selected yet"
             
             return ui.div( 
-                                # ui.div(  button_label),
                                 ui.row( 
                                           ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter course options"),
                                     style = "margin:0px"
@@ -38,29 +37,9 @@ class CourseSelected:
 
 
     def as_card_selected(self, show = True, dissertation = False):
-        button_label = StyleService.name_shorter(self.course_info.name) #+ " " + self.course_info.id
-        buttons = []
         button_uid_remove = self.to_selected_button_id( "buttonremove_")
-        
-        credits = f"Credits: {self.course_info.credits}"
-        more_info_card = StyleService.info_card_for_course(self.course_info)
-        return ui.div( 
-                        ui.div(  button_label, ui.popover( icon("circle-info"), more_info_card, hidden = (not dissertation))),
-                        ui.row( 
-                            ui.column(1,ui.popover( icon("circle-info"), more_info_card)), 
-                            ui.column(8,credits),
-                            ui.column(1,      ui.input_action_link(button_uid_remove, f"❌", style=StyleService.style_highlighted_link())),
-                            style = "margin:0px",
-                            hidden = (dissertation)
-                        ),
-                        StyleService.box_of_themes(self.course_info.themes),
-                  
-                         style= StyleService.style_course_box(),
-                         hidden = (not show)
-        )
-        
-                
-
+        buttons = [ui.input_action_link(button_uid_remove, f"❌", style=StyleService.style_highlighted_link())]
+        return StyleService.course_as_card(self.course_info,show,dissertation=dissertation, buttons = buttons)
 
     def as_string(self):
         course_info = f"Course Info: {self.course_info}, Year: {self.year}, Block: {self.block}"
