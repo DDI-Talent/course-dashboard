@@ -22,7 +22,7 @@ DS_HSC1+DS_HSC2+DS_HSC3,2,5,10,HEIN11046,HEIN11046,,context+qual,,,User-driven s
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,HEIN11062,HEIN11062,,code+data,Python,HEIN11066,Applied software development in Health and Social Care (Python 2),,,http://www.drps.ed.ac.uk/current/dpt/HEIN11062.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PUHR11063,PUHR11063,,stats+code,R,,Data analysis for epidemiology,,,http://www.drps.ed.ac.uk/current/dpt/PUHR11063.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PGSP11401,PGSP11401,,scholar+context+data,,,Engaging with digital research,,,http://www.drps.ed.ac.uk/current/dpt/PGSP11401.htm
-DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PUHR11069,PUHR11069,,scholar+qual+quant,,,Systematic reviews,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/PUHR11069.htm
+DS_HSC1+DS_HSC2+DS_HSC3,2,2,10,PUHR11069,PUHR11069,,scholar+qual+quant,,,Systematic reviews,,MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/PUHR11069.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,5,10,PGSP11388,PGSP11388,,qual+quant+scholar,,,Use and evolution of digital data analysis and collection tools,,School of Social and Political Sciences,http://www.drps.ed.ac.uk/current/dpt/PGSP11388.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,HEIN11068,HEIN11068,,data+code,R+Python,HEIN11037,Data Types & Structures in R & Python,,School of Social and Political Sciences,http://www.drps.ed.ac.uk/current/dpt/HEIN11068.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,HEIN11047,HEIN11047,,context+data+ethics,,,Data security and protection in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/HEIN11047.htm
