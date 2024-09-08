@@ -232,11 +232,11 @@ def server(input, output, session):
 
         
         right_most_column =  ui.column(1, 
-                                    ui.row(ui.p("YEAR 3",get_credits_information(3), style = "padding: 0px")),
+                                    ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
                                     ui.row( 
                                          courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
                                          courses_data.get().as_card_nothing_selected(3, 1),
-                                           style ="writing-mode: vertical-rl;text-orientation: upright;"),
+                                           style ="writing-mode: vertical-rl;text-orientation: upright;padding: 16px 0px;"),
                                     hidden = current_degree.years < 3
                                     )
 
@@ -244,7 +244,7 @@ def server(input, output, session):
 
 
         rows  = [ui.row(
-                ui.column(1,ui.div("Block", style="padding-top: 32px")),
+                ui.column(2,ui.div("Block", style="padding-top: 32px")),
                 ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 1")), ui.column(7,get_credits_information(1)))),
                 ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 2")), ui.column(7,get_credits_information(2))), hidden = current_degree.years < 2))
             ]
@@ -264,7 +264,7 @@ def server(input, output, session):
                 years_widgets.append(courses_in_this_block)
 
             new_row = ui.row(
-                ui.column(1, ui.h5(block), ui.p(block_dates[block],style="font-size: small;"), style="padding-right: -20;"),
+                ui.column(2, ui.h5(block), ui.p(block_dates[block],style="font-size: small;"), style="padding-right: -20;"),
                 ui.column(5, years_widgets[0]),
                 ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
                 style = "padding: 16px 0px;"
@@ -272,7 +272,7 @@ def server(input, output, session):
             rows.append(new_row)
         return ui.row(ui.column(11, rows), right_most_column)
 
-    def get_credits_information(year = None):
+    def get_credits_information(year = None, shortened=False):
         nonlocal courses_data
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
         if year == None:
@@ -287,7 +287,12 @@ def server(input, output, session):
             max_credits = current_degree.years * 60
         else: # just showing one year
             max_credits = 60
-        return ui.div(f"Credits: {total_credits} of {max_credits}", style = "padding: 0px")
+        
+        if shortened:
+            text = f"{total_credits} of {max_credits}"
+        else:
+            text = f"Credits: {total_credits} of {max_credits}"
+        return ui.div(text, style = "padding: 0px")
     
     @output
     @render.text
