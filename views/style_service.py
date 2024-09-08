@@ -31,7 +31,7 @@ class StyleService:
         return f"width: 24px;height: 48px; text-align:center;"
 
     def style_theme_single(theme):
-        return f"padding-right:2px; text-align:center; color:{StyleService.theme_infos()[theme]['textcolor']};background-color:{StyleService.theme_infos()[theme]['color']};"
+        return f"padding:1px; text-align:center; vertical-align: middle; color:{StyleService.theme_infos()[theme]['textcolor']};background-color:{StyleService.theme_infos()[theme]['color']};"
 
 
     def theme_infos():
