@@ -200,9 +200,8 @@ def server(input, output, session):
             return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
                           ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
                           ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;"),
-                          ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
-
-                            {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
+                        #   ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
+                        #     {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
                           )
 
 
