@@ -3,6 +3,7 @@ from shiny import ui
 from models.course import Course
 from models.persona import Persona
 from models.degree import Degree
+from models.theme import Theme
 from models.course_selected import CourseSelected
 from shiny import reactive
 # this class is a data service: it holds all informationm and distributes it
@@ -27,7 +28,7 @@ class DataService:
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
         self.degrees = DataService.load_degrees()
-        self.course_infos = DataService.load_data()
+        self.course_infos = DataService.load_courses()
         self.personas = DataService.load_personas()
         # TODO: ugh, this should not be hardcoded :(
         # if DataService.degree_with_id_or_default().years == 3:
@@ -45,19 +46,19 @@ class DataService:
 
     def all_inputs_ids():
         ids =  [ button_id
-            for course in DataService.load_data()
+            for course in DataService.load_courses()
             for button_id in course.all_possible_button_ids()
         ]
         return ids
 
     def all_course_ids():
         ids =  [ course.id
-            for course in DataService.load_data()
+            for course in DataService.load_courses()
         ]
         return ids
 
-    def load_data(filename = "courses.csv"):
-        loaded_df = pd.read_csv(f'./data/{filename}')
+    def load_courses(filename = "courses.csv"):
+        loaded_df = pd.read_csv(f'./data/{filename}', na_filter=False)
         return [ Course(row)
                 for _, row in loaded_df.iterrows()]
     
@@ -66,7 +67,14 @@ class DataService:
         return [ Persona(row)
                 for _, row in loaded_df.iterrows()]
     
-        
+    # used by style service
+    def load_themes():
+        file = f'./data/themes.csv'
+        print("file",file)
+        loaded_df = pd.read_csv(file)
+        return [ Theme(row)
+                for _, row in loaded_df.iterrows()]
+    
     def load_degrees():
         loaded_df = pd.read_csv(f'./data/degrees.csv')
         return [ Degree(row)
@@ -228,7 +236,7 @@ class DataService:
 
         return link_to_share
 
-    def __str__(self):
-        courses_str = ', '.join(str(course) for course in self.course_infos)
-        courses_selected_str = ', '.join(str(course) for course in self.selected_courses.get())
-        return f"Selected Courses: [{courses_str}], {courses_selected_str}"
+    # def __str__(self):
+    #     courses_str = ', '.join(str(course) for course in self.course_infos)
+    #     courses_selected_str = ', '.join(str(course) for course in self.selected_courses.get())
+    #     return f"Selected Courses: [{courses_str}], {courses_selected_str}"
