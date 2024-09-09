@@ -31,7 +31,7 @@ DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,PUHR11064,PUHR11064,,stats+code,R,PUHR11103 or 
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,PUHR11116,PUHR11116,,stats+code,R,See DPRS listing,Advanced statistics,,Run by MSc Epidemiology,http://www.drps.ed.ac.uk/current/dpt/cxpuhr11116.htm
 DS_HSC1+DS_HSC2+DS_HSC3,1+2,6,10,HEIN11084,HEIN11084,,context+design+qual,,,Delivering person-centred care in a digital age for remote and rural areas,,Run by MSc Leading Digital Transformation,http://www.drps.ed.ac.uk/current/dpt/cxhein11084.htm
 DS_HSC2+DS_HSC3,2,6,10,HEIN11090,HEIN11090,,quant+qual+scholar,,HEIN11089,Applied research design for data science in Health and Social Care,,,http://www.drps.ed.ac.uk/current/dpt/cxhein11090.htm
-DS_HSC3+LDT_HSC,3,1,60,DISSERTATION,DISSERTATION,,context,,,DISSERTATION,,,https://www.drps.ed.ac.uk/current/dpt/cxhein11053.htm
+DS_HSC3+LDT_HSC,3,1,60,DISSERTATION,DISSERTATION,,context+qual+quant+leader+code+stats+design+data+scholar+ethics,,,DISSERTATION,,,https://www.drps.ed.ac.uk/current/dpt/cxhein11053.htm
 LDT_HSC,2,1+3,5,HEIN11088a,HEIN11088,,context+data+code,R,,Health Data Science Foundations (1 of 2),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11088.htm
 LDT_HSC,2,2+4,5,HEIN11088b,HEIN11088,,context+data+code,R,,Health Data Science Foundations (2 of 2),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11088.htm
 LDT_HSC,1,1,10,HEIN11064a,HEIN11064,,leader+context,,,Fundamentals of Leading Digital Transformation (1 of 2),,,http://www.drps.ed.ac.uk/current/dpt/cxhein11064.htm
