@@ -269,7 +269,7 @@ def server(input, output, session):
                 style = "padding: 16px 0px;"
             )
             rows.append(new_row)
-        return ui.row(ui.column(10, rows), right_most_column)
+        return ui.row(ui.column(10, rows), right_most_column, style="margin: 0px;")
 
     def get_credits_information(year = None, shortened=False):
         nonlocal courses_data
@@ -350,7 +350,7 @@ def server(input, output, session):
     
     def get_all_inputs_add_remove():
         all_inputs = get_all_inputs_add_remove_info().values()
-        print(get_all_inputs_add_remove_info().keys())
+        # print(get_all_inputs_add_remove_info().keys())
         return  all_inputs
 
     def get_all_inputs_add_remove_info():

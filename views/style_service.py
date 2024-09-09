@@ -147,4 +147,3 @@ class StyleService:
                             ))
         return more_info_card
     
-s
