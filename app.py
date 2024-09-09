@@ -9,7 +9,7 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.5" # major.sprint.release
+version = "1.3.6" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -110,8 +110,8 @@ def server(input, output, session):
                 )),
                 ui.column(4,
                           ui.input_select("filter_theme", "Theme", 
-                            choices = {  key: f"{value['emoji']} {value['name']}"
-                                for (key, value) in StyleService.theme_infos().items()},
+                            choices = { theme.id: f"{theme.emoji} {theme.name}"
+                                for theme in StyleService.get_themes()},
                 ))
             )
         )
@@ -153,7 +153,7 @@ def server(input, output, session):
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
         years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
         text_to_keep = input.filter_name.get().strip().lower()
-        themes_to_keep = list(StyleService.theme_infos().keys()) if input.filter_theme.get() == "all" else [input.filter_theme.get()]
+        themes_to_keep = [theme.id for theme in StyleService.themes] if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
         courses_cards = [
             course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
@@ -231,12 +231,12 @@ def server(input, output, session):
         # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
 
         
-        right_most_column =  ui.column(1, 
+        right_most_column =  ui.column(2, 
                                     ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
                                     ui.row( 
                                          courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
                                          courses_data.get().as_card_nothing_selected(3, 1),
-                                           style ="writing-mode: vertical-rl;text-orientation: upright;padding: 16px 0px;"),
+                                           style ="padding: 16px 0px;"), #writing-mode: vertical-rl;text-orientation: upright;
                                     hidden = current_degree.years < 3
                                     )
 
@@ -270,7 +270,7 @@ def server(input, output, session):
                 style = "padding: 16px 0px;"
             )
             rows.append(new_row)
-        return ui.row(ui.column(11, rows), right_most_column)
+        return ui.row(ui.column(10, rows), right_most_column)
 
     def get_credits_information(year = None, shortened=False):
         nonlocal courses_data
@@ -301,10 +301,9 @@ def server(input, output, session):
     
 
 
-    def one_theme_count(themename,value):
-        theme = StyleService.theme_infos()[themename]
-        return StyleService.single_theme(themename, 1, text = f"{theme['emoji']} {value}")
-    # ui.div(theme['name'],value, style=StyleService.style_theme_single(themename)) 
+    def one_theme_count(theme_id,value):
+        theme = StyleService.get_theme(theme_id)
+        return StyleService.single_theme(theme_id, 1, text = f"{theme.emoji} {value}")
 
     @output
     @render.ui
@@ -321,7 +320,7 @@ def server(input, output, session):
             one_theme_count(theme_name, 
                             theme_counts[theme_name])
             for theme_name in list(theme_counts.keys())],
-            style="display:flex;"
+            style="display:flex; ",
         ) , StyleService.theme_balance(theme_counts))
     
 
