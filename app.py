@@ -9,7 +9,7 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.6" # major.sprint.release
+version = "1.3.10" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -200,9 +200,8 @@ def server(input, output, session):
             return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
                           ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
                           ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;"),
-                          ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
-
-                            {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
+                        #   ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
+                        #     {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
                           )
 
 
@@ -270,7 +269,7 @@ def server(input, output, session):
                 style = "padding: 16px 0px;"
             )
             rows.append(new_row)
-        return ui.row(ui.column(10, rows), right_most_column)
+        return ui.row(ui.column(10, rows), right_most_column, style="margin: 0px;")
 
     def get_credits_information(year = None, shortened=False):
         nonlocal courses_data
@@ -351,7 +350,7 @@ def server(input, output, session):
     
     def get_all_inputs_add_remove():
         all_inputs = get_all_inputs_add_remove_info().values()
-        print(get_all_inputs_add_remove_info().keys())
+        # print(get_all_inputs_add_remove_info().keys())
         return  all_inputs
 
     def get_all_inputs_add_remove_info():
