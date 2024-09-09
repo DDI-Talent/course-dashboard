@@ -9,7 +9,7 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.6" # major.sprint.release
+version = "1.3.10" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
