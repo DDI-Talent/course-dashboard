@@ -58,7 +58,7 @@ class DataService:
         return ids
 
     def load_courses(filename = "courses.csv"):
-        loaded_df = pd.read_csv(f'./data/{filename}', na_filter=False)
+        loaded_df = pd.read_csv(f'./data/{filename}', keep_default_na=False)
         return [ Course(row)
                 for _, row in loaded_df.iterrows()]
     

@@ -26,6 +26,8 @@ class Course:
             self.themes.remove("code")
             self.themes.extend([f"code-{language.lower()}" for language in self.prog_lang])
 
+        print("notes", self.notes, "!", type(self.notes))
+
     
     def takeable_in(self, year, block):
         takeable = year in self.years and block in self.blocks
