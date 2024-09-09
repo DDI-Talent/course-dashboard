@@ -125,7 +125,7 @@ class StyleService:
                   
                          style= StyleService.style_course_box(),
                          hidden = (not show)
-        )
+        ).add_class("card-header")
 
 
 

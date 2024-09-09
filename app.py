@@ -6,12 +6,15 @@ from models.course_selected import CourseSelected
 from models.data_service import DataService
 from faicons import icon_svg as icon
 from views.style_service import StyleService
-
+from htmltools import head_content
 
 
 version = "1.3.5" # major.sprint.release
-    
+
+
 app_ui = ui.page_fixed(
+
+ ui.head_content(ui.include_css("styles.css")),   
 
  ui.row(     
      ui.column(12, ui.panel_title(
