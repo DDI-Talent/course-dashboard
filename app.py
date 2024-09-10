@@ -75,6 +75,7 @@ def server(input, output, session):
         data_service.degree_selected_id = current_degree_id()
         courses_data.set(data_service)
 
+
     @reactive.effect
     def load_initial_url():
         nonlocal courses_data
@@ -156,7 +157,7 @@ def server(input, output, session):
         themes_to_keep = [theme.id for theme in StyleService.themes] if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
         courses_cards = [
-            course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
+            course_obj.as_card( show = current_degree_id() in course_obj.degree_ids) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
             and course_has_word(course_obj, text_to_keep)
@@ -226,7 +227,6 @@ def server(input, output, session):
     def grid_selected_courses():
         nonlocal courses_data
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
-
         # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
 
         

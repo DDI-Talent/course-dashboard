@@ -15,3 +15,11 @@ class Degree:
         self.years = int(row['years'])   
         self.description = row['description']            
         self.link = row['link']            
+        self.compulsory_courses = self.string_to_list(row['compulsory_courses'], as_ints=False)
+
+    # could this be in the deta service?
+    def string_to_list(self, string_to_parse, as_ints = True):
+        string_to_parse = string_to_parse.replace(" and ", " ").replace(" or ", " ").replace("+", " ")
+        return [int(item) if as_ints else item
+                for item in string_to_parse.split(' ')
+                if item != '' and item != 'nan']

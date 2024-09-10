@@ -22,6 +22,7 @@ class Course:
         self.link = row['drps_link']
         self.credits = row['credits']
         self.themes = self.string_to_list(f"{row['themes']}", as_ints=False)
+        self.is_compulsory_course = False
         if "code" in self.themes:
             self.themes.remove("code")
             self.themes.extend([f"code-{language.lower()}" for language in self.prog_lang])
@@ -64,7 +65,7 @@ class Course:
 
 
     def __repr__(self) -> str:
-        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits}"
+        return f"course id is: {self.id}, year is: {self.years}, block is: {self.blocks}, name is: {self.name}, credits: {self.credits} compulsory {self.is_compulsory_course}"
     
     def string_to_list(self, string_to_parse, as_ints = True):
         string_to_parse = string_to_parse.replace(" and ", " ").replace(" or ", " ").replace("+", " ")
