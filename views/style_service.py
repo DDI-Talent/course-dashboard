@@ -57,7 +57,6 @@ class StyleService:
     def style_disabled_link():
         return "background-color: #dddddd; padding: 0px 10px;"
     
-    
     def style_meta_box_half_bottom():
         return "right: 0px; bottom: 0px; position:absolute;"
    

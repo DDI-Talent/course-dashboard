@@ -152,13 +152,17 @@ def server(input, output, session):
     def list_all_courses():
         nonlocal courses_data
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
-        years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+        # only keep course in the years that are allowed in this degree
+        years_to_keep = list(range(1, current_degree.years+1))
+        if input.filter_year.get() != "all":
+            years_to_keep = [int(input.filter_year.get())]
+        
         text_to_keep = input.filter_name.get().strip().lower()
         themes_to_keep = [theme.id for theme in StyleService.themes] if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
         selected_courses_ids = [course.course_info.id
                                 for course in courses_data.get().selected_courses.get()]
-        print("selected_courses_ids" , selected_courses_ids)
         courses_cards = [
             course_obj.as_card( show = current_degree_id() in course_obj.degree_ids, selected = course_obj.id in selected_courses_ids) 
             for course_obj in courses_data.get().course_infos
