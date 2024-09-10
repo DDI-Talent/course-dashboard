@@ -9,7 +9,8 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.11" # major.production.development i.e. when releasing to dev, increase dev number, when releasing to prod, increase prod number
+version = "1.3.12" # major.production.development 
+# i.e. when releasing to dev, increase dev number, when releasing to prod, increase prod number
     
 app_ui = ui.page_fixed(
 

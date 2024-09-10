@@ -22,10 +22,13 @@ class Course:
         self.link = row['drps_link']
         self.credits = row['credits']
         self.themes = self.string_to_list(f"{row['themes']}", as_ints=False)
+        self.assessment = row['assessment']
+        self.description = row['description']
         self.is_compulsory_course = False
         if "code" in self.themes:
             self.themes.remove("code")
             self.themes.extend([f"code-{language.lower()}" for language in self.prog_lang])
+        self.themes = list(reversed(self.themes))
 
     
     def takeable_in(self, year, block):

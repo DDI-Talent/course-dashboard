@@ -90,7 +90,7 @@ class StyleService:
         return ui.div( 
             f"{count} : {theme.emoji} {theme.name}",
             # f"{theme['description']}",
-            style=f"background-color:{theme.color}; color:{theme.textcolor};",
+            style=f"background-color:{theme.color}; color:{theme.textcolor};padding: 0px 8px;",
         )
         
     def theme_balance(theme_counts_dict):
@@ -146,8 +146,9 @@ class StyleService:
                                 ui.div(ui.tags.b("id: "), course_info.drps_id),
                                 ui.div(ui.tags.b("Credits: "), course_info.credits),
                                 ui.div(ui.tags.b("Notes: "), course_info.notes ) if len(course_info.notes)>0 else None,
-                                ui.div(ui.tags.b("Years: "), course_info.years),
-                                ui.div(ui.tags.b("Blocks: "), course_info.blocks),
+                                ui.div(ui.tags.b("Description: "), course_info.description) if len(course_info.description)>0 else None,
+                                ui.div(ui.tags.b("Assessement: "), course_info.assessment) if len(course_info.assessment)>0 else None,
+                                ui.div(ui.tags.b("Years: "), course_info.years, ui.tags.b("Blocks: "), course_info.blocks),
                                 ui.div(ui.tags.b("Has prerequisites: "), course_info.has_pre_req_id ) if len(course_info.has_pre_req_id)>0 else None,
                                 ui.div(ui.tags.b("Themes: "), ", ".join(course_info.themes)),
                                 ui.div(ui.tags.b("Programming in: "), ", ".join(course_info.prog_lang)) if len(course_info.prog_lang)>0 else None,
