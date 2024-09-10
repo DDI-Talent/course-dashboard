@@ -9,7 +9,7 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.4" # major.sprint.release
+version = "1.3.10" # major.sprint.release
     
 app_ui = ui.page_fixed(
 
@@ -110,8 +110,8 @@ def server(input, output, session):
                 )),
                 ui.column(4,
                           ui.input_select("filter_theme", "Theme", 
-                            choices = {  key: f"{value['emoji']} {value['name']}"
-                                for (key, value) in StyleService.theme_infos().items()},
+                            choices = { theme.id: f"{theme.emoji} {theme.name}"
+                                for theme in StyleService.get_themes()},
                 ))
             )
         )
@@ -153,7 +153,7 @@ def server(input, output, session):
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
         years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
         text_to_keep = input.filter_name.get().strip().lower()
-        themes_to_keep = list(StyleService.theme_infos().keys()) if input.filter_theme.get() == "all" else [input.filter_theme.get()]
+        themes_to_keep = [theme.id for theme in StyleService.themes] if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
         courses_cards = [
             course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
@@ -200,9 +200,8 @@ def server(input, output, session):
             return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
                           ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
                           ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;"),
-                          ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
-
-                            {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
+                        #   ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
+                        #     {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
                           )
 
 
@@ -231,12 +230,12 @@ def server(input, output, session):
         # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
 
         
-        right_most_column =  ui.column(1, 
-                                    ui.row(ui.p("YEAR 3",get_credits_information(3), style = "padding: 0px")),
+        right_most_column =  ui.column(2, 
+                                    ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
                                     ui.row( 
                                          courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
                                          courses_data.get().as_card_nothing_selected(3, 1),
-                                           style ="writing-mode: vertical-rl;text-orientation: upright;"),
+                                           style ="padding: 16px 0px;"), #writing-mode: vertical-rl;text-orientation: upright;
                                     hidden = current_degree.years < 3
                                     )
 
@@ -244,7 +243,7 @@ def server(input, output, session):
 
 
         rows  = [ui.row(
-                ui.column(1,ui.div("Block", style="padding-top: 32px")),
+                ui.column(2,ui.div("Block", style="padding-top: 32px")),
                 ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 1")), ui.column(7,get_credits_information(1)))),
                 ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 2")), ui.column(7,get_credits_information(2))), hidden = current_degree.years < 2))
             ]
@@ -264,15 +263,15 @@ def server(input, output, session):
                 years_widgets.append(courses_in_this_block)
 
             new_row = ui.row(
-                ui.column(1, ui.h5(block), ui.p(block_dates[block],style="font-size: small;"), style="padding-right: -20;"),
+                ui.column(2, ui.h5(block), ui.p(block_dates[block],style="font-size: small;"), style="padding-right: -20;"),
                 ui.column(5, years_widgets[0]),
                 ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
                 style = "padding: 16px 0px;"
             )
             rows.append(new_row)
-        return ui.row(ui.column(11, rows), right_most_column)
+        return ui.row(ui.column(10, rows), right_most_column, style="margin: 0px;")
 
-    def get_credits_information(year = None):
+    def get_credits_information(year = None, shortened=False):
         nonlocal courses_data
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
         if year == None:
@@ -287,7 +286,12 @@ def server(input, output, session):
             max_credits = current_degree.years * 60
         else: # just showing one year
             max_credits = 60
-        return ui.div(f"Credits: {total_credits} of {max_credits}", style = "padding: 0px")
+        
+        if shortened:
+            text = f"{total_credits} of {max_credits}"
+        else:
+            text = f"Credits: {total_credits} of {max_credits}"
+        return ui.div(text, style = "padding: 0px")
     
     @output
     @render.text
@@ -296,10 +300,9 @@ def server(input, output, session):
     
 
 
-    def one_theme_count(themename,value):
-        theme = StyleService.theme_infos()[themename]
-        return StyleService.single_theme(themename, 1, text = f"{theme['emoji']} {value}")
-    # ui.div(theme['name'],value, style=StyleService.style_theme_single(themename)) 
+    def one_theme_count(theme_id,value):
+        theme = StyleService.get_theme(theme_id)
+        return StyleService.single_theme(theme_id, 1, text = f"{theme.emoji} {value}")
 
     @output
     @render.ui
@@ -316,7 +319,7 @@ def server(input, output, session):
             one_theme_count(theme_name, 
                             theme_counts[theme_name])
             for theme_name in list(theme_counts.keys())],
-            style="display:flex;"
+            style="display:flex; ",
         ) , StyleService.theme_balance(theme_counts))
     
 
@@ -347,7 +350,7 @@ def server(input, output, session):
     
     def get_all_inputs_add_remove():
         all_inputs = get_all_inputs_add_remove_info().values()
-        print(get_all_inputs_add_remove_info().keys())
+        # print(get_all_inputs_add_remove_info().keys())
         return  all_inputs
 
     def get_all_inputs_add_remove_info():

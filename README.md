@@ -17,9 +17,13 @@ pip install -r requirements.txt
 - each time (you need to be in the main project folder, check in terminal with `pwd`)
 
 ```
+From Main Branch:
+
+rsconnect deploy shiny ./ --name ddi-talent -a 12235352 --title course-dashboard  
+
+From Dev branch:
 
 rsconnect deploy shiny ./ --name ddi-talent -a 12215502 --title course-dashboard-development  
-rsconnect deploy shiny ./ --name ddi-talent -a 12235352 --title course-dashboard  
 
 ```
 
