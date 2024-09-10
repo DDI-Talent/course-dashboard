@@ -112,7 +112,7 @@ class StyleService:
         extra_styles = "padding-bottom: 80px" if dissertation else ""
         # credits = f"{self.course_info.credits} cred."
         return ui.div( 
-                        ui.div(  name_label,  ),
+                        ui.div(  name_label, "*" if course_info.is_compulsory_course else None),
                         ui.div( 
                             ui.div(  *[button for button in buttons]   ),
                             style = "margin:0px; padding:0px" ,
@@ -133,6 +133,7 @@ class StyleService:
                                     {"style": "font-weight: bold"},
                                     ui.p("Course Information"),
                                 ),),
+                                ui.div(ui.tags.b("*COMPULSORY COURSE*")) if course_info.is_compulsory_course else None,
                                 ui.div(ui.tags.b("name: "), f"{ course_info.name}"),
                                 ui.div(ui.tags.b("id: "), course_info.drps_id),
                                 ui.div(ui.tags.b("Credits: "), course_info.credits),

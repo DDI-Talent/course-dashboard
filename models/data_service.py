@@ -21,18 +21,25 @@ class DataService:
         if degree_id == None:
             degree = degrees[0]
         else:
-            degree = [degree for degree in degrees if degree.id == degree_id][0]
+            degrees_options = [degree for degree in degrees if degree.id == degree_id]
+            degree = degrees_options[0] if len(degrees_options) > 0 else degrees[0]
 
         return degree
+
+    def add_compulsory_course_info(self, degree_id):
+        compolsory_courses = DataService.degree_with_id_or_default(degree_id).compulsory_courses
+        compulsory_course_ids = [self.selected_course_from_string(course_string).course_info.id 
+                                 for course_string in compolsory_courses]
+
+        for course_info in self.course_infos:
+            course_info.is_compulsory_course = course_info.id in compulsory_course_ids
 
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
         self.degrees = DataService.load_degrees()
         self.course_infos = DataService.load_courses()
         self.personas = DataService.load_personas()
-        # TODO: ugh, this should not be hardcoded :(
-        # if DataService.degree_with_id_or_default().years == 3:
-        #     self.select_dissertation()
+        self.add_compulsory_course_info(degree_id)
   
     def select_dissertation(self):
         dissertation_selected = CourseSelected(self.get_dissertation(),3,1)
