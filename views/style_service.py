@@ -16,6 +16,9 @@ class StyleService:
     def style_section_box():
         return "padding: 10px; border: 1px solid grey;"
     
+    def style_align_left():
+        return "display: inline-block;" 
+
     def style_theme_box(number_of_items = 1):
         item_width = 24
         max_in_row = 4

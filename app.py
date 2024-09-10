@@ -17,7 +17,8 @@ app_ui = ui.page_fixed(
  ui.row(     
      ui.column(12, ui.panel_title(
          ui.row(
-            ui.column(6,ui.h1(f"Course Selection Tool"), ui.div(f"(v{version})"), ui.output_ui("select_degree"),),
+            ui.column(6,ui.h1(f"Course Selection Tool", style=StyleService.style_align_left()), 
+                      ui.div(f"(v{version})", style=StyleService.style_align_left()), ui.output_ui("select_degree"),),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
