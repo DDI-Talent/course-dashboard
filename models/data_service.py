@@ -34,12 +34,21 @@ class DataService:
         for course_info in self.course_infos:
             course_info.is_compulsory_course = course_info.id in compulsory_course_ids
 
+
+    def remove_years_not_compatible_with_degree(self, degree_id):
+        years_of_degree = DataService.degree_with_id_or_default(degree_id).years
+        for course_info in self.course_infos:
+            course_info.years = [year 
+                                 for year in course_info.years 
+                                 if year <= years_of_degree]
+
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
         self.degrees = DataService.load_degrees()
         self.course_infos = DataService.load_courses()
         self.personas = DataService.load_personas()
         self.add_compulsory_course_info(degree_id)
+        self.remove_years_not_compatible_with_degree(degree_id)
   
     def select_dissertation(self):
         dissertation_selected = CourseSelected(self.get_dissertation(),3,1)
@@ -77,7 +86,6 @@ class DataService:
     # used by style service
     def load_themes():
         file = f'./data/themes.csv'
-        print("file",file)
         loaded_df = pd.read_csv(file)
         return [ Theme(row)
                 for _, row in loaded_df.iterrows()]
@@ -136,7 +144,6 @@ class DataService:
     def get_year_and_block_from_filter_button_id(self, button_id):
         button_id = button_id.replace("buttonfilter_","")
         string_bits = button_id.split("_")
-        print("get_year_and_block_from_filter_button_id",button_id,string_bits)
         return (int(string_bits[0]), int(string_bits[1])) if len(string_bits) == 2 else ("all", "all")
 
     def respond_to_clicked_button_id(self, button_id):

@@ -54,6 +54,9 @@ class StyleService:
     def style_highlighted_link():
         return "background-color: #ffff00; padding: 0px 10px;"
     
+    def style_disabled_link():
+        return "background-color: #dddddd; padding: 0px 10px;"
+    
     def style_meta_box_half_bottom():
         return "right: 0px; bottom: 0px; position:absolute;"
    
@@ -87,7 +90,7 @@ class StyleService:
         return ui.div( 
             f"{count} : {theme.emoji} {theme.name}",
             # f"{theme['description']}",
-            style=f"background-color:{theme.color}; color:{theme.textcolor};",
+            style=f"background-color:{theme.color}; color:{theme.textcolor};padding: 0px 8px;",
         )
         
     def theme_balance(theme_counts_dict):
@@ -107,10 +110,15 @@ class StyleService:
         shorter_name = shorter_name.replace("Introduction", "Intro")
         return shorter_name
     
-    def course_as_card(course_info, show = True, buttons = [], dissertation = False):
+    def course_as_card(course_info, show = True, buttons = [], dissertation = False, selected = False):
         name_label = StyleService.name_shorter(course_info.name) #+ " " + self.course_info.id
         extra_styles = "padding-bottom: 80px" if dissertation else ""
+        extra_styles += "background-color: #eeeeee;" if selected else ""
         # credits = f"{self.course_info.credits} cred."
+        for button in buttons:
+            if selected:
+                button.style = "background-color: #aaaaaa"
+
         return ui.div( 
                         ui.div(  name_label, "*" if course_info.is_compulsory_course else None),
                         ui.div( 
@@ -138,8 +146,9 @@ class StyleService:
                                 ui.div(ui.tags.b("id: "), course_info.drps_id),
                                 ui.div(ui.tags.b("Credits: "), course_info.credits),
                                 ui.div(ui.tags.b("Notes: "), course_info.notes ) if len(course_info.notes)>0 else None,
-                                ui.div(ui.tags.b("Years: "), course_info.years),
-                                ui.div(ui.tags.b("Blocks: "), course_info.blocks),
+                                ui.div(ui.tags.b("Description: "), course_info.description) if len(course_info.description)>0 else None,
+                                ui.div(ui.tags.b("Assessement: "), course_info.assessment) if len(course_info.assessment)>0 else None,
+                                ui.div(ui.tags.b("Years: "), course_info.years, ui.tags.b("Blocks: "), course_info.blocks),
                                 ui.div(ui.tags.b("Has prerequisites: "), course_info.has_pre_req_id ) if len(course_info.has_pre_req_id)>0 else None,
                                 ui.div(ui.tags.b("Themes: "), ", ".join(course_info.themes)),
                                 ui.div(ui.tags.b("Programming in: "), ", ".join(course_info.prog_lang)) if len(course_info.prog_lang)>0 else None,

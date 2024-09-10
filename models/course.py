@@ -22,10 +22,13 @@ class Course:
         self.link = row['drps_link']
         self.credits = row['credits']
         self.themes = self.string_to_list(f"{row['themes']}", as_ints=False)
+        self.assessment = row['assessment']
+        self.description = row['description']
         self.is_compulsory_course = False
         if "code" in self.themes:
             self.themes.remove("code")
             self.themes.extend([f"code-{language.lower()}" for language in self.prog_lang])
+        self.themes = list(reversed(self.themes))
 
     
     def takeable_in(self, year, block):
@@ -51,16 +54,16 @@ class Course:
         ]
        
 
-    def as_card(self, show):
+    def as_card(self, show, selected = False):
         buttons = []
         for year in self.years:
             for block in self.blocks:
                 button_uid = self.to_button_id(year, block, "buttonadd_")
                 buttons.append(ui.input_action_link(button_uid, 
                                 f"📌 Y{year} B{block}",
-                                style=StyleService.style_highlighted_link()),
+                                style= StyleService.style_disabled_link() if selected else  StyleService.style_highlighted_link() ),
                             )
-        return StyleService.course_as_card(self, show, buttons = buttons)
+        return StyleService.course_as_card(self, show, buttons = buttons, selected = selected)
         
 
 
