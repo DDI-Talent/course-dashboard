@@ -54,6 +54,10 @@ class StyleService:
     def style_highlighted_link():
         return "background-color: #ffff00; padding: 0px 10px;"
     
+    def style_disabled_link():
+        return "background-color: #dddddd; padding: 0px 10px;"
+    
+    
     def style_meta_box_half_bottom():
         return "right: 0px; bottom: 0px; position:absolute;"
    
@@ -107,10 +111,15 @@ class StyleService:
         shorter_name = shorter_name.replace("Introduction", "Intro")
         return shorter_name
     
-    def course_as_card(course_info, show = True, buttons = [], dissertation = False):
+    def course_as_card(course_info, show = True, buttons = [], dissertation = False, selected = False):
         name_label = StyleService.name_shorter(course_info.name) #+ " " + self.course_info.id
         extra_styles = "padding-bottom: 80px" if dissertation else ""
+        extra_styles += "background-color: #eeeeee;" if selected else ""
         # credits = f"{self.course_info.credits} cred."
+        for button in buttons:
+            if selected:
+                button.style = "background-color: #aaaaaa"
+
         return ui.div( 
                         ui.div(  name_label, "*" if course_info.is_compulsory_course else None),
                         ui.div( 

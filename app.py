@@ -9,7 +9,7 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.11: compulsory courses" # major.sprint.release
+version = "1.3.11" # major.production.development i.e. when releasing to dev, increase dev number, when releasing to prod, increase prod number
     
 app_ui = ui.page_fixed(
 
@@ -156,8 +156,11 @@ def server(input, output, session):
         text_to_keep = input.filter_name.get().strip().lower()
         themes_to_keep = [theme.id for theme in StyleService.themes] if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
+        selected_courses_ids = [course.course_info.id
+                                for course in courses_data.get().selected_courses.get()]
+        print("selected_courses_ids" , selected_courses_ids)
         courses_cards = [
-            course_obj.as_card( show = current_degree_id() in course_obj.degree_ids) 
+            course_obj.as_card( show = current_degree_id() in course_obj.degree_ids, selected = course_obj.id in selected_courses_ids) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
             and course_has_word(course_obj, text_to_keep)
