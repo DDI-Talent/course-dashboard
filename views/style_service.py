@@ -99,7 +99,6 @@ class StyleService:
                             hidden = (dissertation)
                         ),
                         StyleService.box_of_course_metainfo(course_info) ,
-                        # StyleService.box_of_themes(self.course_info.themes),
                          hidden = (not show)
         ).add_class(css_class)
 
@@ -107,10 +106,12 @@ class StyleService:
 
     def info_card_for_course(course_info):
         more_info_card = (ui.div(
-                                ui.row(ui.div(
-                                    {"style": "font-weight: bold"},
-                                    ui.p("Course Information"),
-                                ),),
+                                ui.row(
+                                    ui.div(
+                                        {"style": "font-weight: bold"},
+                                        ui.p("Course Information"),
+                                    )   
+                                ),
                                 ui.div(ui.tags.b("*COMPULSORY COURSE*")) if course_info.is_compulsory_course else None,
                                 ui.div(ui.tags.b("name: "), f"{ course_info.name}"),
                                 ui.div(ui.tags.b("id: "), course_info.drps_id),
