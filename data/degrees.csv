@@ -1,5 +1,5 @@
-id,name,years,description,link
-DS_HSC3,(3 YEAR) MSc in Data Science for Health and Social Care,3,Degree description TODO,https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&id=1041
-DS_HSC2,(2 YEAR) Diploma in Data Science for Health and Social Care,2,Degree description TODO,https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&id=1041
-DS_HSC1,(1 YEAR) Certificate in Data Science for Health and Social Care,1,Degree description TODO,https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&id=1041
-LDT_HSC,(3 YEAR) MSc in Leading Digital Transformation in Health and Care for Scotland,3,Degree description TODO,https://learn.nes.nhs.scot/65021/postgraduate-programme-leading-digital-transformation-in-health-and-care-for-scotland-pgcert-pgdip-msc
+id,name,years,description,link,compulsory_courses
+DS_HSC3,(3 YEAR) MSc in Data Science for Health and Social Care,3,Degree description TODO,https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&id=1041,HEIN11037a_1_1+HEIN11089_2_1+HEIN11037b_1_2+HEIN11090_2_6+DISSERTATION_3_1
+DS_HSC2,(2 YEAR) Dimploma in Data Science for Health and Social Care,2,Degree description TODO,https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&id=1041,HEIN11037a_1_1+HEIN11089_2_1+HEIN11037b_1_2
+DS_HSC1,(1 YEAR) Certificate in Data Science for Health and Social Care,1,Degree description TODO,https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&id=1041,HEIN11037a_1_1+HEIN11037b_1_2
+LDT_HSC,(3 YEAR) MSc in Leading Digital Transformation in Health and Care for Scotland,3,Degree description TODO,https://learn.nes.nhs.scot/65021/postgraduate-programme-leading-digital-transformation-in-health-and-care-for-scotland-pgcert-pgdip-msc,HEIN11064a_1_1+HEIN11064b_1_2+HEIN11076a_1_3+HEIN11076b_1_4+HEIN11063a_1_5+HEIN11063b_1_6+HEIN11086_2_1+HEIN11082_2_2+DISSERTATION_3_1

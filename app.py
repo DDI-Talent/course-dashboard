@@ -9,14 +9,16 @@ from views.style_service import StyleService
 
 
 
-version = "1.3.10" # major.sprint.release
+version = "1.4.13" # major.production.development 
+# i.e. when releasing to dev, increase dev number, when releasing to prod, increase prod number
     
 app_ui = ui.page_fixed(
 
  ui.row(     
      ui.column(12, ui.panel_title(
          ui.row(
-            ui.column(6,ui.h1(f"Course Selection Tool"), ui.div(f"(v{version})"), ui.output_ui("select_degree"),),
+            ui.column(6,ui.h1(f"Course Selection Tool", style=StyleService.style_align_left()), 
+                      ui.div(f"(v{version})", style=StyleService.style_align_left()), ui.output_ui("select_degree"),),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
@@ -74,6 +76,7 @@ def server(input, output, session):
         data_service.refresh_data(current_degree_id())
         data_service.degree_selected_id = current_degree_id()
         courses_data.set(data_service)
+
 
     @reactive.effect
     def load_initial_url():
@@ -151,12 +154,19 @@ def server(input, output, session):
     def list_all_courses():
         nonlocal courses_data
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
-        years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+        # only keep course in the years that are allowed in this degree
+        years_to_keep = list(range(1, current_degree.years+1))
+        if input.filter_year.get() != "all":
+            years_to_keep = [int(input.filter_year.get())]
+        
         text_to_keep = input.filter_name.get().strip().lower()
         themes_to_keep = [theme.id for theme in StyleService.themes] if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
+        selected_courses_ids = [course.course_info.id
+                                for course in courses_data.get().selected_courses.get()]
         courses_cards = [
-            course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
+            course_obj.as_card( show = current_degree_id() in course_obj.degree_ids, selected = course_obj.id in selected_courses_ids) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
             and course_has_word(course_obj, text_to_keep)
@@ -226,7 +236,6 @@ def server(input, output, session):
     def grid_selected_courses():
         nonlocal courses_data
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
-
         # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
 
         

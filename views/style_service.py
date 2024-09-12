@@ -16,6 +16,9 @@ class StyleService:
     def style_section_box():
         return "padding: 10px; border: 1px solid grey;"
     
+    def style_align_left():
+        return "display: inline-block;" 
+
     def style_theme_box(number_of_items = 1):
         item_width = 24
         max_in_row = 4
@@ -54,6 +57,9 @@ class StyleService:
     def style_highlighted_link():
         return "background-color: #ffff00; padding: 0px 10px;"
     
+    def style_disabled_link():
+        return "background-color: #ffffff; padding: 0px 10px;"
+    
     def style_meta_box_half_bottom():
         return "right: 0px; bottom: 0px; position:absolute;"
    
@@ -87,7 +93,7 @@ class StyleService:
         return ui.div( 
             f"{count} : {theme.emoji} {theme.name}",
             # f"{theme['description']}",
-            style=f"background-color:{theme.color}; color:{theme.textcolor};",
+            style=f"background-color:{theme.color}; color:{theme.textcolor};padding: 0px 8px;",
         )
         
     def theme_balance(theme_counts_dict):
@@ -107,12 +113,16 @@ class StyleService:
         shorter_name = shorter_name.replace("Introduction", "Intro")
         return shorter_name
     
-    def course_as_card(course_info, show = True, buttons = [], dissertation = False):
+    def style_disabled_background():
+        return "background-color: #f4f4f4;"
+
+    def course_as_card(course_info, show = True, buttons = [], dissertation = False, selected = False):
         name_label = StyleService.name_shorter(course_info.name) #+ " " + self.course_info.id
         extra_styles = "padding-bottom: 80px" if dissertation else ""
-        # credits = f"{self.course_info.credits} cred."
+        extra_styles += StyleService.style_disabled_background() if selected else ""
+
         return ui.div( 
-                        ui.div(  name_label,  ),
+                        ui.div(  name_label, "*" if course_info.is_compulsory_course else None),
                         ui.div( 
                             ui.div(  *[button for button in buttons]   ),
                             style = "margin:0px; padding:0px" ,
@@ -133,12 +143,14 @@ class StyleService:
                                     {"style": "font-weight: bold"},
                                     ui.p("Course Information"),
                                 ),),
+                                ui.div(ui.tags.b("*COMPULSORY COURSE*")) if course_info.is_compulsory_course else None,
                                 ui.div(ui.tags.b("name: "), f"{ course_info.name}"),
                                 ui.div(ui.tags.b("id: "), course_info.drps_id),
                                 ui.div(ui.tags.b("Credits: "), course_info.credits),
                                 ui.div(ui.tags.b("Notes: "), course_info.notes ) if len(course_info.notes)>0 else None,
-                                ui.div(ui.tags.b("Years: "), course_info.years),
-                                ui.div(ui.tags.b("Blocks: "), course_info.blocks),
+                                ui.div(ui.tags.b("Description: "), course_info.description) if len(course_info.description)>0 else None,
+                                ui.div(ui.tags.b("Assessement: "), course_info.assessment) if len(course_info.assessment)>0 else None,
+                                ui.div(ui.tags.b("Years: "), course_info.years, ui.tags.b("Blocks: "), course_info.blocks),
                                 ui.div(ui.tags.b("Has prerequisites: "), course_info.has_pre_req_id ) if len(course_info.has_pre_req_id)>0 else None,
                                 ui.div(ui.tags.b("Themes: "), ", ".join(course_info.themes)),
                                 ui.div(ui.tags.b("Programming in: "), ", ".join(course_info.prog_lang)) if len(course_info.prog_lang)>0 else None,
