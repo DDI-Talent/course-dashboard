@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.4.13" # major.production.development 
+version = "1.4.14" # major.production.development 
 # i.e. when releasing to dev, increase dev number, when releasing to prod, increase prod number
     
 app_ui = ui.page_fixed(

@@ -50,6 +50,9 @@
 .disabled-link {
   background-color: #ffffff; 
   padding: 0px 10px;
+  cursor: not-allowed;
+  opacity: 0.5;
+  text-decoration: none;
 }
 
 .meta-box-half-bottom {
