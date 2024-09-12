@@ -3,6 +3,7 @@ from shiny import ui
 from models.course import Course
 from models.persona import Persona
 from models.degree import Degree
+from models.theme import Theme
 from models.course_selected import CourseSelected
 from shiny import reactive
 # this class is a data service: it holds all informationm and distributes it
@@ -20,18 +21,34 @@ class DataService:
         if degree_id == None:
             degree = degrees[0]
         else:
-            degree = [degree for degree in degrees if degree.id == degree_id][0]
+            degrees_options = [degree for degree in degrees if degree.id == degree_id]
+            degree = degrees_options[0] if len(degrees_options) > 0 else degrees[0]
 
         return degree
+
+    def add_compulsory_course_info(self, degree_id):
+        compolsory_courses = DataService.degree_with_id_or_default(degree_id).compulsory_courses
+        compulsory_course_ids = [self.selected_course_from_string(course_string).course_info.id 
+                                 for course_string in compolsory_courses]
+
+        for course_info in self.course_infos:
+            course_info.is_compulsory_course = course_info.id in compulsory_course_ids
+
+
+    def remove_years_not_compatible_with_degree(self, degree_id):
+        years_of_degree = DataService.degree_with_id_or_default(degree_id).years
+        for course_info in self.course_infos:
+            course_info.years = [year 
+                                 for year in course_info.years 
+                                 if year <= years_of_degree]
 
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
         self.degrees = DataService.load_degrees()
-        self.course_infos = DataService.load_data()
+        self.course_infos = DataService.load_courses()
         self.personas = DataService.load_personas()
-        # TODO: ugh, this should not be hardcoded :(
-        # if DataService.degree_with_id_or_default().years == 3:
-        #     self.select_dissertation()
+        self.add_compulsory_course_info(degree_id)
+        self.remove_years_not_compatible_with_degree(degree_id)
   
     def select_dissertation(self):
         dissertation_selected = CourseSelected(self.get_dissertation(),3,1)
@@ -45,19 +62,19 @@ class DataService:
 
     def all_inputs_ids():
         ids =  [ button_id
-            for course in DataService.load_data()
+            for course in DataService.load_courses()
             for button_id in course.all_possible_button_ids()
         ]
         return ids
 
     def all_course_ids():
         ids =  [ course.id
-            for course in DataService.load_data()
+            for course in DataService.load_courses()
         ]
         return ids
 
-    def load_data(filename = "courses.csv"):
-        loaded_df = pd.read_csv(f'./data/{filename}')
+    def load_courses(filename = "courses.csv"):
+        loaded_df = pd.read_csv(f'./data/{filename}', keep_default_na=False)
         return [ Course(row)
                 for _, row in loaded_df.iterrows()]
     
@@ -66,7 +83,13 @@ class DataService:
         return [ Persona(row)
                 for _, row in loaded_df.iterrows()]
     
-        
+    # used by style service
+    def load_themes():
+        file = f'./data/themes.csv'
+        loaded_df = pd.read_csv(file)
+        return [ Theme(row)
+                for _, row in loaded_df.iterrows()]
+    
     def load_degrees():
         loaded_df = pd.read_csv(f'./data/degrees.csv')
         return [ Degree(row)
@@ -121,7 +144,6 @@ class DataService:
     def get_year_and_block_from_filter_button_id(self, button_id):
         button_id = button_id.replace("buttonfilter_","")
         string_bits = button_id.split("_")
-        print("get_year_and_block_from_filter_button_id",button_id,string_bits)
         return (int(string_bits[0]), int(string_bits[1])) if len(string_bits) == 2 else ("all", "all")
 
     def respond_to_clicked_button_id(self, button_id):
@@ -228,7 +250,7 @@ class DataService:
 
         return link_to_share
 
-    def __str__(self):
-        courses_str = ', '.join(str(course) for course in self.course_infos)
-        courses_selected_str = ', '.join(str(course) for course in self.selected_courses.get())
-        return f"Selected Courses: [{courses_str}], {courses_selected_str}"
+    # def __str__(self):
+    #     courses_str = ', '.join(str(course) for course in self.course_infos)
+    #     courses_selected_str = ', '.join(str(course) for course in self.selected_courses.get())
+    #     return f"Selected Courses: [{courses_str}], {courses_selected_str}"

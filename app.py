@@ -9,9 +9,9 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.3.5" # major.sprint.release
-
-
+version = "1.3.13" # major.production.development 
+# i.e. when releasing to dev, increase dev number, when releasing to prod, increase prod number
+    
 app_ui = ui.page_fixed(
 
  ui.head_content(ui.include_css("styles.css")),   
@@ -19,7 +19,8 @@ app_ui = ui.page_fixed(
  ui.row(     
      ui.column(12, ui.panel_title(
          ui.row(
-            ui.column(6,ui.h1(f"Course Selection Tool"), ui.div(f"(v{version})"), ui.output_ui("select_degree"),),
+            ui.column(6,ui.h1(f"Course Selection Tool", style=StyleService.style_align_left()), 
+                      ui.div(f"(v{version})", style=StyleService.style_align_left()), ui.output_ui("select_degree"),),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
@@ -78,6 +79,7 @@ def server(input, output, session):
         data_service.degree_selected_id = current_degree_id()
         courses_data.set(data_service)
 
+
     @reactive.effect
     def load_initial_url():
         nonlocal courses_data
@@ -113,8 +115,8 @@ def server(input, output, session):
                 )),
                 ui.column(4,
                           ui.input_select("filter_theme", "Theme", 
-                            choices = {  key: f"{value['emoji']} {value['name']}"
-                                for (key, value) in StyleService.theme_infos().items()},
+                            choices = { theme.id: f"{theme.emoji} {theme.name}"
+                                for theme in StyleService.get_themes()},
                 ))
             )
         )
@@ -154,12 +156,19 @@ def server(input, output, session):
     def list_all_courses():
         nonlocal courses_data
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
-        years_to_keep = [1,2,3] if input.filter_year.get() == "all" else [int(input.filter_year.get())]
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+        # only keep course in the years that are allowed in this degree
+        years_to_keep = list(range(1, current_degree.years+1))
+        if input.filter_year.get() != "all":
+            years_to_keep = [int(input.filter_year.get())]
+        
         text_to_keep = input.filter_name.get().strip().lower()
-        themes_to_keep = list(StyleService.theme_infos().keys()) if input.filter_theme.get() == "all" else [input.filter_theme.get()]
+        themes_to_keep = [theme.id for theme in StyleService.themes] if input.filter_theme.get() == "all" else [input.filter_theme.get()]
 
+        selected_courses_ids = [course.course_info.id
+                                for course in courses_data.get().selected_courses.get()]
         courses_cards = [
-            course_obj.as_card( current_degree_id() in course_obj.degree_ids) 
+            course_obj.as_card( show = current_degree_id() in course_obj.degree_ids, selected = course_obj.id in selected_courses_ids) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
             and course_has_word(course_obj, text_to_keep)
@@ -203,9 +212,8 @@ def server(input, output, session):
             return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
                           ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
                           ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;"),
-                          ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
-
-                            {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
+                        #   ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
+                        #     {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
                           )
 
 
@@ -230,16 +238,15 @@ def server(input, output, session):
     def grid_selected_courses():
         nonlocal courses_data
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
-
         # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
 
         
-        right_most_column =  ui.column(1, 
+        right_most_column =  ui.column(2, 
                                     ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
                                     ui.row( 
                                          courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
                                          courses_data.get().as_card_nothing_selected(3, 1),
-                                           style ="writing-mode: vertical-rl;text-orientation: upright;padding: 16px 0px;"),
+                                           style ="padding: 16px 0px;"), #writing-mode: vertical-rl;text-orientation: upright;
                                     hidden = current_degree.years < 3
                                     )
 
@@ -273,7 +280,7 @@ def server(input, output, session):
                 style = "padding: 16px 0px;"
             )
             rows.append(new_row)
-        return ui.row(ui.column(11, rows), right_most_column)
+        return ui.row(ui.column(10, rows), right_most_column, style="margin: 0px;")
 
     def get_credits_information(year = None, shortened=False):
         nonlocal courses_data
@@ -304,10 +311,9 @@ def server(input, output, session):
     
 
 
-    def one_theme_count(themename,value):
-        theme = StyleService.theme_infos()[themename]
-        return StyleService.single_theme(themename, 1, text = f"{theme['emoji']} {value}")
-    # ui.div(theme['name'],value, style=StyleService.style_theme_single(themename)) 
+    def one_theme_count(theme_id,value):
+        theme = StyleService.get_theme(theme_id)
+        return StyleService.single_theme(theme_id, 1, text = f"{theme.emoji} {value}")
 
     @output
     @render.ui
@@ -324,7 +330,7 @@ def server(input, output, session):
             one_theme_count(theme_name, 
                             theme_counts[theme_name])
             for theme_name in list(theme_counts.keys())],
-            style="display:flex;"
+            style="display:flex; ",
         ) , StyleService.theme_balance(theme_counts))
     
 
@@ -355,7 +361,7 @@ def server(input, output, session):
     
     def get_all_inputs_add_remove():
         all_inputs = get_all_inputs_add_remove_info().values()
-        print(get_all_inputs_add_remove_info().keys())
+        # print(get_all_inputs_add_remove_info().keys())
         return  all_inputs
 
     def get_all_inputs_add_remove_info():
