@@ -65,6 +65,12 @@
   background-color: #e5e2e2;
 }
 
-.bottom-padding-80 {
+.dissertation-box {
   padding-bottom: 80px
 }
+
+.dissertation-box > div:first-of-type{
+  font-size: smaller;
+  padding-top: 18px;
+  padding-bottom: 18px;
+} 
