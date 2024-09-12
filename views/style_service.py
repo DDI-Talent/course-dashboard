@@ -13,13 +13,6 @@ class StyleService:
         if number_of_items > max_in_row:
             number_of_items = max_in_row
         return f"display:flex;  flex-wrap: wrap-reverse; width: {item_width*number_of_items}px;"
-   
-    def style_theme_single_size(how_many_themes):
-        return f"width: 24px;height: 24px; text-align:center;"
-    
-         
-    def style_theme_single_size_with_count(how_many_themes):
-        return f"width: 24px;height: 48px; text-align:center;"
 
     def style_theme_single(theme_id):
         theme = StyleService.get_theme(theme_id)
@@ -37,25 +30,20 @@ class StyleService:
         return [theme
          for theme in StyleService.get_themes()
           if theme.id == theme_id][0]
-
-    def style_highlighted_link():
-        return "background-color: #ffff00; padding: 0px 10px;"
-    
-    def style_disabled_link():
-        return "background-color: #ffffff; padding: 0px 10px;"
     
     def style_meta_box_half_bottom():
         return "right: 0px; bottom: 0px; position:absolute;"
    
     def single_theme(theme_id, how_many_vertical, text=None):
         if text == None:
-            extra_style = StyleService.style_theme_single_size(how_many_vertical)
+            css_class = "theme-single-size"
         else:
-            extra_style = StyleService.style_theme_single_size_with_count(how_many_vertical)
+            css_class = "theme-single-size-with-count"
 
         text = text if text  else f"{StyleService.get_theme(theme_id).emoji}"
         return  ui.div(text, 
-                      style=StyleService.style_theme_single(theme_id)+extra_style),
+                      style = StyleService.style_theme_single(theme_id)
+                      ).add_class(css_class),
     
     def box_of_course_metainfo(course_info, no_popover = False):
         more_info_card = StyleService.info_card_for_course(course_info) if not no_popover else None

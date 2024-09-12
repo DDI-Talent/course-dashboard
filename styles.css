@@ -28,3 +28,25 @@
   top: 0px; 
   display: block;
 }
+
+.theme-single-size {
+  width: 24px;
+  height: 28px; 
+  text-align: center;
+}
+
+.theme-single-size-with-count {
+  width: 24px;
+  height: 52px; 
+  text-align:center;
+}
+
+.highlighted-link {
+  background-color: #ffff00; 
+  padding: 0px 10px;
+}
+
+.disabled-link {
+  background-color: #ffffff; 
+  padding: 0px 10px;
+}
