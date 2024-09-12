@@ -28,10 +28,8 @@ class CourseSelected:
                                           ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter course options"),
                                     style = "margin:0px"
                                 ),
-                            style= StyleService.style_course_box_not_selected(),
-                                                    hidden = (not show)
-
-                        )
+                                hidden = (not show)
+                        ).add_class("course-box-not-selected")
 
 
 

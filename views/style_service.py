@@ -6,12 +6,6 @@ class StyleService:
     themes = []
     def __init__(self):
         pass
-
-    def style_course_box_not_selected():
-        return "padding: 10px; border: 1px dashed grey; margin: 2px;"
-    
-    def style_section_box():
-        return "padding: 10px; border: 1px solid grey;"
     
     def style_align_left():
         return "display: inline-block;" 

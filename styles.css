@@ -5,4 +5,14 @@
   position:relative;
 }
 
-.
+.course-box-not-selected {
+  padding: 10px; 
+  border: 1px dashed grey; 
+  margin: 2px;
+}
+
+.section-box {
+  padding: 30px; 
+  border: 1px solid grey;
+  border-radius: 5px;
+}

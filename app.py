@@ -27,16 +27,17 @@ app_ui = ui.page_fixed(
                         ui.row( ui.output_ui('total_credits'),  ui.output_ui('total_credits_warning')),
                         ui.row( ui.output_ui('overall_themes'))
                         )
-        ))),style= StyleService.style_section_box()
-        ),
+        )))
+        ).add_class("section-box"),
  ui.row(
     ui.column(4, 
-              ui.h2("Available Courses:"),
-              ui.output_ui("filter_panel"),
-               ui.output_ui("list_all_courses")
-               ,style= StyleService.style_section_box()),
+                ui.h2("Available Courses:"),
+                ui.output_ui("filter_panel"),
+                ui.output_ui("list_all_courses")
+              ).add_class("section-box"),
               ui.column(8,ui.h2("Your Courses:"),
-              ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
+              ui.output_ui('grid_selected_courses')
+            ).add_class("section-box")
 ), 
 ui.tags.script("""
         Shiny.addCustomMessageHandler('navigate', function(url) {
