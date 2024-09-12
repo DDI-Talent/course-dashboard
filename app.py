@@ -6,7 +6,7 @@ from models.course_selected import CourseSelected
 from models.data_service import DataService
 from faicons import icon_svg as icon
 from views.style_service import StyleService
-
+from htmltools import head_content
 
 
 version = "1.4.13" # major.production.development 
@@ -14,27 +14,30 @@ version = "1.4.13" # major.production.development
     
 app_ui = ui.page_fixed(
 
+ ui.head_content(ui.include_css("styles.css")),   
+
  ui.row(     
      ui.column(12, ui.panel_title(
          ui.row(
-            ui.column(6,ui.h1(f"Course Selection Tool", style=StyleService.style_align_left()), 
-                      ui.div(f"(v{version})", style=StyleService.style_align_left()), ui.output_ui("select_degree"),),
+            ui.column(6,ui.h1(f"Course Selection Tool").add_class("align-left"), 
+                      ui.div(f"(v{version})").add_class("align-left"), ui.output_ui("select_degree"),),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
                         ui.row( ui.output_ui('total_credits'),  ui.output_ui('total_credits_warning')),
                         ui.row( ui.output_ui('overall_themes'))
                         )
-        ))),style= StyleService.style_section_box()
-        ),
+        )))
+        ).add_class("section-box"),
  ui.row(
     ui.column(4, 
-              ui.h2("Available Courses:"),
-              ui.output_ui("filter_panel"),
-               ui.output_ui("list_all_courses")
-               ,style= StyleService.style_section_box()),
+                ui.h2("Available Courses:"),
+                ui.output_ui("filter_panel"),
+                ui.output_ui("list_all_courses")
+              ).add_class("section-box"),
               ui.column(8,ui.h2("Your Courses:"),
-              ui.output_ui('grid_selected_courses'),style= StyleService.style_section_box())
+              ui.output_ui('grid_selected_courses')
+            ).add_class("section-box")
 ), 
 ui.tags.script("""
         Shiny.addCustomMessageHandler('navigate', function(url) {

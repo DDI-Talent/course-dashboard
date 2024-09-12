@@ -60,8 +60,8 @@ class Course:
             for block in self.blocks:
                 button_uid = self.to_button_id(year, block, "buttonadd_")
                 buttons.append(ui.input_action_link(button_uid, 
-                                f"📌 Y{year} B{block}",
-                                style= StyleService.style_disabled_link() if selected else  StyleService.style_highlighted_link() ),
+                                f"📌 Y{year} B{block}")
+                                .add_class("diabled-link" if selected else "highlighted-link"),
                             )
         return StyleService.course_as_card(self, show, buttons = buttons, selected = selected)
         

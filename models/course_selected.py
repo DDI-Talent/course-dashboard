@@ -28,17 +28,15 @@ class CourseSelected:
                                           ui.input_action_link(f"buttonfilter_{year}_{block}", f"🔎 filter course options"),
                                     style = "margin:0px"
                                 ),
-                            style= StyleService.style_course_box_not_selected(),
-                                                    hidden = (not show)
-
-                        )
+                                hidden = (not show)
+                        ).add_class("course-box-not-selected")
 
 
 
 
     def as_card_selected(self, show = True, dissertation = False):
         button_uid_remove = self.to_selected_button_id( "buttonremove_")
-        buttons = [ui.input_action_link(button_uid_remove, f"❌", style=StyleService.style_highlighted_link())]
+        buttons = [ui.input_action_link(button_uid_remove, f"❌").add_class("highlighted-link")]
         return StyleService.course_as_card(self.course_info,show,dissertation=dissertation, buttons = buttons)
 
     def as_string(self):
