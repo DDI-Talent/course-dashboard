@@ -7,9 +7,6 @@ class StyleService:
     def __init__(self):
         pass
 
-    def style_course_box():
-        return "padding: 10px 22px 10px 10px;;  border: 1px solid black; margin: 2px; position:relative;"
-    
     def style_course_box_not_selected():
         return "padding: 10px; border: 1px dashed grey; margin: 2px;"
     
@@ -131,9 +128,9 @@ class StyleService:
                         StyleService.box_of_course_metainfo(course_info) ,
                         # StyleService.box_of_themes(self.course_info.themes),
                   
-                         style= StyleService.style_course_box()+ extra_styles,
+                         style= extra_styles,
                          hidden = (not show)
-        ).add_class("card-header")
+        ).add_class("course-box")
 
 
 
