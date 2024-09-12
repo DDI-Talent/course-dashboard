@@ -20,3 +20,11 @@
 .align-left {
   display: inline-block;
 }
+
+.meta-info-box {
+  position: absolute; 
+  right: 0px; 
+  height: 100%; 
+  top: 0px; 
+  display: block;
+}

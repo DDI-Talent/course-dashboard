@@ -14,10 +14,6 @@ class StyleService:
             number_of_items = max_in_row
         return f"display:flex;  flex-wrap: wrap-reverse; width: {item_width*number_of_items}px;"
    
-    def style_metainfo_box():
-        return "position: absolute; right: 0px; height: 100%; top: 0px ; display:block;"
-    
-     
     def style_theme_single_size(how_many_themes):
         return f"width: 24px;height: 24px; text-align:center;"
     
@@ -71,9 +67,10 @@ class StyleService:
                         # ui.div(f"{course_info.credits} cred"),
                           style="right: 0px; top: 0px; position: absolute;"),
                      ),
-                StyleService.box_of_themes(course_info.themes, StyleService.style_meta_box_half_bottom()),
-                style= StyleService.style_metainfo_box()
-            ), more_info_card )
+                StyleService.box_of_themes(course_info.themes, StyleService.style_meta_box_half_bottom())
+            ).add_class("meta-info-box"), 
+            more_info_card 
+        )
         
 
     def one_theme(theme_id, count):
