@@ -3,18 +3,19 @@
   border: 1px solid black;
   margin: 2px; 
   position:relative;
+  border-radius: 5px;
 }
 
 .course-box-not-selected {
   padding: 10px; 
   border: 1px dashed grey; 
   margin: 2px;
+  border-radius: 5px;
 }
 
 .section-box {
   padding: 30px; 
   border: 1px solid grey;
-  border-radius: 5px;
 }
 
 .align-left {
@@ -49,4 +50,18 @@
 .disabled-link {
   background-color: #ffffff; 
   padding: 0px 10px;
+}
+
+.meta-box-half-bottom {
+  right: 0px; 
+  bottom: 0px; 
+  position:absolute;
+}
+
+.disabled-background {
+  background-color: #e5e2e2;
+}
+
+.bottom-padding-80 {
+  padding-bottom: 80px
 }
