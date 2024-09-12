@@ -6,9 +6,6 @@ class StyleService:
     themes = []
     def __init__(self):
         pass
-    
-    def style_align_left():
-        return "display: inline-block;" 
 
     def style_theme_box(number_of_items = 1):
         item_width = 24

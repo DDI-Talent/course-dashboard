@@ -16,3 +16,7 @@
   border: 1px solid grey;
   border-radius: 5px;
 }
+
+.align-left {
+  display: inline-block;
+}
