@@ -32,6 +32,7 @@ jobs:
         SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET_DDI_TALENT }}
       run: |
         rsconnect deploy shiny ./ \
+        --account ddi-talent \
         --server shinyapps.io \
         --token $SHINYAPPS_TOKEN \
         --secret $SHINYAPPS_SECRET \
