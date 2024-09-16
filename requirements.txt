@@ -5,6 +5,7 @@ shinywidgets
 pandas
 ridgeplot
 jinja2
+rsconnect
 anyio==4.4.0
 appdirs==1.4.4
 asgiref==3.8.1
