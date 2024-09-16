@@ -1,6 +1,5 @@
 id,name,color,textcolor,emoji,description
 all,All,#1E90FF,white,🍰,"TODO"
-code,Coding,#1E90FF,white,👾,"TODO"
 code-r,Coding in R,#1E90FF,white,🧩,"TODO"
 code-python,Coding in Python,#1E90FF,white,🐍,"TODO"
 code-sql,Coding in SQL,#1E90FF,white,🗄,"TODO"
@@ -12,5 +11,4 @@ scholar,Scholarship and Research,#FFD700,black,📚,"TODO"
 stats,Statistics,#4682B4,white,📊,"TODO"
 ethics,Ethics and Social Issues,#111111,white,😇,"TODO"
 leader,Leadership Skills,#8a2be2,white,🌟,"TODO"
-?,Unknown,#B8860B,black,❓,"TODO"
 design,Design and Presentation,#32CD32,black,🎨,"TODO"

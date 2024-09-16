@@ -28,7 +28,8 @@ app_ui = ui.page_fixed(
                         ui.row( ui.output_ui('overall_themes'))
                         )
         )))
-        ).add_class("section-box"),
+        ),
+        # .add_class("section-box"),
  ui.row(
     ui.column(4, 
                 ui.h2("Available Courses:"),
@@ -50,7 +51,7 @@ ui.tags.script("""
             copyText.select();
             copyText.setSelectionRange(0, 99999); // For mobile devices
             navigator.clipboard.writeText(copyText.value);
-            alert("Link to your choices has been coppied, so you can paste it anywhere now (link is " + copyText.value+")");
+            prompt("Link to your choices has been coppied, so you can paste it anywhere now. Link is:", copyText.value);
             return false;
         }
     """),
@@ -108,11 +109,11 @@ def server(input, output, session):
             ui.row(
                 ui.column(4,
                           ui.input_select("filter_year",  "Year", 
-                            choices = {"all": "All","1":"Year 1", "2": "Year 2",  "3": "Year 3"},
+                            choices = {"all": "All","1":"1st Year", "2": "2nd Year",  "3": "3rd Year"},
                 )),
                 ui.column(4,
                           ui.input_select("filter_block", "Block", 
-                            choices = {"all": "All","1":"Block 1", "2": "Block 2", "3": "Block 3", "4": "Block 4" , "5": "Block 5" , "6": "Block 6"  },
+                            choices = {"all": "All","1":"1st Block", "2": "2nd Block", "3": "3rd Block", "4": "4th Block" , "5": "5th Block" , "6": "6th Block"  },
                 )),
                 ui.column(4,
                           ui.input_select("filter_theme", "Theme", 
@@ -121,9 +122,6 @@ def server(input, output, session):
                 ))
             )
         )
-
-
-
 
     @output
     @render.ui
@@ -240,14 +238,12 @@ def server(input, output, session):
         nonlocal courses_data
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
         # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
-
         
         right_most_column =  ui.column(2, 
                                     ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
                                     ui.row( 
                                          courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
-                                         courses_data.get().as_card_nothing_selected(3, 1),
-                                           style ="padding: 16px 0px;"), #writing-mode: vertical-rl;text-orientation: upright;
+                                         courses_data.get().as_card_nothing_selected(3, 1)  ).add_class("row_of_courses"),
                                     hidden = current_degree.years < 3
                                     )
 
@@ -278,8 +274,8 @@ def server(input, output, session):
                 ui.column(2, ui.h5(block), ui.p(block_dates[block],style="font-size: small;"), style="padding-right: -20;"),
                 ui.column(5, years_widgets[0]),
                 ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
-                style = "padding: 16px 0px;"
-            )
+
+            ).add_class("row_of_courses")
             rows.append(new_row)
         return ui.row(ui.column(10, rows), right_most_column, style="margin: 0px;")
 
@@ -348,14 +344,14 @@ def server(input, output, session):
 
         if total_credits == max_credits:
             warning = ""
-            style = ""
+            style_class = ""
         elif total_credits > max_credits:
             warning = f"(remove {total_credits - max_credits})"
-            style="background-color: #ff0000; color: #ffffff; margin-left: 10px;"
+            style_class="warning warning_too_much"
         else: 
-            warning = f" (add {max_credits - total_credits} more)"
-            style="background-color: #0000ff; color: #ffffff; margin-left: 10px;"
-        return ui.div(warning, style=style)
+            warning = f" (add {max_credits - total_credits})"
+            style_class="warning warning_too_little"
+        return ui.div(warning).add_class(style_class)
 
     def get_all_inputs_ids():
         return DataService.all_inputs_ids(current_degree_id())
