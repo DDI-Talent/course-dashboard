@@ -1,7 +1,7 @@
 {
     "https://api.shinyapps.io": {
         "server_url": "https://api.shinyapps.io",
-        "filename": "/Users/keithdouglas/university-work/course-dashboard",
+        "filename": "/Users/pawel/Development/course-dashboard",
         "app_url": "https://ddi-talent.shinyapps.io/course-dashboard-development/",
         "app_id": 12215502,
         "app_guid": null,
