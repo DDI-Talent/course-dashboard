@@ -31,13 +31,18 @@ jobs:
         SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN_DDI_TALENT }}
         SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET_DDI_TALENT }}
       run: |
-        rsconnect deploy shiny \
+        rsconnect deploy shiny ./ \
         --server shinyapps.io \
-        --account ddi-talent \
+        --name ddi-talent \
         --token $SHINYAPPS_TOKEN \
         --secret $SHINYAPPS_SECRET \
-        --app-dir ./ \
-        --app-name course-dashboard-development 
+        -a 12215502 --title course-dashboard-development 
+
+# rsconnect deploy shiny ./ --name ddi-talent -a 12235352 --title course-dashboard  
+
+# rsconnect deploy shiny ./ --name ddi-talent -a 12215502 --title course-dashboard-development  
+
+
 
   deploy-main:
     if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
@@ -58,8 +63,8 @@ jobs:
 
     - name: Deploy to shinyapps.io (Production)
       env:
-        SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
-        SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+        SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN_DDI_TALENT }}
+        SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET_DDI_TALENT }}
       run: |
         rsconnect deploy shiny \
         --server shinyapps.io \
