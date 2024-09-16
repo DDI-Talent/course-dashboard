@@ -1,0 +1,70 @@
+name: Deploy Shiny App on PR to Development or Main Branch
+
+on:
+  pull_request:
+    types: [closed]  # Trigger when PR is closed
+    branches:
+      - develop
+      - main  
+  workflow_dispatch:  # Optional manual trigger
+
+jobs:
+  deploy-development:
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Deploy to shinyapps.io (Develop)
+      env:
+        SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN_DDI_TALENT }}
+        SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET_DDI_TALENT }}
+      run: |
+        rsconnect deploy shinyapp \
+        --server shinyapps.io \
+        --account ddi-talent \
+        --token $SHINYAPPS_TOKEN \
+        --secret $SHINYAPPS_SECRET \
+        --app-dir ./ \
+        --app-name course-dashboard-development 
+
+  deploy-main:
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Deploy to shinyapps.io (Production)
+      env:
+        SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+        SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+      run: |
+        rsconnect deploy shinyapp \
+        --server shinyapps.io \
+        --account ddi-talent \
+        --token $SHINYAPPS_TOKEN \
+        --secret $SHINYAPPS_SECRET \
+        --app-dir ./ \
+        --app-name course-dashboard 
