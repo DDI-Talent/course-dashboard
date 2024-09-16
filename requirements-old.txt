@@ -1,0 +1,8 @@
+faicons
+shiny
+shinywidgets
+plotly
+pandas
+ridgeplot
+jinja2
+matplotlib
