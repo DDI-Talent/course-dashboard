@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "locale": "en_US.UTF-8",
+  "metadata": {
+    "appmode": "python-shiny",
+    "entrypoint": "app"
+  },
+  "python": {
+    "version": "3.12.5",
+    "package_manager": {
+      "name": "pip",
+      "version": "24.2",
+      "package_file": "requirements.txt"
+    }
+  },
+  "files": {
+    "requirements.txt": {
+      "checksum": "334d593d372abb367477bc07aef5bf26"
+    },
+    ".DS_Store": {
+      "checksum": "41fca4731b33f9ccc612e30849e15576"
+    },
+    ".gitignore": {
+      "checksum": "26139c741d500820727dc78ccb96962e"
+    },
+    "LICENSE": {
+      "checksum": "80f69e8c63772370e0b3533597daab98"
+    },
+    "README.md": {
+      "checksum": "903d7f6492097ec2af2e41a0f25a4dd7"
+    },
+    "README_DEV.md": {
+      "checksum": "f9e528109b67face248aafb4d00eb952"
+    },
+    "app.py": {
+      "checksum": "4363bd9c3757f449b55d1e080901da9f"
+    },
+    "data/.DS_Store": {
+      "checksum": "6496f09f0c1b53d5a5ca1da9faf982b2"
+    },
+    "data/courses.csv": {
+      "checksum": "4e5b7a83ae46e6424d429858f856569a"
+    },
+    "data/degrees.csv": {
+      "checksum": "3996af97748d51e0e2b70d341079dd2e"
+    },
+    "data/personas.csv": {
+      "checksum": "a46da4bb38c78fafce0487b8e43a31be"
+    },
+    "data/themes.csv": {
+      "checksum": "c17beb12081845f3b5a90948704b2f58"
+    },
+    "models/__pycache__/course.cpython-312.pyc": {
+      "checksum": "c5e65f70ab727c626ee2c79403049d96"
+    },
+    "models/__pycache__/course.cpython-37.pyc": {
+      "checksum": "813465be6c10eba7a6fadf3ec4b076cb"
+    },
+    "models/__pycache__/course_data.cpython-312.pyc": {
+      "checksum": "e46b3df20f5403e6ba28e7286e43d889"
+    },
+    "models/__pycache__/course_selected.cpython-312.pyc": {
+      "checksum": "f675241ec87c5a6538867807ed92742b"
+    },
+    "models/__pycache__/courses_data.cpython-312.pyc": {
+      "checksum": "1028a805f8241de3659d26b00321ea5f"
+    },
+    "models/__pycache__/data_service.cpython-312.pyc": {
+      "checksum": "9b21c33145b30e2a4610e1a8b3cdd1e8"
+    },
+    "models/__pycache__/degree.cpython-312.pyc": {
+      "checksum": "1ee78ca2647588113df0a2e9c6494cc7"
+    },
+    "models/__pycache__/persona.cpython-312.pyc": {
+      "checksum": "089895bbaa14400563447a17016ee613"
+    },
+    "models/__pycache__/selected_course.cpython-312.pyc": {
+      "checksum": "c0799ec8549f758e1abb6a48cdad8e9f"
+    },
+    "models/__pycache__/theme.cpython-312.pyc": {
+      "checksum": "8b307a267ea9ab2aecf0a157d41828ad"
+    },
+    "models/course.py": {
+      "checksum": "08e72b333be09ff4ffd484f833da85b2"
+    },
+    "models/course_selected.py": {
+      "checksum": "3bfa87bb20ca017a7a303f715f950496"
+    },
+    "models/data_service.py": {
+      "checksum": "c391ed82e67a87261d2965b6fcf911ba"
+    },
+    "models/degree.py": {
+      "checksum": "ed94c0ee7031c3ba663a32567d5a7c50"
+    },
+    "models/persona.py": {
+      "checksum": "44d1377caff6cb1524fbd1ababaaeea7"
+    },
+    "models/theme.py": {
+      "checksum": "eef7841e3b33f2d278d3a34be61ac0c6"
+    },
+    "requirements-old.txt": {
+      "checksum": "82485691f12f29c9c3897dabdb9dec54"
+    },
+    "shared.py": {
+      "checksum": "2c9ddbcae51dc1faee86c4a6d1781b43"
+    },
+    "styles.css": {
+      "checksum": "a8a3b9b76cc8a2b98e89af8cc3124bc0"
+    },
+    "views/__pycache__/style_service.cpython-312.pyc": {
+      "checksum": "ba6ac56bb82675fe24ff87183019b2fc"
+    },
+    "views/style_service.py": {
+      "checksum": "77f1ef57a049ae3b5abe8f5395db6891"
+    }
+  }
+}
