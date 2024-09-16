@@ -33,7 +33,6 @@ jobs:
       run: |
         rsconnect deploy shiny ./ \
         --server shinyapps.io \
-        --name ddi-talent \
         --token $SHINYAPPS_TOKEN \
         --secret $SHINYAPPS_SECRET \
         -a 12215502 --title course-dashboard-development 
