@@ -42,6 +42,28 @@
   text-align:center;
 }
 
+.link-box {
+  margin:0px; 
+  padding:0px;
+}
+
+.row_of_courses{
+  padding: 16px 0px;
+}
+
+.warning{
+  margin-left: 10px;
+  padding: 0px 10px;
+}
+.warning_too_much{
+  background-color: #ff0000;
+  color: #ffffff;
+
+}
+.warning_too_little{
+  background-color: #0000ff;
+  color: #ffffff;
+}
 .highlighted-link {
   background-color: #ffff00; 
   padding: 0px 10px;
@@ -51,7 +73,6 @@
   background-color: #ffffff; 
   padding: 0px 10px;
   cursor: not-allowed;
-  opacity: 0.5;
   text-decoration: none;
 }
 
@@ -61,8 +82,15 @@
   position:absolute;
 }
 
+.meta-box-half-top {
+  right: 0px; 
+  top: 0px; 
+  position:absolute;
+}
+
+
 .disabled-background {
-  background-color: #e5e2e2;
+  background-color: #f4f4f4;
 }
 
 .dissertation-box {
@@ -74,3 +102,7 @@
   padding-top: 18px;
   padding-bottom: 18px;
 } 
+
+.one-theme{
+  padding: 0px 8px;
+}
