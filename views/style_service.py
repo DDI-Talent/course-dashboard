@@ -111,7 +111,7 @@ class StyleService:
                                 ui.div(ui.tags.b("Credits: "), course_info.credits),
                                 ui.div(ui.tags.b("Notes: "), course_info.notes ) if len(course_info.notes)>0 else None,
                                 ui.div(ui.tags.b("Description: "), course_info.description) if len(course_info.description)>0 else None,
-                                ui.div(ui.tags.b("Assessement: "), course_info.assessment) if len(course_info.assessment)>0 else None,
+                                ui.div(ui.tags.b("Assessment: "), course_info.assessment) if len(course_info.assessment)>0 else None,
                                 ui.div(ui.tags.b("Years: "), course_info.years, ui.tags.b("Blocks: "), course_info.blocks),
                                 ui.div(ui.tags.b("Has prerequisites: "), course_info.has_pre_req_id ) if len(course_info.has_pre_req_id)>0 else None,
                                 ui.div(ui.tags.b("Themes: "), ", ".join(course_info.themes)),
