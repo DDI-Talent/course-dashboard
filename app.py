@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.4.3.18b" # major.sprint.prodrelease.devrelease 
+version = "1.4.3.20b" # major.sprint.prodrelease.devrelease 
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -179,6 +179,16 @@ def server(input, output, session):
         sharable_url = sharable_url( selected_courses_as_string)
         return ui.a(link_text,  href=sharable_url)
     
+    def ahref_link_to_ms_form(selected_courses_as_string):
+        current_degree = DataService.degree_with_id_or_default( current_degree_id())
+        # format changes "a{}b{}".format(1,2) into a1b2 
+        print("current_degree.link_to_ms_form",current_degree.link_to_ms_form)
+        ms_forms_link_filled = current_degree.link_to_ms_form.format(selected_courses_as_string, current_degree.id)
+        print("ms_forms_link_filled",ms_forms_link_filled)
+        ms_forms_link_filled.encode()
+        print("ms_forms_link_filled",ms_forms_link_filled)
+        return ms_forms_link_filled
+
     def sharable_url( selected_courses_as_string):
         # TODO: clean this up. currently in many places
         nonlocal courses_data
@@ -210,7 +220,8 @@ def server(input, output, session):
         else:
             return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
                           ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
-                          ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;"),
+                          ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;").add_class("plain-external-link"),
+                          ui.a(" SUBMIT CHOICES", href=ahref_link_to_ms_form(selected_courses_as_string)).add_class("plain-external-link"),
                         #   ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
                         #     {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
                           )

@@ -15,6 +15,7 @@ class Degree:
         self.years = int(row['years'])   
         self.description = row['description']            
         self.link = row['link']            
+        self.link_to_ms_form = row['link_to_ms_form']            
         self.compulsory_courses = self.string_to_list(row['compulsory_courses'], as_ints=False)
 
     # could this be in the deta service?

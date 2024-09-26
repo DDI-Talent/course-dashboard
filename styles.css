@@ -18,6 +18,10 @@
   border: 1px solid grey;
 }
 
+.plain-external-link{
+  padding-right:10px;
+}
+
 .align-left {
   display: inline-block;
 }
