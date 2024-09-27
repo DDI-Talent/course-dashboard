@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.4.3.20b" # major.sprint.prodrelease.devrelease 
+version = "1.4.4.21" # major.sprint.prodrelease.devrelease 
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -20,7 +20,9 @@ app_ui = ui.page_fixed(
      ui.column(12, ui.panel_title(
          ui.row(
             ui.column(6,ui.h1(f"Course Selection Tool").add_class("align-left"), 
-                      ui.div(f"(v{version})").add_class("align-left"), ui.output_ui("select_degree"),),
+                      ui.div(f"(v{version})").add_class("align-left"), 
+                      ui.div(ui.output_ui('about_button')).add_class("align-left"), 
+                      ui.output_ui("select_degree"),),
             ui.column(3,ui.output_ui('course_personas')),
             ui.column(3, 
                         ui.row(ui.output_ui('share_choices_button')),
@@ -182,11 +184,8 @@ def server(input, output, session):
     def ahref_link_to_ms_form(selected_courses_as_string):
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
         # format changes "a{}b{}".format(1,2) into a1b2 
-        print("current_degree.link_to_ms_form",current_degree.link_to_ms_form)
         ms_forms_link_filled = current_degree.link_to_ms_form.format(selected_courses_as_string, current_degree.id)
-        print("ms_forms_link_filled",ms_forms_link_filled)
         ms_forms_link_filled.encode()
-        print("ms_forms_link_filled",ms_forms_link_filled)
         return ms_forms_link_filled
 
     def sharable_url( selected_courses_as_string):
@@ -209,9 +208,45 @@ def server(input, output, session):
         return link_to_share
        
 
+
+    @output
+    @render.ui 
+    def about_button():
+       return ui.popover( ui.div(ui.a(f"INFO",  href="#", action="return false;"), icon("circle-info")), about_panel())
+    
+    
+    def about_panel():
+            return ui.div(ui.h3("How to use this course-selection tool:"),
+                          ui.div(f"Students at some programs at Usher Institute can use this tool to choose their elective courses and design their learning pathway."),
+                          ui.tags.ol(
+                            ui.tags.li(f"CHOOSE your program of study (top left)"),
+                            ui.tags.li(f"ADD courses which you'd like to take (left). Yellow pin 📌 buttons will add courses to your timetable. Click info icon ℹ️ to find out more about each course."),
+                            ui.tags.li(f"SEE courses appearing in each of 6 blocks for each year (right)"),
+                            ui.tags.li(f"BALANCE different themes/skills and academic credits (top right). Click bar with emoji to see more details."),
+                            ui.tags.li(f"FILTER available courses to know what you can pick. You can filter using dropdowns (middle left) or clicking empty blocks on timetable (right)"),
+                            ui.tags.li(f"SHARE your choices with someone (top right) using a link, or submit them via online form to your course organiser."),
+                            ui.tags.li(f"EXPLORE pre-selected pathways (top middle), to get inspired what courses are available."),
+                          ),
+                          ui.p(f"This tool is a work in progress."),
+                          ui.p(f"Build using Shiny Python."),
+                          ui.a("See code on Github", href= "https://github.com/DDI-Talent/course-dashboard/"),
+                          ui.a("About Usher Institute", href= "https://www.ed.ac.uk/usher", target="_blank"),
+                          )
+
+
+
     @output
     @render.ui 
     def share_choices_button():
+        nonlocal courses_data
+        selected_courses_as_string = courses_data.get().selected_choices_as_string()
+        number_of_choices =  len(courses_data.get().selected_courses.get())
+
+
+        return ui.popover( ui.div(ui.a(f"SHARE ({number_of_choices}) CHOICES ",  href="#", action="return false;"), icon("share-from-square")), share_choices_panel())
+    
+    
+    def share_choices_panel():
         nonlocal courses_data
         selected_courses_as_string = courses_data.get().selected_choices_as_string()
         number_of_choices =  len(courses_data.get().selected_courses.get())
@@ -219,11 +254,9 @@ def server(input, output, session):
             return ui.div(f"🛒 Choose courses to create sharable link")
         else:
             return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
-                          ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices", hidden = True),
-                          ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;").add_class("plain-external-link"),
-                          ui.a(" SUBMIT CHOICES", href=ahref_link_to_ms_form(selected_courses_as_string)).add_class("plain-external-link"),
-                        #   ui.a("SHARE via EMAIL", href=f'''mailto:?subject=My Course Choices&body=Follow this link to see my course choices
-                        #     {sharable_url(selected_courses_as_string)}''', style="padding: 10px;")
+                          ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices").add_class("full-width"),
+                          ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;").add_class("plain-external-link full-width"),
+                          ui.a("SUBMIT CHOICES via FORM", href=ahref_link_to_ms_form(selected_courses_as_string), target="_blank").add_class("plain-external-link full-width"),
                           )
 
 
@@ -238,7 +271,7 @@ def server(input, output, session):
             if persona.degree_id == current_degree_id()]
 
         course_help = ui.row(
-               ui.span("Example pathways:"),
+               ui.span("Pre-load example choices:"),
                *personas_links
                )
         return course_help
