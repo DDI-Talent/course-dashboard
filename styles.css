@@ -13,9 +13,22 @@
   border-radius: 5px;
 }
 
+.popover {
+  max-width: 400px !important;
+}
+
+.full-width {
+  width: 100%;
+  padding: 10px 0px;
+}
+
 .section-box {
   padding: 30px; 
   border: 1px solid grey;
+}
+
+.plain-external-link{
+  padding-right:10px;
 }
 
 .align-left {
