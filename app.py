@@ -123,7 +123,7 @@ def server(input, output, session):
                                 for theme in StyleService.get_themes()},
                 ))
             )
-        )
+        ).add_class("row-tight")
 
     @output
     @render.ui
@@ -254,9 +254,10 @@ def server(input, output, session):
             return ui.div(f"🛒 Choose courses to create sharable link")
         else:
             return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
-                          ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices").add_class("full-width"),
+                    
                           ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;").add_class("plain-external-link full-width"),
                           ui.a("SUBMIT CHOICES via FORM", href=ahref_link_to_ms_form(selected_courses_as_string), target="_blank").add_class("plain-external-link full-width"),
+                          ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices").add_class("full-width"),
                           )
 
 
@@ -283,13 +284,50 @@ def server(input, output, session):
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
         # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
         
+        # TODO: needs cleanup
+
+        courses_in_year_3 = [ 
+                    course
+                    # courses_data.get().as_card_selected(CourseSelected(course, year, block))
+                    for course in courses_data.get().all_options_in(3, 1)
+                    for block in range(1,6)
+                    ]
+
+
+        only_dissertation = len(courses_in_year_3) == 1 and  courses_in_year_3[0].credits == 60
+        
+        rows_year_3 = []
+
+        # if only_dissertation:
         right_most_column =  ui.column(2, 
                                     ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
                                     ui.row( 
-                                         courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
-                                         courses_data.get().as_card_nothing_selected(3, 1)  ).add_class("row_of_courses"),
+                                        # courses_data.get().as_card_selected(CourseSelected(course, year, block))
+                                        courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
+                                        courses_data.get().as_card_nothing_selected(3, 1)  ).add_class("row_of_courses"),
                                     hidden = current_degree.years < 3
                                     )
+        # else:
+        #     for block in range(1,7):
+        #         years_widgets = []
+        #         for year in [3]:
+        #             courses_in_this_block = [ 
+        #                 courses_data.get().as_card_selected(CourseSelected(course, year, block))
+        #                 for course in courses_data.get().all_options_in(year, block)]
+        #             courses_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block))
+
+        #             years_widgets.append(courses_in_this_block)
+
+        #         new_row = ui.row(
+        #             ui.column(5, years_widgets[0]),
+        #         ).add_class("row_of_courses")
+        #         rows_year_3.append(new_row)
+
+        #     right_most_column =  ui.column(2, 
+        #                                 ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
+        #                                 *rows_year_3,
+        #                                 hidden = current_degree.years < 3
+        #                                 )
 
 
 
@@ -299,9 +337,9 @@ def server(input, output, session):
                 ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 1")), ui.column(7,get_credits_information(1)))),
                 ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 2")), ui.column(7,get_credits_information(2))), hidden = current_degree.years < 2))
             ]
-        block_dates = {1: "16 Sep - 18 Oct", 2: "28 Oct - 29 Nov", 
-                       3: "6 Jan - 7 Feb", 4: "17 Feb - 21 Mar", 
-                       5: "7 Apr - 9 May", 6: "19 May - 20 Jun"}
+        block_dates = {1: "16 Sep - 18 Oct 2024", 2: "28 Oct - 29 Nov  2024", 
+                       3: "6 Jan - 7 Feb 2025", 4: "17 Feb - 21 Mar 2025", 
+                       5: "7 Apr - 9 May 2025", 6: "19 May - 20 Jun 2025"}
         
 
         for block in range(1,7):
