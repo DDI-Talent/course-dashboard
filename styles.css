@@ -17,6 +17,9 @@
   max-width: 400px !important;
 }
 
+.row.row-right{
+    --bs-gutter-x: 2px !important;  
+}
 .full-width {
   width: 100%;
   padding: 10px 0px;
