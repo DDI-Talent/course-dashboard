@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.4.4.21" # major.sprint.prodrelease.devrelease 
+version = "1.5.0.0" # major.sprint.prodrelease.devrelease 
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -230,7 +230,7 @@ def server(input, output, session):
                           ui.p(f"This tool is a work in progress."),
                           ui.p(f"Build using Shiny Python."),
                           ui.a("See code on Github", href= "https://github.com/DDI-Talent/course-dashboard/"),
-                          ui.a("About Usher Institute", href= "https://www.ed.ac.uk/usher", target="_blank"),
+                          ui.a("About Usher Institute", href= "https://www.ed.ac.uk/usher", target="_blank").add_style("margin-left: 10px;"),
                           )
 
 
@@ -287,55 +287,20 @@ def server(input, output, session):
         # TODO: needs cleanup
 
         courses_in_year_3 = [ 
-                    course
-                    # courses_data.get().as_card_selected(CourseSelected(course, year, block))
-                    for course in courses_data.get().all_options_in(3, 1)
-                    for block in range(1,6)
+                    selected_course.course_info
+                    for selected_course in courses_data.get().selected_courses.get()
+                    if selected_course.year == 3
                     ]
 
 
-        only_dissertation = len(courses_in_year_3) == 1 and  courses_in_year_3[0].credits == 60
-        
-        rows_year_3 = []
-
-        # if only_dissertation:
-        right_most_column =  ui.column(2, 
-                                    ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
-                                    ui.row( 
-                                        # courses_data.get().as_card_selected(CourseSelected(course, year, block))
-                                        courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
-                                        courses_data.get().as_card_nothing_selected(3, 1)  ).add_class("row_of_courses"),
-                                    hidden = current_degree.years < 3
-                                    )
-        # else:
-        #     for block in range(1,7):
-        #         years_widgets = []
-        #         for year in [3]:
-        #             courses_in_this_block = [ 
-        #                 courses_data.get().as_card_selected(CourseSelected(course, year, block))
-        #                 for course in courses_data.get().all_options_in(year, block)]
-        #             courses_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block))
-
-        #             years_widgets.append(courses_in_this_block)
-
-        #         new_row = ui.row(
-        #             ui.column(5, years_widgets[0]),
-        #         ).add_class("row_of_courses")
-        #         rows_year_3.append(new_row)
-
-        #     right_most_column =  ui.column(2, 
-        #                                 ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
-        #                                 *rows_year_3,
-        #                                 hidden = current_degree.years < 3
-        #                                 )
-
-
-
-
+        took_only_dissertation = len(courses_in_year_3) >= 1 and any(map( lambda course: course.credits == 60, courses_in_year_3))
+    
         rows  = [ui.row(
-                ui.column(2,ui.div("Block", style="padding-top: 32px")),
-                ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 1")), ui.column(7,get_credits_information(1)))),
-                ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 2")), ui.column(7,get_credits_information(2))), hidden = current_degree.years < 2))
+                    ui.column(4, ui.row( ui.h5("YEAR 1").add_class("align-left"), get_credits_information(1).add_class("align-left"))),
+                    ui.column(4, ui.row( ui.h5("YEAR 2").add_class("align-left"), get_credits_information(2).add_class("align-left")), hidden = current_degree.years < 2).add_class('middle-course-column'),
+                    ui.column(4, ui.row( ui.h5("YEAR 3").add_class("align-left"), get_credits_information(3).add_class("align-left")), hidden = current_degree.years < 3)
+                ).add_class("row-of-courses")
+
             ]
         block_dates = {1: "16 Sep - 18 Oct 2024", 2: "28 Oct - 29 Nov  2024", 
                        3: "6 Jan - 7 Feb 2025", 4: "17 Feb - 21 Mar 2025", 
@@ -344,22 +309,29 @@ def server(input, output, session):
 
         for block in range(1,7):
             years_widgets = []
-            for year in [1,2]:
+            for year in [1,2,3]:
                 courses_in_this_block = [ 
                     courses_data.get().as_card_selected(CourseSelected(course, year, block))
                     for course in courses_data.get().all_options_in(year, block)]
-                courses_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block))
+                # hide filter button if dissertation is already picked, or there is nothing to take there
+                force_hide =  (year == 3 and block != 1 and took_only_dissertation) or len(courses_in_this_block) == 0
+                courses_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block, force_hide= force_hide))
 
+# or (took_dissertation and block >1) # todo: shall we hide filters in year 3 if dissertation is taken
                 years_widgets.append(courses_in_this_block)
 
-            new_row = ui.row(
-                ui.column(2, ui.h5(block), ui.p(block_dates[block],style="font-size: small;"), style="padding-right: -20;"),
-                ui.column(5, years_widgets[0]),
-                ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
-
-            ).add_class("row_of_courses")
-            rows.append(new_row)
-        return ui.row(ui.column(10, rows), right_most_column, style="margin: 0px;")
+            new_rows = [
+                ui.row(
+                    ui.h5( f"Block {block}").add_class("align-left"), ui.p( f"({block_dates[block]})").add_class("align-left")
+                ),
+                ui.row(
+                    ui.column(4, years_widgets[0]),
+                    ui.column(4, years_widgets[1], hidden = current_degree.years < 2).add_class('middle-course-column'),
+                    ui.column(4, years_widgets[2], hidden = current_degree.years < 3 )
+                ).add_class("row-of-courses")
+            ]
+            rows.extend(new_rows)
+        return ui.row(ui.column(12, rows), style="margin: 0px;")
 
     def get_credits_information(year = None, shortened=False):
         nonlocal courses_data
@@ -380,7 +352,7 @@ def server(input, output, session):
         if shortened:
             text = f"{total_credits} of {max_credits}"
         else:
-            text = f"Credits: {total_credits} of {max_credits}"
+            text = f"({total_credits} of {max_credits} credits)"
         return ui.div(text, style = "padding: 0px")
     
     @output
@@ -419,6 +391,7 @@ def server(input, output, session):
     @render.ui
     def total_credits_warning():
         nonlocal courses_data
+        print([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
         total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
 
@@ -454,12 +427,9 @@ def server(input, output, session):
     
     def get_all_filter_buttons_info():
         return {
-            **{
             f"buttonfilter_{year}_{block}" : getattr(input, f"buttonfilter_{year}_{block}") 
-            for year in ["1", "2"]
+            for year in ["1", "2","3"]
             for block in ["1", "2", "3", "4", "5", "6"]
-            },
-            **{f"buttonfilter_3_1" : getattr(input, f"buttonfilter_3_1")}
         }
     # TODO: is there a way to not hardcode it?
     

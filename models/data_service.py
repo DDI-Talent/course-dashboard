@@ -65,6 +65,10 @@ class DataService:
             for course in DataService.load_courses()
             for button_id in course.all_possible_button_ids()
         ]
+        if (len(set(ids)) != len(ids)):
+            print("SOMETHING IS WRONG WITH DATA! DUPLICATED BUTTION IDS:")
+            print([id for id in sorted(ids)   if ids.count(id) > 1])
+        print(ids)
         return ids
 
     def all_course_ids():
@@ -176,9 +180,9 @@ class DataService:
     def as_card_selected(self, courseSelected, dissertation = False):
         return courseSelected.as_card_selected( self.is_taken_in_selected_course(courseSelected),dissertation)
 
-    def as_card_nothing_selected(self, year, block):
+    def as_card_nothing_selected(self, year, block, force_hide = False):
         number_of_taken_courses = self.number_of_taken_courses_in(year, block)
-        show = number_of_taken_courses == 0
+        show = (not force_hide) and number_of_taken_courses == 0
         return CourseSelected.as_card_nothing_selected( year, block, show )
 
     def add_course(self, new_selected_course):

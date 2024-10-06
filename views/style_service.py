@@ -87,7 +87,8 @@ class StyleService:
         name_label = StyleService.name_shorter(course_info.name) #+ " " + self.course_info.id
         
         css_class = "course-box"
-        css_class += " dissertation-box" if dissertation else ""
+        css_class += " dissertation-box" if course_info.credits == 60 else ""
+        css_class += " disabled-background" if selected else ""
         css_class += " disabled-background" if selected else ""
 
         return ui.div( 
