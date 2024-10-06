@@ -25,6 +25,11 @@
   padding: 10px 0px;
 }
 
+.middle-course-column{
+  /* border-right: lightgrey solid 1px; */
+  /* border-left: lightgrey solid 1px; */
+}
+
 .section-box {
   padding: 30px; 
   border: 1px solid grey;
@@ -36,6 +41,7 @@
 
 .align-left {
   display: inline-block;
+  width: fit-content;
 }
 
 .meta-info-box {
@@ -63,8 +69,8 @@
   padding:0px;
 }
 
-.row_of_courses{
-  padding: 16px 0px;
+.row-of-courses{
+  padding: 0px 0px 14px 0px;
 }
 
 .warning{
@@ -110,13 +116,13 @@
 }
 
 .dissertation-box {
-  padding-bottom: 80px
+  min-height: 160px;
+  border-style: double;
+  border-width: 3px;
 }
 
 .dissertation-box > div:first-of-type{
-  font-size: smaller;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  /* font-size: smaller; */
 } 
 
 .one-theme{
