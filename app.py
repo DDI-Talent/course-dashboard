@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.5.2.2" # major.sprint.prodrelease.devrelease 
+version = "1.5.0.3" # major.sprint.prodrelease.devrelease 
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -131,7 +131,7 @@ def server(input, output, session):
         nonlocal courses_data
         degree_options = {degree.id: degree.name 
                           for degree in courses_data.get().degrees }
-        return ui.input_select("select_degree_dropdown", "Your program of study:", choices = degree_options, selected=current_degree_id(), width="90%;") 
+        return ui.input_select("select_degree_dropdown", "Your program of study at the Usher Institute:", choices = degree_options, selected=current_degree_id(), width="90%;") 
 
 
 
@@ -310,19 +310,23 @@ def server(input, output, session):
         for block in range(1,7):
             years_widgets = []
             for year in [1,2,3]:
-                print("TAKABLE IN block", block, " year", year)
-                print([ 
-                    course.id
-                    for course in courses_data.get().all_options_in(year, block)])
                 courses_in_this_block = [ 
-                    courses_data.get().as_card_selected(CourseSelected(course, year, block))
+                    course
                     for course in courses_data.get().all_options_in(year, block)]
+                
+                course_widgets_in_this_block = [ 
+                    courses_data.get().as_card_selected(CourseSelected(course, year, block))
+                    for course in courses_in_this_block]
                 # hide filter button if dissertation is already picked, or there is nothing to take there
-                force_hide =  (year == 3 and block != 1 and took_only_dissertation) or len(courses_in_this_block) == 0
-                courses_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block, force_hide= force_hide))
+                took_dissertation_so_hide_other_year_3 = (year == 3 and block != 1 and took_only_dissertation) 
+                any_allowed_courses_in_block = any([ 
+                    current_degree_id() in course.degree_ids
+                    for course in courses_data.get().all_options_in(year, block)])
+                force_hide =  took_dissertation_so_hide_other_year_3 or len(courses_in_this_block) == 0 or not any_allowed_courses_in_block
+                course_widgets_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block, force_hide= force_hide))
 
 # or (took_dissertation and block >1) # todo: shall we hide filters in year 3 if dissertation is taken
-                years_widgets.append(courses_in_this_block)
+                years_widgets.append(course_widgets_in_this_block)
 
             new_rows = [
                 ui.row(

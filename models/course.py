@@ -54,7 +54,7 @@ class Course:
         ]
        
 
-    def as_card(self, show, selected = False, degree_years = 1):
+    def as_card(self, show, selected = False, degree_years = 3):
         buttons = []
         for year in self.years:
             for block in self.blocks:
