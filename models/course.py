@@ -54,13 +54,14 @@ class Course:
         ]
        
 
-    def as_card(self, show, selected = False):
+    def as_card(self, show, selected = False, degree_years = 1):
         buttons = []
         for year in self.years:
             for block in self.blocks:
                 button_uid = self.to_button_id(year, block, "buttonadd_")
                 buttons.append(ui.input_action_link(button_uid, 
-                                f"📌 Y{year} B{block}")
+                                f"📌 Y{year} B{block}" , hidden = year > degree_years
+                                )
                                 .add_class("disabled-link" if selected else "highlighted-link"),
                             )
         return StyleService.course_as_card(self, show, buttons = buttons, selected = selected)

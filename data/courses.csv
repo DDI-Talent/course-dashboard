@@ -52,4 +52,4 @@ DS_HSC3,3,1,60,DISSERTATION,DISSERTATION,,context+qual+quant+leader+code+stats+d
 DS_HSC3,3,1,60,DISSERTATIONWBP,DISSERTATIONWBP,,context+qual+quant+leader+code+stats+design+data+scholar+ethics,,,DISSERTATION WORK BASED PLACEMENT,,,,,
 DS_HSC3,3,1,10,SLICCa,SLICCa,,context+qual+quant,,,"Student-Led, Individually-Created Courses (1 of 2)",,,,,
 DS_HSC3,3,6,10,SLICCb,SLICCb,,context+qual+quant,,,"Student-Led, Individually-Created Courses (2 of 2)",,,,,
-LDT_HSC1+LDT_HSC2+LDT_HSC3,2,6,10,ResearchDesignPractice,ResearchDesignPractice,,leader,,,Research Design - Digital Health and Social Care Transformation in Practice,,,,,
+LDT_HSC1+LDT_HSC2+LDT_HSC3,2,5,10,ResearchDesignPractice,ResearchDesignPractice,,quant+qual+scholar,,,Foundations of research design for data science in Health and Social Care (Digital),,,,,
