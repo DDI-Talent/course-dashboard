@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.5.0.0" # major.sprint.prodrelease.devrelease 
+version = "1.5.1.1" # major.sprint.prodrelease.devrelease 
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -159,7 +159,7 @@ def server(input, output, session):
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
         # only keep course in the years that are allowed in this degree
-        years_to_keep = list(range(1, current_degree.years+1))
+        years_to_keep = list(range(1, 4))
         if input.filter_year.get() != "all":
             years_to_keep = [int(input.filter_year.get())]
         
@@ -310,6 +310,10 @@ def server(input, output, session):
         for block in range(1,7):
             years_widgets = []
             for year in [1,2,3]:
+                print("TAKABLE IN block", block, " year", year)
+                print([ 
+                    course.id
+                    for course in courses_data.get().all_options_in(year, block)])
                 courses_in_this_block = [ 
                     courses_data.get().as_card_selected(CourseSelected(course, year, block))
                     for course in courses_data.get().all_options_in(year, block)]
@@ -385,8 +389,6 @@ def server(input, output, session):
         ) , StyleService.theme_balance(theme_counts))
     
 
-    
-
     @output
     @render.ui
     def total_credits_warning():
@@ -413,7 +415,7 @@ def server(input, output, session):
     
     def get_all_inputs_add_remove():
         all_inputs = get_all_inputs_add_remove_info().values()
-        # print(get_all_inputs_add_remove_info().keys())
+
         return  all_inputs
 
     def get_all_inputs_add_remove_info():
@@ -440,26 +442,40 @@ def server(input, output, session):
         nonlocal input_states
         new_states = {}
         all_inputs ={**get_all_inputs_add_remove_info(), **get_all_filter_buttons_info()}
+
+        print("CLICKED!")
+        # for k,v in all_inputs.items():
+        #     print(f"{k:>50}, {v}")
+
+
         #print("which_input_changed+",all_inputs,len(all_inputs.items()))
         for input_id, input_object in all_inputs.items():
+            print("CLICKED!a", input_id)
             new_states[input_id] = input_object()
+            print("CLICKED!b", input_id)
+            
+
 
         # {"but_45678": button_oibject} # turn those into
         # {"but_45678": 2}  # those. where number is how many times I was clicked
         # old [0,0,1]
         # new [0,0,2]
         # print("inputstates",input_states.get().keys())
+        print("CLICKED 1")
+
         if (len(input_states.get().keys()) == 0):
             old_states = {new_state_key: 0
                 for new_state_key, new_state_value in new_states.items()}
         else:
             old_states = input_states.get()
 
+        print("CLICKED 2")
+
         keys_that_changed = [old_state_key
                             for old_state_key, old_state_value in old_states.items()
                             if old_state_value != new_states[old_state_key]]
         
-        # print("keys that changed",keys_that_changed)
+        print("keys that changed",keys_that_changed)
         
         input_states.set(new_states)
         return keys_that_changed if len(keys_that_changed) > 0 else None
