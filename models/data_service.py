@@ -40,7 +40,8 @@ class DataService:
         for course_info in self.course_infos:
             course_info.years = [year 
                                  for year in course_info.years 
-                                 if year <= years_of_degree]
+                                #  if year <= years_of_degree # TODO: is this what was hurting the 1 and 2 year degrees?
+                                 ]
 
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
@@ -68,7 +69,6 @@ class DataService:
         if (len(set(ids)) != len(ids)):
             print("SOMETHING IS WRONG WITH DATA! DUPLICATED BUTTION IDS:")
             print([id for id in sorted(ids)   if ids.count(id) > 1])
-        print(ids)
         return ids
 
     def all_course_ids():
