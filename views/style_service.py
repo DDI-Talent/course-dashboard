@@ -94,7 +94,7 @@ class StyleService:
         return ui.div( 
                         ui.div(  name_label, "*" if course_info.is_compulsory_course else None),
                         ui.div( 
-                            ui.div(  *[button for button in buttons]   ),
+                            ui.div(  *buttons   ),
                             hidden = (dissertation)
                         ).add_class("link-box"),
                         StyleService.box_of_course_metainfo(course_info) ,
