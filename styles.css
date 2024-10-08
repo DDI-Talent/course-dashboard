@@ -17,6 +17,10 @@
   max-width: 400px !important;
 }
 
+ .popover:has(div div .popover-large)  {
+  max-width: 800px !important;
+}
+
 .row.row-right{
     --bs-gutter-x: 2px !important;  
 }
@@ -67,6 +71,7 @@
 .link-box {
   margin:0px; 
   padding:0px;
+  padding-right: 74px;
 }
 
 .row-of-courses{
@@ -89,6 +94,7 @@
 .highlighted-link {
   background-color: #ffff00; 
   padding: 0px 10px;
+  white-space: nowrap;
 }
 
 .disabled-link {
@@ -96,6 +102,7 @@
   padding: 0px 10px;
   cursor: not-allowed;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .meta-box-half-bottom {
