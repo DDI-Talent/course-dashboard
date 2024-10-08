@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.5.1.1" # major.sprint.prodrelease.devrelease 
+version = "1.5.1.2" # major.sprint.prodrelease.devrelease 
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -233,7 +233,7 @@ def server(input, output, session):
                           ui.a("See code on Github", href= "https://github.com/DDI-Talent/course-dashboard/"),
                           ui.a("About Usher Institute", href= "https://www.ed.ac.uk/usher", target="_blank").add_style("margin-left: 10px;"),
                           )
-                ),ui.column(6,ui.HTML("""<iframe id="kaltura_player" type="text/javascript"  src='https://cdnapisec.kaltura.com/p/2010292/embedPlaykitJs/uiconf_id/55171522?iframeembed=true&entry_id=1_xnrtj57j&config[provider]={"widgetId":"1_kd1syjza"}'  style="width: 304px;height: 231px;border: 0;" allowfullscreen webkitallowfullscreen mozAllowFullScreen allow="autoplay *; fullscreen *; encrypted-media *" sandbox="allow-forms allow-same-origin allow-scripts allow-top-navigation allow-pointer-lock allow-popups allow-modals allow-orientation-lock allow-popups-to-escape-sandbox allow-presentation allow-top-navigation-by-user-activation" title="Kaltura Player"></iframe>"""))
+                ),ui.column(6,ui.HTML("""<iframe id="kaltura_player" type="text/javascript"  src='https://cdnapisec.kaltura.com/p/2010292/embedPlaykitJs/uiconf_id/55171522?iframeembed=true&entry_id=1_vy5677t2&config[provider]={"widgetId":"1_tdt6q0k2"}'  style="width: 304px;height: 231px;border: 0;" allowfullscreen webkitallowfullscreen mozAllowFullScreen allow="autoplay *; fullscreen *; encrypted-media *" sandbox="allow-forms allow-same-origin allow-scripts allow-top-navigation allow-pointer-lock allow-popups allow-modals allow-orientation-lock allow-popups-to-escape-sandbox allow-presentation allow-top-navigation-by-user-activation" title="Kaltura Player"></iframe>"""))
             )
 
 
