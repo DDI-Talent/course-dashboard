@@ -238,7 +238,7 @@ class DataService:
         return selected_courses
 
 
-    def url_to_doashboard_with_degree(session, degree_id):
+    def url_to_doashboard_with_degree(session, degree_id, include_core_courses = False):
         # TODO, this is repeated in a few places
         site_protocol = session.input[".clientdata_url_protocol"]()
         site_port = session.input[".clientdata_url_port"]()
@@ -251,6 +251,9 @@ class DataService:
         if len(pathname) > 1: # eg. ignore just "/"
             link_to_share += f"{pathname}"
         link_to_share += f"?degree_id={degree_id}"
+        if include_core_courses: 
+            core_courses = "+".join(DataService.degree_with_id_or_default(degree_id).compulsory_courses)
+            link_to_share += f"&courses={core_courses}"
 
         return link_to_share
 

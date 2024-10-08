@@ -60,7 +60,7 @@ class Course:
             for block in self.blocks:
                 button_uid = self.to_button_id(year, block, "buttonadd_")
                 buttons.append(ui.input_action_link(button_uid, 
-                                f"📌 Y{year} B{block}" , hidden = year > degree_years
+                                f"📌Y{year}_B{block}" , hidden = year > degree_years
                                 )
                                 .add_class("disabled-link" if selected else "highlighted-link"),
                             )
