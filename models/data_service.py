@@ -40,7 +40,8 @@ class DataService:
         for course_info in self.course_infos:
             course_info.years = [year 
                                  for year in course_info.years 
-                                 if year <= years_of_degree]
+                                #  if year <= years_of_degree # TODO: is this what was hurting the 1 and 2 year degrees?
+                                 ]
 
     def refresh_data(self, degree_id = None):
         print("refresh_data",degree_id)
@@ -65,6 +66,9 @@ class DataService:
             for course in DataService.load_courses()
             for button_id in course.all_possible_button_ids()
         ]
+        if (len(set(ids)) != len(ids)):
+            print("SOMETHING IS WRONG WITH DATA! DUPLICATED BUTTION IDS:")
+            print([id for id in sorted(ids)   if ids.count(id) > 1])
         return ids
 
     def all_course_ids():
@@ -176,9 +180,9 @@ class DataService:
     def as_card_selected(self, courseSelected, dissertation = False):
         return courseSelected.as_card_selected( self.is_taken_in_selected_course(courseSelected),dissertation)
 
-    def as_card_nothing_selected(self, year, block):
+    def as_card_nothing_selected(self, year, block, force_hide = False):
         number_of_taken_courses = self.number_of_taken_courses_in(year, block)
-        show = number_of_taken_courses == 0
+        show = (not force_hide) and number_of_taken_courses == 0
         return CourseSelected.as_card_nothing_selected( year, block, show )
 
     def add_course(self, new_selected_course):

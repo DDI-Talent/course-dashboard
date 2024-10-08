@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.4.4.21" # major.sprint.prodrelease.devrelease 
+version = "1.5.0.3" # major.sprint.prodrelease.devrelease 
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -123,7 +123,7 @@ def server(input, output, session):
                                 for theme in StyleService.get_themes()},
                 ))
             )
-        )
+        ).add_class("row-tight")
 
     @output
     @render.ui
@@ -131,7 +131,7 @@ def server(input, output, session):
         nonlocal courses_data
         degree_options = {degree.id: degree.name 
                           for degree in courses_data.get().degrees }
-        return ui.input_select("select_degree_dropdown", "Your program of study:", choices = degree_options, selected=current_degree_id(), width="90%;") 
+        return ui.input_select("select_degree_dropdown", "Your program of study at the Usher Institute:", choices = degree_options, selected=current_degree_id(), width="90%;") 
 
 
 
@@ -159,7 +159,7 @@ def server(input, output, session):
         blocks_to_keep = [1,2,3,4,5,6] if input.filter_block.get() == "all" else [int(input.filter_block.get())]
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
         # only keep course in the years that are allowed in this degree
-        years_to_keep = list(range(1, current_degree.years+1))
+        years_to_keep = list(range(1, 4))
         if input.filter_year.get() != "all":
             years_to_keep = [int(input.filter_year.get())]
         
@@ -169,7 +169,7 @@ def server(input, output, session):
         selected_courses_ids = [course.course_info.id
                                 for course in courses_data.get().selected_courses.get()]
         courses_cards = [
-            course_obj.as_card( show = current_degree_id() in course_obj.degree_ids, selected = course_obj.id in selected_courses_ids) 
+            course_obj.as_card( show = current_degree_id() in course_obj.degree_ids, selected = course_obj.id in selected_courses_ids, degree_years = current_degree.years) 
             for course_obj in courses_data.get().course_infos
             if course_obj.takeable_in_any(years_to_keep, blocks_to_keep)
             and course_has_word(course_obj, text_to_keep)
@@ -230,7 +230,7 @@ def server(input, output, session):
                           ui.p(f"This tool is a work in progress."),
                           ui.p(f"Build using Shiny Python."),
                           ui.a("See code on Github", href= "https://github.com/DDI-Talent/course-dashboard/"),
-                          ui.a("About Usher Institute", href= "https://www.ed.ac.uk/usher", target="_blank"),
+                          ui.a("About Usher Institute", href= "https://www.ed.ac.uk/usher", target="_blank").add_style("margin-left: 10px;"),
                           )
 
 
@@ -254,9 +254,10 @@ def server(input, output, session):
             return ui.div(f"🛒 Choose courses to create sharable link")
         else:
             return ui.div(ui.div(f"Share your {number_of_choices} choices:"),
-                          ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices").add_class("full-width"),
+                    
                           ui.a("COPY LINK", href=sharable_url(selected_courses_as_string),onclick="copyToClipboard(); return false;").add_class("plain-external-link full-width"),
                           ui.a("SUBMIT CHOICES via FORM", href=ahref_link_to_ms_form(selected_courses_as_string), target="_blank").add_class("plain-external-link full-width"),
+                          ui.tags.textarea( sharable_url(selected_courses_as_string), id= "course_choices").add_class("full-width"),
                           )
 
 
@@ -283,45 +284,62 @@ def server(input, output, session):
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
         # dissertation_selected = CourseSelected(courses_data.get().get_dissertation(),3,1)
         
-        right_most_column =  ui.column(2, 
-                                    ui.row(ui.h5("YEAR 3", style = "padding: 0px"),get_credits_information(3, shortened=True)),
-                                    ui.row( 
-                                         courses_data.get().as_card_selected(CourseSelected(courses_data.get().get_dissertation(), 3, 1), dissertation = True),
-                                         courses_data.get().as_card_nothing_selected(3, 1)  ).add_class("row_of_courses"),
-                                    hidden = current_degree.years < 3
-                                    )
+        # TODO: needs cleanup
+
+        courses_in_year_3 = [ 
+                    selected_course.course_info
+                    for selected_course in courses_data.get().selected_courses.get()
+                    if selected_course.year == 3
+                    ]
 
 
-
-
+        took_only_dissertation = len(courses_in_year_3) >= 1 and any(map( lambda course: course.credits == 60, courses_in_year_3))
+    
         rows  = [ui.row(
-                ui.column(2,ui.div("Block", style="padding-top: 32px")),
-                ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 1")), ui.column(7,get_credits_information(1)))),
-                ui.column(5, ui.row( ui.column(5,ui.h5("YEAR 2")), ui.column(7,get_credits_information(2))), hidden = current_degree.years < 2))
+                    ui.column(4, ui.row( ui.h5("YEAR 1").add_class("align-left"), get_credits_information(1).add_class("align-left"))),
+                    ui.column(4, ui.row( ui.h5("YEAR 2").add_class("align-left"), get_credits_information(2).add_class("align-left")), hidden = current_degree.years < 2).add_class('middle-course-column'),
+                    ui.column(4, ui.row( ui.h5("YEAR 3").add_class("align-left"), get_credits_information(3).add_class("align-left")), hidden = current_degree.years < 3)
+                ).add_class("row-of-courses")
+
             ]
-        block_dates = {1: "16 Sep - 18 Oct", 2: "28 Oct - 29 Nov", 
-                       3: "6 Jan - 7 Feb", 4: "17 Feb - 21 Mar", 
-                       5: "7 Apr - 9 May", 6: "19 May - 20 Jun"}
+        block_dates = {1: "16 Sep - 18 Oct 2024", 2: "28 Oct - 29 Nov  2024", 
+                       3: "6 Jan - 7 Feb 2025", 4: "17 Feb - 21 Mar 2025", 
+                       5: "7 Apr - 9 May 2025", 6: "19 May - 20 Jun 2025"}
         
 
         for block in range(1,7):
             years_widgets = []
-            for year in [1,2]:
+            for year in [1,2,3]:
                 courses_in_this_block = [ 
-                    courses_data.get().as_card_selected(CourseSelected(course, year, block))
+                    course
                     for course in courses_data.get().all_options_in(year, block)]
-                courses_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block))
+                
+                course_widgets_in_this_block = [ 
+                    courses_data.get().as_card_selected(CourseSelected(course, year, block))
+                    for course in courses_in_this_block]
+                # hide filter button if dissertation is already picked, or there is nothing to take there
+                took_dissertation_so_hide_other_year_3 = (year == 3 and block != 1 and took_only_dissertation) 
+                any_allowed_courses_in_block = any([ 
+                    current_degree_id() in course.degree_ids
+                    for course in courses_data.get().all_options_in(year, block)])
+                force_hide =  took_dissertation_so_hide_other_year_3 or len(courses_in_this_block) == 0 or not any_allowed_courses_in_block
+                course_widgets_in_this_block.append(courses_data.get().as_card_nothing_selected(year, block, force_hide= force_hide))
 
-                years_widgets.append(courses_in_this_block)
+# or (took_dissertation and block >1) # todo: shall we hide filters in year 3 if dissertation is taken
+                years_widgets.append(course_widgets_in_this_block)
 
-            new_row = ui.row(
-                ui.column(2, ui.h5(block), ui.p(block_dates[block],style="font-size: small;"), style="padding-right: -20;"),
-                ui.column(5, years_widgets[0]),
-                ui.column(5, years_widgets[1], hidden = current_degree.years < 2),
-
-            ).add_class("row_of_courses")
-            rows.append(new_row)
-        return ui.row(ui.column(10, rows), right_most_column, style="margin: 0px;")
+            new_rows = [
+                ui.row(
+                    ui.h5( f"Block {block}").add_class("align-left"), ui.p( f"({block_dates[block]})").add_class("align-left")
+                ),
+                ui.row(
+                    ui.column(4, years_widgets[0]),
+                    ui.column(4, years_widgets[1], hidden = current_degree.years < 2).add_class('middle-course-column'),
+                    ui.column(4, years_widgets[2], hidden = current_degree.years < 3 )
+                ).add_class("row-of-courses")
+            ]
+            rows.extend(new_rows)
+        return ui.row(ui.column(12, rows), style="margin: 0px;")
 
     def get_credits_information(year = None, shortened=False):
         nonlocal courses_data
@@ -342,7 +360,7 @@ def server(input, output, session):
         if shortened:
             text = f"{total_credits} of {max_credits}"
         else:
-            text = f"Credits: {total_credits} of {max_credits}"
+            text = f"({total_credits} of {max_credits} credits)"
         return ui.div(text, style = "padding: 0px")
     
     @output
@@ -375,12 +393,11 @@ def server(input, output, session):
         ) , StyleService.theme_balance(theme_counts))
     
 
-    
-
     @output
     @render.ui
     def total_credits_warning():
         nonlocal courses_data
+        print([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
         total_credits = sum([(course.get_credits()) for course in courses_data.get().selected_courses.get()])
         current_degree = DataService.degree_with_id_or_default( current_degree_id())
 
@@ -402,7 +419,7 @@ def server(input, output, session):
     
     def get_all_inputs_add_remove():
         all_inputs = get_all_inputs_add_remove_info().values()
-        # print(get_all_inputs_add_remove_info().keys())
+
         return  all_inputs
 
     def get_all_inputs_add_remove_info():
@@ -416,12 +433,9 @@ def server(input, output, session):
     
     def get_all_filter_buttons_info():
         return {
-            **{
             f"buttonfilter_{year}_{block}" : getattr(input, f"buttonfilter_{year}_{block}") 
-            for year in ["1", "2"]
+            for year in ["1", "2","3"]
             for block in ["1", "2", "3", "4", "5", "6"]
-            },
-            **{f"buttonfilter_3_1" : getattr(input, f"buttonfilter_3_1")}
         }
     # TODO: is there a way to not hardcode it?
     
@@ -432,26 +446,40 @@ def server(input, output, session):
         nonlocal input_states
         new_states = {}
         all_inputs ={**get_all_inputs_add_remove_info(), **get_all_filter_buttons_info()}
+
+        print("CLICKED!")
+        # for k,v in all_inputs.items():
+        #     print(f"{k:>50}, {v}")
+
+
         #print("which_input_changed+",all_inputs,len(all_inputs.items()))
         for input_id, input_object in all_inputs.items():
+            print("CLICKED!a", input_id)
             new_states[input_id] = input_object()
+            print("CLICKED!b", input_id)
+            
+
 
         # {"but_45678": button_oibject} # turn those into
         # {"but_45678": 2}  # those. where number is how many times I was clicked
         # old [0,0,1]
         # new [0,0,2]
         # print("inputstates",input_states.get().keys())
+        print("CLICKED 1")
+
         if (len(input_states.get().keys()) == 0):
             old_states = {new_state_key: 0
                 for new_state_key, new_state_value in new_states.items()}
         else:
             old_states = input_states.get()
 
+        print("CLICKED 2")
+
         keys_that_changed = [old_state_key
                             for old_state_key, old_state_value in old_states.items()
                             if old_state_value != new_states[old_state_key]]
         
-        # print("keys that changed",keys_that_changed)
+        print("keys that changed",keys_that_changed)
         
         input_states.set(new_states)
         return keys_that_changed if len(keys_that_changed) > 0 else None

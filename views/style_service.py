@@ -87,13 +87,14 @@ class StyleService:
         name_label = StyleService.name_shorter(course_info.name) #+ " " + self.course_info.id
         
         css_class = "course-box"
-        css_class += " dissertation-box" if dissertation else ""
+        css_class += " dissertation-box" if course_info.credits == 60 else ""
+        css_class += " disabled-background" if selected else ""
         css_class += " disabled-background" if selected else ""
 
         return ui.div( 
                         ui.div(  name_label, "*" if course_info.is_compulsory_course else None),
                         ui.div( 
-                            ui.div(  *[button for button in buttons]   ),
+                            ui.div(  *buttons   ),
                             hidden = (dissertation)
                         ).add_class("link-box"),
                         StyleService.box_of_course_metainfo(course_info) ,
