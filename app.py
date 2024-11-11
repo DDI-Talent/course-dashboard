@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.5.2.2" # major.sprint.prodrelease.devrelease 
+version = "1.5.3.3" # major.sprint.prodrelease.devrelease 
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -281,6 +281,8 @@ def server(input, output, session):
                )
         return course_help
 
+
+
     @output
     @render.ui
     def grid_selected_courses():
@@ -337,8 +339,11 @@ def server(input, output, session):
                     ui.h5( f"Block {block}").add_class("align-left"), ui.p( f"({block_dates[block]})").add_class("align-left")
                 ),
                 ui.row(
+                    StyleService.year_divider_mobile(1),
                     ui.column(4, years_widgets[0]),
+                    StyleService.year_divider_mobile(2, hidden=current_degree.years < 2),
                     ui.column(4, years_widgets[1], hidden = current_degree.years < 2).add_class('middle-course-column'),
+                    StyleService.year_divider_mobile(3, hidden=current_degree.years < 3),
                     ui.column(4, years_widgets[2], hidden = current_degree.years < 3 )
                 ).add_class("row-of-courses")
             ]
