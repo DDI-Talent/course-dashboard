@@ -13,6 +13,18 @@
   border-radius: 5px;
 }
 
+
+
+.hide_this {
+  display: none;
+}
+
+@media (min-width: 768px) { 
+ .hide_this_on_large_screen {
+    display: none;
+ }
+}
+
 .popover {
   max-width: 400px !important;
 }

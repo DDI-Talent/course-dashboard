@@ -77,11 +77,17 @@ class StyleService:
 
     def info_icon():
         return ui.div( icon("circle-info")).add_class("meta-box-half-top")
-    
+        
     def name_shorter(long_name):
         shorter_name =  long_name.replace("health and social care", "H&SC").replace("Health and Social Care", "H&SC")
         shorter_name = shorter_name.replace("Introduction", "Intro")
         return shorter_name
+
+    def year_divider_mobile(which_year, hidden = False):
+        extra_css_class = " hide_this" if hidden else "" 
+        # 
+        return ui.column(4, f"Year {which_year}", class_= "hide_this_on_large_screen" + extra_css_class ) 
+      
 
     def course_as_card(course_info, show = True, buttons = [], dissertation = False, selected = False):
         name_label = StyleService.name_shorter(course_info.name) #+ " " + self.course_info.id
