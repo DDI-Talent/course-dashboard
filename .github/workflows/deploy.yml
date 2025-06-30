@@ -38,7 +38,7 @@ jobs:
         --secret $SHINYAPPS_SECRET \
         -a 12215502 --title course-dashboard-development 
 
-# rsconnect deploy shiny ./ --name ddi-talent -a 12235352 --title course-dashboard  
+# rsconnect deploy shiny ./ --name ddi-talent -a 12215502 --title course-dashboard  
 
 
 
