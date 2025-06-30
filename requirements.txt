@@ -5,6 +5,7 @@ plotly
 pandas
 ridgeplot
 rsconnect
+jinja2
 anyio==4.6.0
 appnope==0.1.4
 argon2-cffi==23.1.0
