@@ -79,8 +79,12 @@ class DataService:
 
     def load_courses(filename = "courses.csv"):
         loaded_df = pd.read_csv(f'./data/{filename}', keep_default_na=False)
-        return [ Course(row)
-                for _, row in loaded_df.iterrows()]
+        courses =  [ Course(row)
+                for _, row in loaded_df.iterrows()
+                ]
+        return [course 
+                for course in courses
+                if course.show == 1]
     
     def load_personas(filename = "personas.csv"):
         loaded_df = pd.read_csv(f'./data/{filename}')
