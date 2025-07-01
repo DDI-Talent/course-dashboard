@@ -25,6 +25,7 @@ class Course:
         self.assessment = row['assessment']
         self.description = row['description']
         self.is_compulsory_course = False
+        self.show = row['show']
         if "code" in self.themes:
             self.themes.remove("code")
             self.themes.extend([f"code-{language.lower()}" for language in self.prog_lang])
