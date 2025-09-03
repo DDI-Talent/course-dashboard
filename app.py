@@ -308,9 +308,9 @@ def server(input, output, session):
                 ).add_class("row-of-courses")
 
             ]
-        block_dates = {1: "16 Sep - 18 Oct 2024", 2: "28 Oct - 29 Nov  2024", 
-                       3: "6 Jan - 7 Feb 2025", 4: "17 Feb - 21 Mar 2025", 
-                       5: "7 Apr - 9 May 2025", 6: "19 May - 20 Jun 2025"}
+        block_dates = {1: "15 Sep - 24 Oct 2025", 2: "27 Oct - 5 Dec  2025", 
+                       3: "5 Jan - 13 Feb 2026", 4: "16 Feb - 27 Mar 2026", 
+                       5: "6 Apr - 15 May 2026", 6: "18 May - 26 Jun 2026"}
         
 
         for block in range(1,7):
