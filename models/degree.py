@@ -16,7 +16,7 @@ class Degree:
         self.description = row['description']            
         self.link = row['link']            
         self.link_to_ms_form = row['link_to_ms_form']            
-        self.compulsory_courses = self.string_to_list(row['compulsory_courses'], as_ints=False)
+        self.compulsory_courses = self.string_to_list(str(row['compulsory_courses']), as_ints=False)
 
     # could this be in the deta service?
     def string_to_list(self, string_to_parse, as_ints = True):
