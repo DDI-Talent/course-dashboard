@@ -12,6 +12,7 @@ class Persona:
     def __init__(self, row):
         self.name = row['name']
         self.emoji = row['emoji']
+        self.show = row['show']
         self.degree_id = row['degree_id']
         self.description = row['description']
         self.course_ids_plus_separated = row['course_ids_plus_separated']
