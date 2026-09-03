@@ -4,6 +4,7 @@
   margin: 2px; 
   position:relative;
   border-radius: 5px;
+  background-color: white;
 }
 
 .course-box-not-selected {
@@ -13,9 +14,39 @@
   border-radius: 5px;
 }
 
-/* .middle-course-column {
-    background: #eeeeee;
-} */
+.middle-course-column {
+    /* background: #f8f8f8; */
+    border-left: #ffffff solid 5px;
+    border-right: #ffffff solid 5px;
+}
+
+.middle-course-row{
+      /* padding-top: 14px; */
+}
+
+.middle-course-row-odd{
+      background: #f8f8f8;
+}
+
+.middle-course-row-even .middle-course-column, .row-of-years .middle-course-column{
+    border-left: #f8f8f8 solid 5px;
+    border-right: #f8f8f8 solid 5px;
+}
+
+.middle-course-row div p{
+  margin-bottom: 0;
+}
+
+.row-of-years .row{
+  padding-top: 14px;
+  padding-bottom:  14px ;
+}
+
+
+.course-outer-box{
+  padding-top: 14px;
+  padding-bottom:  14px ;
+}
 
 .hide_this {
   display: none;
@@ -89,7 +120,7 @@
 }
 
 .row-of-courses{
-  padding: 0px 0px 14px 0px;
+  padding: 0px 0px 0px 0px;
 }
 
 .warning{
