@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.8.3" # major.sprint.prodrelease
+version = "1.9.0" # major.sprint.prodrelease
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -302,10 +302,10 @@ def server(input, output, session):
         took_only_dissertation = len(courses_in_year_3) >= 1 and any(map( lambda course: course.credits == 60, courses_in_year_3))
     
         rows  = [ui.row(
-                    ui.column(4, ui.row( ui.h5("YEAR 1").add_class("align-left"), get_credits_information(1).add_class("align-left"))),
-                    ui.column(4, ui.row( ui.h5("YEAR 2").add_class("align-left"), get_credits_information(2).add_class("align-left")), hidden = current_degree.years < 2).add_class('middle-course-column'),
-                    ui.column(4, ui.row( ui.h5("YEAR 3").add_class("align-left"), get_credits_information(3).add_class("align-left")), hidden = current_degree.years < 3)
-                ).add_class("row-of-courses")
+                    ui.column(4, ui.row( ui.h3("YEAR 1").add_class("align-left"), get_credits_information(1).add_class("align-left"))),
+                    ui.column(4, ui.row( ui.h3("YEAR 2").add_class("align-left"), get_credits_information(2).add_class("align-left")), hidden = current_degree.years < 2).add_class('middle-course-column middle-course-row-even'),
+                    ui.column(4, ui.row( ui.h3("YEAR 3").add_class("align-left"), get_credits_information(3).add_class("align-left")), hidden = current_degree.years < 3)
+                ).add_class("row-of-courses row-of-years")
 
             ]
         block_dates = {1: "15 Sep - 24 Oct 2025", 2: "27 Oct - 5 Dec  2025", 
@@ -334,18 +334,22 @@ def server(input, output, session):
 # or (took_dissertation and block >1) # todo: shall we hide filters in year 3 if dissertation is taken
                 years_widgets.append(course_widgets_in_this_block)
 
+            css_if_is_odd = "middle-course-row" + (" middle-course-row-odd" if block % 2 == 1 else " middle-course-row-even")
             new_rows = [
                 ui.row(
-                    ui.h5( f"Block {block}").add_class("align-left"), ui.p( f"({block_dates[block]})").add_class("align-left")
-                ),
+                    # ui.column(1),
+                    ui.column(4, ui.h5( f"Block {block}").add_class("align-left"), ui.p( f"({block_dates[block]})")),
+                    # ui.column(1),
+                    ui.column(4, ui.p( f" ").add_class("align-left")).add_class('middle-course-column'),
+                ).add_class(css_if_is_odd),
                 ui.row(
                     StyleService.year_divider_mobile(1),
-                    ui.column(4, years_widgets[0]),
+                    ui.column(4, years_widgets[0]).add_class("course-outer-box"),
                     StyleService.year_divider_mobile(2, hidden=current_degree.years < 2),
-                    ui.column(4, years_widgets[1], hidden = current_degree.years < 2).add_class('middle-course-column'),
+                    ui.column(4, years_widgets[1], hidden = current_degree.years < 2).add_class('middle-course-column').add_class("course-outer-box"),
                     StyleService.year_divider_mobile(3, hidden=current_degree.years < 3),
-                    ui.column(4, years_widgets[2], hidden = current_degree.years < 3 )
-                ).add_class("row-of-courses")
+                    ui.column(4, years_widgets[2], hidden = current_degree.years < 3 ).add_class("course-outer-box"),
+                ).add_class("row-of-courses").add_class(css_if_is_odd)
             ]
             rows.extend(new_rows)
         return ui.row(ui.column(12, rows), style="margin: 0px;")
