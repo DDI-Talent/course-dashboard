@@ -88,8 +88,12 @@ class DataService:
     
     def load_personas(filename = "personas.csv"):
         loaded_df = pd.read_csv(f'./data/{filename}')
-        return [ Persona(row)
+        personas = [ Persona(row)
                 for _, row in loaded_df.iterrows()]
+        return [persona 
+                for persona in personas
+                if persona.show == 1]
+    
     
     # used by style service
     def load_themes():
