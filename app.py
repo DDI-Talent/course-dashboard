@@ -9,7 +9,7 @@ from views.style_service import StyleService
 from htmltools import head_content
 
 
-version = "1.9.0" # major.sprint.prodrelease
+version = "1.9.1" # major.sprint.prodrelease
 # i.e. when releasing to dev, increase devrelease number, when releasing to prod, increase prodrelease number
     
 app_ui = ui.page_fixed(
@@ -131,7 +131,7 @@ def server(input, output, session):
         nonlocal courses_data
         degree_options = {degree.id: degree.name 
                           for degree in courses_data.get().degrees }
-        return ui.input_select("select_degree_dropdown", "Your program of study at the Usher Institute:", choices = degree_options, selected=current_degree_id(), width="90%;") 
+        return ui.input_select("select_degree_dropdown", "Your program of study at Edinburgh Medical School:", choices = degree_options, selected=current_degree_id(), width="90%;") 
 
 
 
@@ -218,7 +218,7 @@ def server(input, output, session):
     def about_panel():
             return ui.row(
                 ui.column(6, ui.div(ui.h3("How to use this course-selection tool:"),
-                          ui.div(f"Students at some programs at Usher Institute can use this tool to choose their elective courses and design their learning pathway."),
+                          ui.div(f"Students at some programs at EMS can use this tool to choose their elective courses and design their learning pathway."),
                           ui.tags.ol(
                             ui.tags.li(f"CHOOSE your program of study (top left)"),
                             ui.tags.li(f"ADD courses which you'd like to take (left). Yellow pin 📌 buttons will add courses to your timetable. Click info icon ℹ️ to find out more about each course."),
@@ -231,7 +231,7 @@ def server(input, output, session):
                           ui.p(f"This tool is a work in progress."),
                           ui.p(f"Build using Shiny Python."),
                           ui.a("See code on Github", href= "https://github.com/DDI-Talent/course-dashboard/"),
-                          ui.a("About Usher Institute", href= "https://www.ed.ac.uk/usher", target="_blank").add_style("margin-left: 10px;"),
+                          ui.a("About the Data Science Team", href= "https://teachhealthdata.github.io/", target="_blank").add_style("margin-left: 10px;"),
                           )
                 ),ui.column(6,ui.HTML("""<iframe id="kaltura_player" type="text/javascript"  src='https://cdnapisec.kaltura.com/p/2010292/embedPlaykitJs/uiconf_id/55171522?iframeembed=true&entry_id=1_vy5677t2&config[provider]={"widgetId":"1_tdt6q0k2"}'  style="width: 304px;height: 231px;border: 0;" allowfullscreen webkitallowfullscreen mozAllowFullScreen allow="autoplay *; fullscreen *; encrypted-media *" sandbox="allow-forms allow-same-origin allow-scripts allow-top-navigation allow-pointer-lock allow-popups allow-modals allow-orientation-lock allow-popups-to-escape-sandbox allow-presentation allow-top-navigation-by-user-activation" title="Kaltura Player"></iframe>"""))
             )
@@ -308,9 +308,12 @@ def server(input, output, session):
                 ).add_class("row-of-courses row-of-years")
 
             ]
-        block_dates = {1: "15 Sep - 24 Oct 2025", 2: "27 Oct - 5 Dec  2025", 
-                       3: "5 Jan - 13 Feb 2026", 4: "16 Feb - 27 Mar 2026", 
-                       5: "6 Apr - 15 May 2026", 6: "18 May - 26 Jun 2026"}
+        block_dates = {1: "21 Sep - 30 Oct 2026", 
+                       2: "02 Nov - 11 Dec 2026", 
+                       3: "11 Jan - 19 Feb 2027", 
+                       4: "22 Feb - 02 Apr 2027", 
+                       5: "12 Apr - 21 May 2027", 
+                       6: "24 May - 02 Jul 2027"}
         
 
         for block in range(1,7):
